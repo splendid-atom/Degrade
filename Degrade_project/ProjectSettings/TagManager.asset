@@ -41,6 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 1212631593
+    locked: 0
+  - name: Middleground
+    uniqueID: 3655827355
+    locked: 0
+  - name: Foreground
+    uniqueID: 1974955231
+    locked: 0
   - name: player
     uniqueID: 2381624583
+    locked: 0
+  - name: Decoration
+    uniqueID: 2731874099
     locked: 0
