@@ -9,10 +9,11 @@ public class NewPlayerGuide : MonoBehaviour
     private int loopCounter = 0;
     public int maxLoops = 2; // 设置循环的最大次数
     public float finalTransparency = 0.4f; // 最终透明度
-
+    public int arrows_number = 6;
+    public float WaitUntilDisappear = 5f;
     void Start()
     {
-        if (arrows.Length != 4)
+        if (arrows.Length != arrows_number)
         {
             return;
         }
@@ -77,6 +78,14 @@ public class NewPlayerGuide : MonoBehaviour
             }
             timer += Time.deltaTime;
             yield return null;
+        }
+        // 等待5秒
+        yield return new WaitForSeconds(WaitUntilDisappear);
+
+        // 所有箭头消失
+        for (int i = 0; i < arrows.Length; i++)
+        {
+            arrows[i].color = new Color(arrows[i].color.r, arrows[i].color.g, arrows[i].color.b, 0);
         }
     }
 }

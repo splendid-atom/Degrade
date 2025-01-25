@@ -24,11 +24,11 @@ public class RotatingCamera : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Q) && !isRotating)
         {
-            StartCoroutine(RotateAround(-45, rotateTime));
+            StartCoroutine(RotateAround(45, rotateTime));
         }
         if (Input.GetKey(KeyCode.E) && !isRotating)
         {
-            StartCoroutine(RotateAround(45, rotateTime));
+            StartCoroutine(RotateAround(-45, rotateTime));
         }
     }
     IEnumerator RotateAround(float angle,float time){
