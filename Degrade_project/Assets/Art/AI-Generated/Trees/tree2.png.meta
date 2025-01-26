@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 01eae32188b393949913cd5f9370dcd5
+guid: 045891a05672a244c91e2080646f8532
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -46,14 +46,14 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 300
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -94,19 +94,6 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Server
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -122,11 +109,41 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline: []
+    outline:
+    - - {x: -275.5, y: -480.5}
+      - {x: -137.5, y: -400.5}
+      - {x: -101.5, y: -355.5}
+      - {x: -68.5, y: -274.5}
+      - {x: -60.5, y: -199.5}
+      - {x: -14.5, y: -183.5}
+      - {x: 16.5, y: -147.5}
+      - {x: 2.5, y: -83.5}
+      - {x: -158.5, y: -108.5}
+      - {x: -211.5, y: -68.5}
+      - {x: -335.5, y: -61.5}
+      - {x: -368.5, y: 25.5}
+      - {x: -263.5, y: 66.5}
+      - {x: -357.5, y: 83.5}
+      - {x: -420.5, y: 229.5}
+      - {x: -280.5, y: 373.5}
+      - {x: -187.5, y: 493.5}
+      - {x: 48.5, y: 493.5}
+      - {x: 292.5, y: 493.5}
+      - {x: 399.5, y: 461.5}
+      - {x: 495.5, y: 382.5}
+      - {x: 495.5, y: 89.5}
+      - {x: 355.5, y: 14.5}
+      - {x: 313.5, y: -76.5}
+      - {x: 150.5, y: -118.5}
+      - {x: 53.5, y: -242.5}
+      - {x: 65.5, y: -388.5}
+      - {x: 153.5, y: -430.5}
+      - {x: 222.5, y: -444.5}
+      - {x: 349.5, y: -477.5}
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
