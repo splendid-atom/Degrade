@@ -122,6 +122,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &102143318 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+  m_PrefabInstance: {fileID: 294392877}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &291792203
 GameObject:
   m_ObjectHideFlags: 0
@@ -10634,6 +10639,84 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1001 &294392877
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2049689814}
+    m_Modifications:
+    - target: {fileID: 4021780451516641655, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: muzzle
+      value: 
+      objectReference: {fileID: 459196345}
+    - target: {fileID: 4021780451516641655, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: Offset_x
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021780451516641655, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: Offset_y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 4021780451516641655, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: playerCharacter
+      value: 
+      objectReference: {fileID: 2049689814}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.82
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6468383462795681753, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7783242721791236409, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+      propertyPath: m_Name
+      value: Weapon temp
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+--- !u!4 &459196345 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5639534662833450899, guid: 7dc67c448609e1d46878d63968c58950, type: 3}
+  m_PrefabInstance: {fileID: 294392877}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -11760,6 +11843,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6315955310331757795, guid: 28d02b6969d91fb49a386c50773df210, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9007289324331019542}
+    - targetCorrespondingSourceObject: {fileID: 6315955310331757795, guid: 28d02b6969d91fb49a386c50773df210, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 102143318}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8089941572691531366, guid: 28d02b6969d91fb49a386c50773df210, type: 3}
       insertIndex: -1
