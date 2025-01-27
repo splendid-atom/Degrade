@@ -68,6 +68,7 @@ public class NewPlayerGuide : MonoBehaviour
 
     IEnumerator FadeAllArrowsToTransparency()
     {
+        // 渐变到最终透明度
         float timer = 0;
         while (timer < fadeDuration)
         {
@@ -79,13 +80,22 @@ public class NewPlayerGuide : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
+
         // 等待5秒
         yield return new WaitForSeconds(WaitUntilDisappear);
 
-        // 所有箭头消失
-        for (int i = 0; i < arrows.Length; i++)
+        // 渐变消失
+        timer = 0;
+        while (timer < fadeDuration)
         {
-            arrows[i].color = new Color(arrows[i].color.r, arrows[i].color.g, arrows[i].color.b, 0);
+            float alpha = Mathf.Lerp(finalTransparency, 0, timer / fadeDuration);
+            for (int i = 0; i < arrows.Length; i++)
+            {
+                arrows[i].color = new Color(arrows[i].color.r, arrows[i].color.g, arrows[i].color.b, alpha);
+            }
+            timer += Time.deltaTime;
+            yield return null;
         }
     }
+
 }
