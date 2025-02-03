@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
     Rigidbody2D rigidbody2d;
     public float speed = 3.0f;
     public InputAction MoveActionWASD;
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour
     Animator animator;
     Vector2 moveDirection = new Vector2(1, 0);
     public Transform arrowIndicator;  // 引用ArrowIndicator
+    public int PlayerHealth = 100;//生命值
+    public int PlayerShield = 100;//护甲值
+    public int CurrentHoldingItem = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +24,14 @@ public class PlayerController : MonoBehaviour
         MoveActionWASD.Enable();
         animator = GetComponent<Animator>();
     }
-
+    private void Awake()
+    {
+        // 确保实例化只发生一次
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);  // 如果已经存在，销毁重复的实例
+    }
     // Update is called once per frame
     void Update()
     {
