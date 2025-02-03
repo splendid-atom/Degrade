@@ -1,3 +1,4 @@
+//RotatingCamera.cs
 using System.Collections;
 using UnityEngine;
 
