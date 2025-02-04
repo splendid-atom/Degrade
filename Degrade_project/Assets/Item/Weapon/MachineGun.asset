@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eb497d3bf73d3b4a976cda18757bc59, type: 3}
   m_Name: MachineGun
   m_EditorClassIdentifier: 
-  itemName: MachineGun
+  itemName: "\u673A\u5173\u67AA"
   itemID: 3
   itemIcon: {fileID: 0}
   description: machine gun
