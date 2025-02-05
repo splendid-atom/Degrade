@@ -6,10 +6,13 @@ public class PotionItem : Item
 {
     public int healAmount;  // 药水恢复的生命值
     public int shieldAmount;//恢复护甲值
+    // public float cooldownTime;//使用冷却时间
+    // public bool isObtained=false;//是否获得
 
     // 重写 Use() 方法，实现具体的使用逻辑
-    public override void Use()
+    public override void Use(AudioSource audioSource)
     {
+
         // 在控制台打印出使用药水的信息
         Debug.Log($"Using potion: {itemName}, Heal Amount: {healAmount}");
         if (healAmount > 0)
@@ -23,6 +26,11 @@ public class PotionItem : Item
             // 限制玩家护甲值在0到200之间
             PlayerController.Instance.PlayerShield = Mathf.Clamp(PlayerController.Instance.PlayerShield + shieldAmount, 0, 200);
             Debug.Log($"Player Shield: {PlayerController.Instance.PlayerShield}");
+        }
+        // 播放使用音效
+        if (useSound != null)
+        {
+            audioSource.PlayOneShot(useSound);
         }
  
     }

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58d0d160bd8012a459cc1d463d9bd795, type: 3}
   m_Name: ShieldPotion
   m_EditorClassIdentifier: 
-  itemName: ShieldPotion
+  itemName: "\u62A4\u7532\u7247"
   itemID: 2
   itemIcon: {fileID: 0}
   description: shiled+20
   healAmount: 0
   shieldAmount: 20
+  cooldownTime: 60
+  isObtained: 0
