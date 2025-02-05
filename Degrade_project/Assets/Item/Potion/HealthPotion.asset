@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58d0d160bd8012a459cc1d463d9bd795, type: 3}
   m_Name: HealthPotion
   m_EditorClassIdentifier: Assembly-CSharp::PotionItem
-  itemName: HealthPotion
+  itemName: "\u751F\u547D\u836F\u6C34"
   itemID: 1
-  itemIcon: {fileID: 0}
+  itemIcon: {fileID: 21300000, guid: c5f4ce159ee6fcd44a73b8ad76153863, type: 3}
+  useSound: {fileID: 8300000, guid: a9ff183a52fba1e4497c493852145fa1, type: 3}
   description: health+5
+  cooldownTime: 5
   healAmount: 5
+  shieldAmount: 0

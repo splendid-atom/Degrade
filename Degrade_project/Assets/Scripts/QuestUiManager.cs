@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
-
+//目标功能：任务完成时，动态笔画
 public class QuestUIManager : MonoBehaviour
 {
     public static QuestUIManager QuestManager;
@@ -35,6 +35,10 @@ public class QuestUIManager : MonoBehaviour
 
     // 任务列表
     public List<Quest> quests = new List<Quest>();
+    // 音效
+    public AudioClip completionSound;  // 完成任务的音效
+    private AudioSource audioSource;   // 音频源，用于播放音效
+
     private void Awake()
     {
         // 确保实例化只发生一次
@@ -42,14 +46,21 @@ public class QuestUIManager : MonoBehaviour
             QuestManager = this;
         else
             Destroy(gameObject);  // 如果已经存在，销毁重复的实例
+        // 获取 AudioSource 组件
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>(); // 如果没有 AudioSource 组件，动态添加一个
+        }
+    
     }
     // 初始化
     void Start()
     {
-        Debug.Log("QuestUIManager 初始化...");
+        // Debug.Log("QuestUIManager 初始化...");
 
         // 检查任务列表
-        Debug.Log($"任务列表中有 {quests.Count} 个任务");
+        // Debug.Log($"任务列表中有 {quests.Count} 个任务");
 
         // 如果任务列表不为空，创建任务项
         foreach (var quest in quests)
@@ -61,14 +72,14 @@ public class QuestUIManager : MonoBehaviour
     // 动态创建任务项并添加到任务栏
     public void AddTask(Quest quest)
     {
-        Debug.Log($"正在创建任务: {quest.title}");
+        // Debug.Log($"正在创建任务: {quest.title}");
 
         // 创建任务对象（克隆 taskPrefab）
         GameObject task = Instantiate(taskPrefab, taskPanel);
 
         if (task == null)
         {
-            Debug.LogError("任务对象创建失败！");
+            // Debug.LogError("任务对象创建失败！");
             return;
         }
 
@@ -78,14 +89,14 @@ public class QuestUIManager : MonoBehaviour
         Button taskButton = horizontalLayout?.transform.Find("Button")?.GetComponent<Button>();
         TextMeshProUGUI taskButtonText = taskButton?.GetComponentInChildren<TextMeshProUGUI>();
         TextMeshProUGUI taskDescription = task.transform.Find("Description")?.GetComponent<TextMeshProUGUI>();
-        
+        GameObject completeMask = taskTitle.transform.Find("CompleteMask")?.gameObject;
         // 获取 CompleteTask 作为 Title 的子对象
-        GameObject completeTaskObj = taskTitle?.transform.Find("CompleteTask")?.gameObject; // 获取 CompleteTask 子对象
-
+        GameObject completeTaskObj = completeMask?.transform.Find("CompleteTask")?.gameObject; // 获取 CompleteTask 子对象
+        RectMask2D mask = completeMask.GetComponent<RectMask2D>();
         // 检查 UI 组件是否完整
         if (taskTitle == null || taskDescription == null || taskButton == null || taskButtonText == null || horizontalLayout == null)
         {
-            Debug.LogError("任务项的 UI 组件未找到，请检查层级结构！");
+            // Debug.LogError("任务项的 UI 组件未找到，请检查层级结构！");
             return;
         }
 
@@ -93,12 +104,21 @@ public class QuestUIManager : MonoBehaviour
         if (completeTaskObj != null)
         {
             completeTaskObj.SetActive(false); // 初始时隐藏
+            if (mask != null)
+            {
+                // 设置 padding 的右侧值为 300
+                mask.padding = new Vector4(mask.padding.x, mask.padding.y, 300, mask.padding.w);
+            }
         }
 
         // 设置标题和描述
         taskTitle.text = quest.title;
         taskDescription.text = quest.description;
-
+        // 让任务标题无视遮罩
+        if (taskTitle != null)
+        {
+            taskTitle.maskable = false; // 设置 TextMeshPro 不受 Mask 影响
+        }
         // 如果任务完成，为标题添加“（已完成）”
         if (quest.isCompleted)
         {
@@ -118,7 +138,7 @@ public class QuestUIManager : MonoBehaviour
         // 为任务按钮绑定点击事件（切换任务描述的显示/隐藏）
         taskButton.onClick.AddListener(() => ToggleTaskDescription(taskDescription, taskButtonText));
 
-        Debug.Log($"任务 {quest.title} 添加成功");
+        // Debug.Log($"任务 {quest.title} 添加成功");
     }
 
     // 切换任务描述的显示/隐藏
@@ -126,7 +146,7 @@ public class QuestUIManager : MonoBehaviour
     {
         if (taskDescription == null || taskButtonText == null)
         {
-            Debug.LogError("taskDescription 或 taskButtonText 为空，无法切换可见性！");
+            // Debug.LogError("taskDescription 或 taskButtonText 为空，无法切换可见性！");
             return;
         }
 
@@ -136,7 +156,7 @@ public class QuestUIManager : MonoBehaviour
         // 更新按钮文本
         taskButtonText.text = isActive ? "+" : "-";
 
-        Debug.Log($"任务描述切换为: {(!isActive ? "显示" : "隐藏")}");
+        // Debug.Log($"任务描述切换为: {(!isActive ? "显示" : "隐藏")}");
     }
 
     // 切换任务面板的展开/收起
@@ -161,7 +181,7 @@ public class QuestUIManager : MonoBehaviour
         Quest newQuest = new Quest(id, title, description);
         quests.Add(newQuest);
 
-        Debug.Log($"添加新任务: {title}");
+        // Debug.Log($"添加新任务: {title}");
 
         // 创建新的任务并将其添加到任务栏
         AddTask(newQuest);
@@ -192,27 +212,60 @@ public class QuestUIManager : MonoBehaviour
             foreach (Transform task in taskPanel)
             {
                 var taskTitle = task.Find("ButtonTittleLayout/Title")?.GetComponent<TextMeshProUGUI>();
-                var completeTaskObj = taskTitle?.transform.Find("CompleteTask")?.gameObject; // 获取 CompleteTask 作为 title 的子对象
+                GameObject completeMask = taskTitle.transform.Find("CompleteMask")?.gameObject; 
+                var completeTaskObj = completeMask?.transform.Find("CompleteTask")?.gameObject; // 获取 CompleteTask 作为 title 的子对象
 
                 if (taskTitle != null && taskTitle.text == quest.title)
                 {
                     // 将 CompleteTask 从隐藏状态改为显示
                     if (completeTaskObj != null)
                     {
+                        // 播放任务完成音效
+                        if (completionSound != null && audioSource != null)
+                        {
+                            audioSource.PlayOneShot(completionSound);
+                        }
                         completeTaskObj.SetActive(true); // 显示 CompleteTask
+                        // 获取 CompleteMask 并启动协程
+                        RectMask2D mask = taskTitle.transform.Find("CompleteMask")?.GetComponent<RectMask2D>();
+                        if (mask != null)
+                        {
+                            StartCoroutine(AnimateMaskPadding(mask, 0.15f)); // 0.2秒内平滑过渡
+                        }
                     }
                     break;
                 }
             }
 
-            Debug.Log($"任务 {quest.title} 已完成");
+            // Debug.Log($"任务 {quest.title} 已完成");
         }
         else
         {
             string errorMsg = title != null ? $"未找到名为 {title} 的任务！" : $"未找到 ID 为 {id} 的任务！";
-            Debug.LogError(errorMsg);
+            // Debug.LogError(errorMsg);
         }
     }
 
+    private System.Collections.IEnumerator AnimateMaskPadding(RectMask2D mask, float duration = 0.5f)
+    {
+        if (mask == null) yield break;
+
+        float startPadding = mask.padding.z; // 获取当前的 padding.right
+        float endPadding = 0; // 目标值
+        float elapsedTime = 0f;
+
+        Vector4 padding = mask.padding;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float newPaddingRight = Mathf.Lerp(startPadding, endPadding, elapsedTime / duration);
+            mask.padding = new Vector4(padding.x, padding.y, newPaddingRight, padding.w);
+            yield return null; // 等待下一帧
+        }
+
+        // 确保最终值精确
+        mask.padding = new Vector4(padding.x, padding.y, endPadding, padding.w);
+    }
 
 }
