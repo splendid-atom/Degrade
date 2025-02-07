@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 430e97801948b7b43ad8bc4cd2209674
+guid: d1b2a9dc30f125e468c6b8588b87fbcf
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -108,112 +108,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: CharacterIdleSheet_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 1215
-        width: 553
-        height: 1215
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9145a768a6a333d41980599f255abaad
-      internalID: -1088059624
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CharacterIdleSheet_1
-      rect:
-        serializedVersion: 2
-        x: 553
-        y: 1215
-        width: 553
-        height: 1215
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bc0e49630e47a95499118efe50048303
-      internalID: -655228873
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CharacterIdleSheet_2
-      rect:
-        serializedVersion: 2
-        x: 1106
-        y: 1215
-        width: 553
-        height: 1215
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3a8efca63f865a44a882a55220888bb1
-      internalID: -1888513196
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CharacterIdleSheet_3
-      rect:
-        serializedVersion: 2
-        x: 1659
-        y: 1215
-        width: 553
-        height: 1215
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7fbc333664e1e9a46a17d19b943f442c
-      internalID: -1278063542
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CharacterIdleSheet_4
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 553
-        height: 1215
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 1023973f8354a904bb3170548d401e82
-      internalID: -78148518
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -224,12 +119,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      CharacterIdleSheet_0: -1088059624
-      CharacterIdleSheet_1: -655228873
-      CharacterIdleSheet_2: -1888513196
-      CharacterIdleSheet_3: -1278063542
-      CharacterIdleSheet_4: -78148518
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
