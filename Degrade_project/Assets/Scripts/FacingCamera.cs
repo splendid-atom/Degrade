@@ -18,8 +18,14 @@ public class FacingCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        RotateObjects();
+    }   
+    void RotateObjects(){
         for(int i = 0; i < childs.Length; i++){
-            childs[i].rotation = Camera.main.transform.rotation;
+            if(childs[i].gameObject.layer != LayerMask.NameToLayer("MinimapOnly")){
+                childs[i].rotation = Camera.main.transform.rotation;
+            }
+            
         }
     }
 }
