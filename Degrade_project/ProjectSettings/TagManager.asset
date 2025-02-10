@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - MinimapCamera
+  - FacingOnce
+  - Bridge
+  - Container
   layers:
   - Default
   - TransparentFX
@@ -17,7 +20,7 @@ TagManager:
   - MinimapArrow
   - Player
   - MinimapOnly
-  - 
+  - Bridge
   - 
   - 
   - 

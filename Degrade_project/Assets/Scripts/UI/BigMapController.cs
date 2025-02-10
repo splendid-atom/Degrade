@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BigMapController : MonoBehaviour
 {
-    public GameObject bigMapUI;      // 大地图 UI
-    public Camera bigMapCamera;      // 大地图摄像机
-    public RectTransform bigMapContainer; // 大地图容器
-    public RectTransform bigMapImage; // 大地图 UI Image
-    public RectTransform playerArrow; // 玩家箭头
-    public Transform player;         // 玩家对象
+    public GameObject bigMapUI;            // 大地图 UI
+    public Camera bigMapCamera;            // 大地图摄像机
+    public RectTransform bigMapContainer;  // 大地图容器
+    public RectTransform bigMapImage;      // 大地图 UI Image
+    public RectTransform playerArrow;      // 玩家箭头
+    public Transform player;               // 玩家对象
+    public Image fogMaskImage;             // 遮罩层的 Image 组件
 
-    public float zoomSpeed = 5f;     // 缩放速度
-    public float minZoom = 10f;      // 最小缩放
-    public float maxZoom = 100f;     // 最大缩放
-    public float returnSpeed = 5f;   // 缩小后平滑回原点速度
+    public float zoomSpeed = 5f;           // 缩放速度
+    public float minZoom = 10f;            // 最小缩放
+    public float maxZoom = 100f;           // 最大缩放
+    public float returnSpeed = 5f;         // 缩小后平滑回原点速度
 
     private bool isMapOpen = false;
-    private Vector3 lastPlayerPosition; // 玩家上一帧的位置
-    private Vector3 originalCameraPosition; // 记录大地图摄像机的初始位置
-    private Vector2 originalMapPosition; // 记录 UI Image 的初始位置
+    private Vector3 lastPlayerPosition;    // 玩家上一帧的位置
 
     private bool isDragging = false;
     private Vector2 dragStartPosition;
@@ -32,8 +32,6 @@ public class BigMapController : MonoBehaviour
         {
             lastPlayerPosition = player.position;
         }
-        originalCameraPosition = bigMapCamera.transform.position; // 记录初始摄像机位置
-        originalMapPosition = bigMapImage.anchoredPosition; // 记录大地图 UI Image 初始位置
     }
 
     void Update()
@@ -99,26 +97,13 @@ public class BigMapController : MonoBehaviour
             // 获取大地图容器的尺寸
             float containerWidth = bigMapContainer.rect.width;
             float containerHeight = bigMapContainer.rect.height;
-            // Debug.Log("map_:w"+mapWidth+"container_w:"+containerWidth);
-            // 计算允许的最小和最大位置
-            float minX = - containerWidth/1.5f; // 最左侧限制
-            float maxX = + containerWidth/1.5f; // 最右侧限制
-            float minY = - containerWidth/3f; // 最下方限制
-            float maxY = + containerWidth/3f; // 最上方限制
 
             // 限制地图不超出容器边界
-            //地图在最大size时已经会回弹了，不用再限制边框
-            if(bigMapCamera.orthographicSize!= maxZoom){
-                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
-                newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);                
-            }
+            newPosition.x = Mathf.Clamp(newPosition.x, -containerWidth / 1.5f, containerWidth / 1.5f);
+            newPosition.y = Mathf.Clamp(newPosition.y, -containerHeight / 1.5f, containerHeight / 1.5f);
 
             // 更新大地图的位置
             bigMapImage.anchoredPosition = newPosition;
-
-            // 更新玩家箭头位置
-            UpdatePlayerArrow();
-
         }
         else if (Input.GetMouseButtonUp(0)) // 释放左键
         {
@@ -126,24 +111,17 @@ public class BigMapController : MonoBehaviour
         }
     }
 
-
-
-
     void ResetMapPositionIfMinimized()
     {
         if (Mathf.Approximately(bigMapCamera.orthographicSize, maxZoom))
         {
             bigMapImage.anchoredPosition = Vector2.Lerp(
                 bigMapImage.anchoredPosition,
-                originalMapPosition,
+                Vector2.zero,
                 Time.deltaTime * returnSpeed
             );
-
-            // **同步恢复 playerArrow 位置**
-            UpdatePlayerArrow();
         }
     }
-
 
     bool IsMouseInBigMapContainer()
     {
@@ -174,16 +152,16 @@ public class BigMapController : MonoBehaviour
             normalizedX * mapWidth * 0.5f,
             normalizedY * mapHeight * 0.5f
         ) + bigMapImage.anchoredPosition; // **考虑 `bigMapImage` 的位置偏移**
-
-        // **更新箭头旋转方向**
-        Vector3 movementDirection = playerWorldPosition - lastPlayerPosition;
-        if (movementDirection.sqrMagnitude > 0.01f) // 避免微小抖动
-        {
-            float angle = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg;
-            playerArrow.rotation = Quaternion.Euler(0, 0, angle - 90f);
-        }
-
-        lastPlayerPosition = playerWorldPosition;
     }
 
+    public void SetFogOfWar(float percentage)
+    {
+        // 设置大地图遮罩透明度，模拟 fog of war
+        if (fogMaskImage != null)
+        {
+            Color color = fogMaskImage.color;
+            color.a = Mathf.Clamp01(1.0f - percentage); // 通过探索进度改变透明度
+            fogMaskImage.color = color;
+        }
+    }
 }
