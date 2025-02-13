@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class BambooForest : MonoBehaviour
 {
     public GameObject[] bambooPrefabs;  // 竹子prefabs数组
@@ -19,9 +21,11 @@ public class BambooForest : MonoBehaviour
     // 存储已生成的竹子位置
     private List<Vector3> bambooPositions = new List<Vector3>();
     private Vector3 randomPosition;
+    private Vector3 originPosition; // 存储脚本挂载对象的初始位置
 
     void Start()
     {
+        originPosition = transform.position; // 在Start时计算一次位置
         CreateBambooForest();
     }
 
@@ -78,15 +82,15 @@ public class BambooForest : MonoBehaviour
     Vector3 GetRandomPositionInCircle(float radius)
     {
         // 随机生成一个角度
-        float angle = Random.Range(0f, 2f * Mathf.PI);
-        // 随机生成一个半径值，确保位置在指定的圆形区域内
-        float randomRadius = Random.Range(0f, radius);
+        // 使用更简单的随机生成方法
+        float x = Random.Range(-radius, radius);
+        float y = Random.Range(-radius, radius);
+        while (x * x + y * y > radius * radius) // 确保点在圆内
+        {
+            x = Random.Range(-radius, radius);
+            y = Random.Range(-radius, radius);
+        }
 
-        // 转换为笛卡尔坐标
-        float x = randomRadius * Mathf.Cos(angle);
-        float y = randomRadius * Mathf.Sin(angle);
-
-        // 以脚本挂载的对象位置为圆心返回随机位置
-        return new Vector3(x + transform.position.x, y + transform.position.y, 0);
+        return new Vector3(x + originPosition.x, y + originPosition.y, 0);
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - FacingOnce
   - Bridge
   - Container
+  - NoRotation
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - Player
   - MinimapOnly
   - Bridge
-  - 
-  - 
+  - BambooForest
+  - Grid
   - 
   - 
   - 

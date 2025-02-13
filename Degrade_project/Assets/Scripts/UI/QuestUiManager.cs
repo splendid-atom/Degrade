@@ -36,7 +36,6 @@ public class QuestUIManager : MonoBehaviour
     // 任务列表
     public List<Quest> quests = new List<Quest>();
     // 音效
-    public AudioClip completionSound;  // 完成任务的音效
     private AudioSource audioSource;   // 音频源，用于播放音效
 
     private void Awake()
@@ -48,11 +47,7 @@ public class QuestUIManager : MonoBehaviour
             Destroy(gameObject);  // 如果已经存在，销毁重复的实例
         // 获取 AudioSource 组件
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>(); // 如果没有 AudioSource 组件，动态添加一个
-        }
-    
+
     }
     // 初始化
     void Start()
@@ -212,7 +207,7 @@ public class QuestUIManager : MonoBehaviour
             foreach (Transform task in taskPanel)
             {
                 var taskTitle = task.Find("ButtonTittleLayout/Title")?.GetComponent<TextMeshProUGUI>();
-                GameObject completeMask = taskTitle.transform.Find("CompleteMask")?.gameObject; 
+                GameObject completeMask = taskTitle.transform.Find("CompleteMask")?.gameObject;
                 var completeTaskObj = completeMask?.transform.Find("CompleteTask")?.gameObject; // 获取 CompleteTask 作为 title 的子对象
 
                 if (taskTitle != null && taskTitle.text == quest.title)
@@ -221,10 +216,7 @@ public class QuestUIManager : MonoBehaviour
                     if (completeTaskObj != null)
                     {
                         // 播放任务完成音效
-                        if (completionSound != null && audioSource != null)
-                        {
-                            audioSource.PlayOneShot(completionSound);
-                        }
+                        audioSource.Play();
                         completeTaskObj.SetActive(true); // 显示 CompleteTask
                         // 获取 CompleteMask 并启动协程
                         RectMask2D mask = taskTitle.transform.Find("CompleteMask")?.GetComponent<RectMask2D>();
