@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public InputAction MoveActionWASD;
     Vector2 move;
     Animator animator;
-    Vector2 moveDirection = new Vector2(1, 0);
+    public Vector2 moveDirection = new Vector2(1, 0);
     public Transform arrowIndicator;  // 引用ArrowIndicator
     public int PlayerHealth = 100;    // 生命值
     public int PlayerShield = 100;    // 护甲值

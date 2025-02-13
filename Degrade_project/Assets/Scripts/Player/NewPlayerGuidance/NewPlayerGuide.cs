@@ -5,7 +5,6 @@ public class NewPlayerGuide : MonoBehaviour
 {
     public SpriteRenderer[] arrows;  // 箭头数组
     public SpriteRenderer[] keySprites; // 按键数组
-    public AudioClip keyPressSound; // 按键按下的音效
     private AudioSource audioSource; // 用来播放音效的音频源
     public float fadeDuration = 2f;  // 渐变时间
     private int currentArrowIndex = 0;
@@ -24,7 +23,7 @@ public class NewPlayerGuide : MonoBehaviour
         keyAnimationsRunning = new bool[arrows_number]; // 初始化动画状态数组
 
         // 添加 AudioSource 组件
-        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource = gameObject.GetComponent<AudioSource>();
 
         // 初始化箭头和按键为透明
         for (int i = 0; i < arrows.Length; i++)
@@ -55,7 +54,7 @@ public class NewPlayerGuide : MonoBehaviour
         // 等待玩家按下对应的按键
         KeyCode keyToPress = GetKeyForArrow(index);  // 获取当前箭头对应的按键
         bool keyPressed = false;
-        
+
         // 等待玩家按下指定的按键
         while (!keyPressed)
         {
@@ -87,10 +86,7 @@ public class NewPlayerGuide : MonoBehaviour
     // 播放按键按下音效
     void PlayKeyPressSound()
     {
-        if (audioSource != null && keyPressSound != null)
-        {
-            audioSource.PlayOneShot(keyPressSound);  // 播放音效
-        }
+        audioSource.Play();  // 播放音效
     }
 
     IEnumerator FadeInArrowAndKey(int index)
@@ -128,7 +124,7 @@ public class NewPlayerGuide : MonoBehaviour
         {
             Destroy(keySprites[index].gameObject);
         }
-        
+
     }
 
     // 根据箭头的索引，返回对应的按键
@@ -184,7 +180,7 @@ public class NewPlayerGuide : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        QuestUIManager.QuestManager.CompleteTask("",1);//完成新手教程
+        QuestUIManager.QuestManager.CompleteTask("", 1);//完成新手教程
     }
 
     // 实现按键动画效果

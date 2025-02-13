@@ -13,6 +13,10 @@ public class loadManager : MonoBehaviour
     public Text text;
     private int timer;
 
+    void Start()
+    {
+        slider.interactable = false;
+    }
     public void loadNextLevel()
     {
         timer = 0;
