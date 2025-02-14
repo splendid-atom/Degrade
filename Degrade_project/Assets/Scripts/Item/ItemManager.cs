@@ -18,10 +18,6 @@ public class ItemManager : MonoBehaviour
         }
         // 获取 AudioSource 组件
         audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>(); // 如果没有 AudioSource 组件，动态添加一个
-        }
     }
 
     void Start()
