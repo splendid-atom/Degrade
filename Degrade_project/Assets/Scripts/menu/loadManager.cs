@@ -16,6 +16,7 @@ public class loadManager : MonoBehaviour
     void Start()
     {
         slider.interactable = false;
+        DontDestroyOnLoad(loadSetting);
     }
     public void loadNextLevel()
     {
