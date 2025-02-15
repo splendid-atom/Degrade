@@ -18,6 +18,10 @@ public class ItemManager : MonoBehaviour
         }
         // 获取 AudioSource 组件
         audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>(); // 如果没有 AudioSource 组件，动态添加一个
+        }
     }
 
     void Start()
@@ -31,14 +35,7 @@ public class ItemManager : MonoBehaviour
 
     void Update()
     {
-        // // 使用数字键 1 到 0 来选择物品并使用它们
-        // for (int i = 0; i < inventoryItems.Length; i++)  // 遍历物品列表
-        // {
-        //     if (Input.GetKeyDown(KeyCode.Alpha1 + i))  // 监听 1 到 0 键
-        //     {
-        //         UseItem(i);  // 使用对应索引的物品
-        //     }
-        // }
+
     }
 
     public void UseItem(int index)

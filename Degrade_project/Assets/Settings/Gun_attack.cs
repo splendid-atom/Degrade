@@ -16,6 +16,10 @@ public class Gun_attack : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(QuestUIManager.QuestManager.quests[0].isCompleted && 
+            !SwitchBridgeCamera.instance.isBridgeCameraSwitched){
+                return;
+        }
         // 获取鼠标的位置
         Vector3 mouseScreenPosition = Input.mousePosition;
 
