@@ -14,7 +14,7 @@ public class BigMapController : MonoBehaviour
     public RectTransform bigMapContainer;
     public RectTransform bigMapImage;
     public RectTransform playerArrow;
-    public Transform player;
+    private Transform player;
 
     public float zoomSpeed = 5f;
     public float minZoom = 10f;
@@ -39,11 +39,7 @@ public class BigMapController : MonoBehaviour
     public int subGridSize = 1; // 每个大格子中的小格子数
     private int bigMapWidth;
     private int bigMapHeight;
-
     private Coroutine fogUpdateCoroutine;
-    private float fogUpdateInterval = 0.1f;  // 增加更新时间间隔
-    
-    private float lastFogUpdateTime = 0f;
     private Vector3 dragOrigin;
     public float CameraFogScaling = 2f;
     private Vector2 playerArrowInitialPosition;
@@ -57,6 +53,7 @@ public class BigMapController : MonoBehaviour
 
     void Start()
     {
+        player = PlayerController.Instance.transform;
         playerArrowInitialPosition = playerArrow.anchoredPosition;
         bigMapUI.SetActive(false);
 
