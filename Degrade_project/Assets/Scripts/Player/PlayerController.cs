@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
         // if(activeBridge){
         //     Debug.Log("activeBridge: " + activeBridge.name);
         // }
-        if (isOnBridge && activeBridge != null)
+        if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
         {
             // 获取玩家当前位置的 X 值
             float playerX = transform.position.x;
