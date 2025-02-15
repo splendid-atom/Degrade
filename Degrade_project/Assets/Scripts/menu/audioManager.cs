@@ -11,36 +11,36 @@ public class audioManager : MonoBehaviour
     public Slider music;
     public Slider sound;
     // Start is called before the first frame update
-    void Start()
-    {
-        if (PlayerPrefs.HasKey("mastervolume"))
-        {
-            master.value = PlayerPrefs.GetFloat("mastervolume");
-        }
-        else
-        {
-            master.value = 10f;
-        }
-        if (PlayerPrefs.HasKey("musicvolume"))
-        {
-            music.value = PlayerPrefs.GetFloat("musicvolume");
-        }
-        else
-        {
-            music.value = 10f;
-        }
-        if (PlayerPrefs.HasKey("soundvolume"))
-        {
-            sound.value = PlayerPrefs.GetFloat("soundvolume");
-        }
-        else
-        {
-            sound.value = 20f;
-        }
-        setMasterVolume(master.value);
-        setMusicVolume(music.value);
-        setSoundVolume(sound.value);
-    }
+    // void Start()
+    // {
+    //     if (PlayerPrefs.HasKey("mastervolume"))
+    //     {
+    //         master.value = PlayerPrefs.GetFloat("mastervolume");
+    //     }
+    //     else
+    //     {
+    //         master.value = 10f;
+    //     }
+    //     if (PlayerPrefs.HasKey("musicvolume"))
+    //     {
+    //         music.value = PlayerPrefs.GetFloat("musicvolume");
+    //     }
+    //     else
+    //     {
+    //         music.value = 10f;
+    //     }
+    //     if (PlayerPrefs.HasKey("soundvolume"))
+    //     {
+    //         sound.value = PlayerPrefs.GetFloat("soundvolume");
+    //     }
+    //     else
+    //     {
+    //         sound.value = 20f;
+    //     }
+    //     setMasterVolume(master.value);
+    //     setMusicVolume(music.value);
+    //     setSoundVolume(sound.value);
+    // }
 
     // Update is called once per frame
     public void setMasterVolume(float volume)
