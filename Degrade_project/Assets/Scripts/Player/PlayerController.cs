@@ -63,6 +63,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(VillageNpcController.instance.isTalking){
+            // Debug.Log("Player is talking");
+            return;
+        }
         move = MoveActionWASD.ReadValue<Vector2>();
         if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
         {
@@ -84,6 +88,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if(VillageNpcController.instance.isTalking){
+            // Debug.Log("Player is talking");
+            return;
+        }
         // 使用角色自身的坐标系移动
         move = move.x * transform.right + move.y * transform.up;
         Vector2 position = (Vector2)rigidbody2d.position + move * speed * Time.deltaTime;

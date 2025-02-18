@@ -118,6 +118,9 @@ public class BigMapController : MonoBehaviour
     }
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            CloseMap();
+        }
         if (Input.GetKeyDown(KeyCode.M))
         {
             ToggleMap();
@@ -140,11 +143,12 @@ public class BigMapController : MonoBehaviour
     {
         isMapOpen = !isMapOpen;
         bigMapUI.SetActive(isMapOpen);
-
-
-
     }
-
+    void CloseMap()
+    {
+        isMapOpen = false;
+        bigMapUI.SetActive(isMapOpen);
+    }
     // void HandleBigMapZoom()
     // {
     //     float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -330,7 +334,7 @@ public class BigMapController : MonoBehaviour
 
             if (colorsToUpdate.Count != width * height)
             {
-                Debug.Log("颜色数组大小与目标区域不匹配！");
+                // Debug.Log("颜色数组大小与目标区域不匹配！");
                 return;
             }
 
@@ -401,7 +405,7 @@ public class BigMapController : MonoBehaviour
 
     void LoadExplorationData()
     {
-        Debug.Log("LoadExplorationData");
+        // Debug.Log("LoadExplorationData");
         // 初始化 exploredMap
         exploredMap = new bool[bigMapWidth, bigMapHeight];
 
