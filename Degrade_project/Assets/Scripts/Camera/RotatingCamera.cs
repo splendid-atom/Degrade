@@ -27,6 +27,10 @@ public class RotatingCamera : MonoBehaviour
 
     void Rotate()
     {
+        if(VillageNpcController.instance.isTalking){
+            // Debug.Log("Player is talking");
+            return;
+        }
         if (Input.GetKey(KeyCode.Q) && !isRotating)
         {
             currentRotationIndex++; // 逆时针旋转

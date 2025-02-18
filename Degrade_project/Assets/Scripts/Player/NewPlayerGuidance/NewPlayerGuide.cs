@@ -1,92 +1,110 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
+using System.Collections.Generic;
 
 public class NewPlayerGuide : MonoBehaviour
 {
-    public SpriteRenderer[] arrows;  // 箭头数组
-    public SpriteRenderer[] keySprites; // 按键数组
-    private AudioSource audioSource; // 用来播放音效的音频源
-    public float fadeDuration = 2f;  // 渐变时间
+    public SpriteRenderer[] arrows;
+    public SpriteRenderer[] keySprites;
+    private AudioSource audioSource;
+    public float fadeDuration = 0.5f;
     private int currentArrowIndex = 0;
-    public int arrows_number = 6;    // 箭头数量
-    public float WaitUntilDisappear = 5f; // 持续显示的时间
-    public float finalTransparency = 0.4f; // 最终透明度
-    private bool[] keyAnimationsRunning;  // 用来记录每个按键的动画是否正在进行
+    public int arrows_number = 6;
+    public float WaitUntilDisappear = 5f;
+    public float finalTransparency = 0.4f;
+    private bool[] keyAnimationsRunning;
+    public TextMeshProUGUI mapHintText;
+    private List<KeyCode> keysBeingPressed = new List<KeyCode>();
+
 
     void Start()
     {
+        if(mapHintText != null){
+            // 隐藏大地图提示
+            mapHintText.alpha = 0f;            
+        }
+
         if (arrows.Length != arrows_number || keySprites.Length != arrows_number)
         {
             return;
         }
 
-        keyAnimationsRunning = new bool[arrows_number]; // 初始化动画状态数组
-
-        // 添加 AudioSource 组件
+        keyAnimationsRunning = new bool[arrows_number];
         audioSource = gameObject.GetComponent<AudioSource>();
 
-        // 初始化箭头和按键为透明
         for (int i = 0; i < arrows.Length; i++)
         {
             arrows[i].color = new Color(arrows[i].color.r, arrows[i].color.g, arrows[i].color.b, 0);
             keySprites[i].color = new Color(keySprites[i].color.r, keySprites[i].color.g, keySprites[i].color.b, 0);
         }
 
-        // 开始显示第一个箭头和按键
         StartCoroutine(ShowArrowAndKey(currentArrowIndex));
     }
 
     IEnumerator ShowArrowAndKey(int index)
     {
-        // 显示当前箭头和按键并等待其淡入动画完成
         yield return StartCoroutine(FadeInArrowAndKey(index));
 
-        // 如果按键动画没有进行过，则启动动画
         if (!keyAnimationsRunning[index])
         {
-            if (keySprites[index] != null)  // 检查对象是否已销毁
+            if (keySprites[index] != null)
             {
-                StartCoroutine(KeyAnimation(keySprites[index], index));  // 启动按键动画
-                keyAnimationsRunning[index] = true;  // 设置动画已开始
+                StartCoroutine(KeyAnimation(keySprites[index], index));
+                keyAnimationsRunning[index] = true;
             }
         }
 
-        // 等待玩家按下对应的按键
-        KeyCode keyToPress = GetKeyForArrow(index);  // 获取当前箭头对应的按键
+        KeyCode keyToPress = GetKeyForArrow(index);
         bool keyPressed = false;
 
-        // 等待玩家按下指定的按键
         while (!keyPressed)
         {
-            if (Input.GetKeyDown(keyToPress))  // 检查玩家是否按下了对应按键
+            if (Input.GetKeyDown(keyToPress))
             {
-                keyPressed = true;  // 设置标志为按下了按键
-                PlayKeyPressSound();  // 播放按键音效
+                // 如果按下了按键，立即触发
+                keyPressed = true;
+                PlayKeyPressSound();
             }
+            else if (Input.GetKey(keyToPress))
+            {
+                // 如果按键被长按，加入到长按的列表中
+                if (!keysBeingPressed.Contains(keyToPress))
+                {
+                    keysBeingPressed.Add(keyToPress);
+                }
+            }
+
+            // 检查是否当前箭头的按键已经在长按列表中，如果是，立即触发
+            if (keysBeingPressed.Contains(keyToPress))
+            {
+                keyPressed = true;
+                PlayKeyPressSound();
+            }
+
             yield return null;
         }
 
-        // 玩家按下了按键，箭头和按键渐渐消失
         yield return StartCoroutine(FadeOutArrowAndKey(index));
 
-        // 显示下一个箭头和按键
         if (currentArrowIndex + 1 < arrows.Length)
         {
-            // 更新索引并显示下一个箭头
             currentArrowIndex = (currentArrowIndex + 1) % arrows.Length;
-            StartCoroutine(ShowArrowAndKey(currentArrowIndex));  // 递归调用以显示下一个箭头
+            StartCoroutine(ShowArrowAndKey(currentArrowIndex));
         }
         else
         {
-            // 达到最大循环次数后，一起渐变显示所有箭头和按键到指定透明度
             StartCoroutine(FadeAllArrowsAndKeysToTransparency());
         }
+
+        // 完成后从长按列表中移除已处理的按键
+        keysBeingPressed.Remove(keyToPress);
     }
 
-    // 播放按键按下音效
+
     void PlayKeyPressSound()
     {
-        audioSource.Play();  // 播放音效
+        audioSource.Play();
     }
 
     IEnumerator FadeInArrowAndKey(int index)
@@ -124,10 +142,8 @@ public class NewPlayerGuide : MonoBehaviour
         {
             Destroy(keySprites[index].gameObject);
         }
-
     }
 
-    // 根据箭头的索引，返回对应的按键
     KeyCode GetKeyForArrow(int index)
     {
         switch (index)
@@ -138,13 +154,12 @@ public class NewPlayerGuide : MonoBehaviour
             case 3: return KeyCode.A;
             case 4: return KeyCode.E;
             case 5: return KeyCode.Q;
-            default: return KeyCode.None;  // 如果索引无效，返回None
+            default: return KeyCode.None;
         }
     }
 
     IEnumerator FadeAllArrowsAndKeysToTransparency()
     {
-        // 渐变到最终透明度
         float timer = 0;
         while (timer < fadeDuration)
         {
@@ -161,10 +176,8 @@ public class NewPlayerGuide : MonoBehaviour
             yield return null;
         }
 
-        // 等待5秒
         yield return new WaitForSeconds(WaitUntilDisappear);
 
-        // 渐变消失
         timer = 0;
         while (timer < fadeDuration)
         {
@@ -180,32 +193,94 @@ public class NewPlayerGuide : MonoBehaviour
             timer += Time.deltaTime;
             yield return null;
         }
-        QuestUIManager.QuestManager.CompleteTask("", 1);//完成新手教程
+        // 完成按键教程后显示大地图提示
+        StartCoroutine(ShowMapHint());
+        
+    }
+    IEnumerator ShowMapHint()
+    {
+        // 初始时隐藏大地图提示
+        mapHintText.alpha = 0f;
+
+        // 显示提示“按M打开大地图”并渐变显示
+        mapHintText.text = "按M打开大地图";
+        yield return StartCoroutine(FadeInText());
+
+        // 等待玩家按下M键
+        while (!Input.GetKeyDown(KeyCode.M))
+        {
+            yield return null;
+        }
+
+        // 玩家按下M键后，渐变消失提示
+        yield return StartCoroutine(FadeOutText());
+
+        // 显示提示“按M或ESC关闭大地图”并渐变显示
+        mapHintText.text = "按M或ESC关闭大地图";
+        yield return StartCoroutine(FadeInText());
+
+        // 等待玩家按下M或ESC键来关闭大地图
+        while (!Input.GetKeyDown(KeyCode.M) && !Input.GetKeyDown(KeyCode.Escape))
+        {
+            yield return null;
+        }
+
+        // 玩家按下M或ESC键后，渐变消失提示
+        yield return StartCoroutine(FadeOutText());
+
+        // 完成任务
+        QuestUIManager.QuestManager.CompleteTask("", 1);
     }
 
-    // 实现按键动画效果
+    // 渐变显示文本
+    IEnumerator FadeInText()
+    {
+        float timer = 0;
+        fadeDuration = 0.2f;
+        while (timer < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0, 1, timer / fadeDuration);
+            mapHintText.alpha = alpha;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        mapHintText.alpha = 1f;  // 确保最终透明度为1
+    }
+
+    // 渐变消失文本
+    IEnumerator FadeOutText()
+    {
+        float timer = 0;
+        while (timer < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(1, 0, timer / fadeDuration);
+            mapHintText.alpha = alpha;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        mapHintText.alpha = 0f;  // 确保最终透明度为0
+    }
+
     IEnumerator KeyAnimation(SpriteRenderer keySprite, int index)
     {
-        Vector3 normalScale = new Vector3(1f, 1f, 1f);  // 正常时的缩放
-        Vector3 pressedScale = new Vector3(0.9f, 0.9f, 1);  // 按下时的缩放
-        Color normalColor = Color.white;  // 正常时的颜色
-        Color pressedColor = new Color(0.8f, 0.8f, 0.8f);  // 按下时的颜色
+        Vector3 normalScale = new Vector3(1f, 1f, 1f);
+        Vector3 pressedScale = new Vector3(0.9f, 0.9f, 1);
+        Color normalColor = Color.white;
+        Color pressedColor = new Color(0.8f, 0.8f, 0.8f);
 
-        float animationSpeed = 1.5f;  // 动画的速度
-        float lerpTime = 0f; // 用于平滑过渡的时间
+        float animationSpeed = 1.5f;
+        float lerpTime = 0f;
 
-        while (keySprite != null)  // 在动画循环中检查是否为null
+        while (keySprite != null)
         {
             lerpTime += Time.deltaTime * animationSpeed;
             if (lerpTime > 1f)
             {
-                lerpTime = 0f;  // 重置动画时间
+                lerpTime = 0f;
             }
 
-            // 使用PingPong函数来实现按下和恢复的动画循环
             float scaleLerp = Mathf.PingPong(lerpTime, 1f);
 
-            // 按键的缩放和颜色平滑过渡
             keySprite.transform.localScale = Vector3.Lerp(normalScale, pressedScale, scaleLerp);
             keySprite.color = Color.Lerp(normalColor, pressedColor, scaleLerp);
 
