@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MinimapCamera : MonoBehaviour
 {
-    public Transform player;          // 玩家对象
+    private Transform player;          // 玩家对象
     public Transform arrowIndicator;  // 小地图上的人物箭头
     public float zoomSpeed = 5f;      // 键盘缩放速度
     public float scrollSpeed = 10f;   // 滚轮缩放速度
@@ -16,6 +16,7 @@ public class MinimapCamera : MonoBehaviour
 
     void Start()
     {
+        player = PlayerController.Instance.transform;
         // 获取小地图摄像机组件
         miniMapCamera = GetComponent<Camera>();
     }

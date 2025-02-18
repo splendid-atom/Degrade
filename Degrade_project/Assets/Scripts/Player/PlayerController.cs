@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     public InputAction MoveActionWASD;
     Vector2 move;
     Animator animator;
-    Vector2 moveDirection = new Vector2(1, 0);
+    public Vector2 moveDirection = new Vector2(1, 0);
     public Transform arrowIndicator;  // 引用ArrowIndicator
     public int PlayerHealth = 100;    // 生命值
     public int PlayerShield = 100;    // 护甲值
@@ -37,7 +37,8 @@ public class PlayerController : MonoBehaviour
         rigidbody2d = GetComponent<Rigidbody2D>();
         MoveActionWASD.Enable();
         animator = GetComponent<Animator>();
-        
+        Debug.Log(PlayerPrefs.GetString("PlayerName"));
+
         // 获取所有tag为"Bridge"的碰撞体
         bridgeColliders.Clear();
         GameObject[] bridges = GameObject.FindGameObjectsWithTag("Bridge");
@@ -54,6 +55,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
+        PlayerName = PlayerPrefs.GetString("PlayerName");
         if (Instance == null)
             Instance = this;
         else
@@ -91,7 +93,7 @@ public class PlayerController : MonoBehaviour
         // if(activeBridge){
         //     Debug.Log("activeBridge: " + activeBridge.name);
         // }
-        if (isOnBridge && activeBridge != null)
+        if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
         {
             // 获取玩家当前位置的 X 值
             float playerX = transform.position.x;
@@ -114,7 +116,7 @@ public class PlayerController : MonoBehaviour
         {
             // 普通移动
             rigidbody2d.MovePosition(position);
-            
+
             // Z 轴回归到原始位置
             float smoothZ = Mathf.SmoothDamp(transform.position.z, 0f, ref zVelocity, 0.2f);  // 回到 Z = 0，使用平滑过渡
             transform.position = new Vector3(position.x, position.y, smoothZ);
