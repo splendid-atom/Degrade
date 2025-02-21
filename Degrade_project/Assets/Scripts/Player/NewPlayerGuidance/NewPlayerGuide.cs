@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class NewPlayerGuide : MonoBehaviour
 {
+    public static NewPlayerGuide instance;
     public SpriteRenderer[] arrows;
     public SpriteRenderer[] keySprites;
     private AudioSource audioSource;
@@ -16,7 +17,23 @@ public class NewPlayerGuide : MonoBehaviour
     private bool[] keyAnimationsRunning;
     public TextMeshProUGUI mapHintText;
     private List<KeyCode> keysBeingPressed = new List<KeyCode>();
-
+    public List<Dialogue> NewPlayerDialogues;  // 管理每个对话的说话者和内容
+    public bool isGuiding = false;//新手电话
+    public bool isNewPlayerGuiding = false;
+    public string npcName;
+    public AudioClip phoneRingingSound; // 电话音效
+    public AudioClip keyPushSound; // 电话音效
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -39,7 +56,17 @@ public class NewPlayerGuide : MonoBehaviour
             keySprites[i].color = new Color(keySprites[i].color.r, keySprites[i].color.g, keySprites[i].color.b, 0);
         }
 
-        StartCoroutine(ShowArrowAndKey(currentArrowIndex));
+        
+    }
+    void Update()
+    {
+        if(!isNewPlayerGuiding){
+            return;
+        }
+        if(isNewPlayerGuiding){
+            StartCoroutine(ShowArrowAndKey(currentArrowIndex));
+            isNewPlayerGuiding = false;
+        }
     }
 
     IEnumerator ShowArrowAndKey(int index)

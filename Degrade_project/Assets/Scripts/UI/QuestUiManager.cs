@@ -11,9 +11,15 @@ public class QuestUIManager : MonoBehaviour
     public GameObject taskPrefab;             // 任务模板
     public RectTransform taskPanel;           // 任务栏面板
     private Button toggleButton;              // 任务栏展开/收起按钮
+    private Button completedTasksButton;              // 已完成任务列表按钮
     private TextMeshProUGUI toggleButtonText; // 展开/收起按钮的文本（"+" / "-"）
     private bool isExpanded = true;           // 当前任务栏是否展开
-
+    public Sprite CompletedSprite;
+    public Sprite NotCompletedSprite;
+    private bool isCompletedPanel = false;
+    private RawImage completedTasksButtonImage;
+    private bool isCompletedTasksAdded = false;
+    private TextMeshProUGUI TaskText;//任务栏标题
     // 任务类定义
     [System.Serializable]
     public class Quest
@@ -35,6 +41,7 @@ public class QuestUIManager : MonoBehaviour
 
     // 任务列表
     public List<Quest> quests = new List<Quest>();
+    private int currentQuestId;
     // 音效
     private AudioSource audioSource;   // 音频源，用于播放音效
 
@@ -52,18 +59,97 @@ public class QuestUIManager : MonoBehaviour
     // 初始化
     void Start()
     {
-        // Debug.Log("QuestUIManager 初始化...");
-
-        // 检查任务列表
-        // Debug.Log($"任务列表中有 {quests.Count} 个任务");
-
-        // 如果任务列表不为空，创建任务项
-        foreach (var quest in quests)
+        TaskText = GameObject.Find("TaskText").GetComponent<TextMeshProUGUI>();
+        completedTasksButton = GameObject.Find("CompletedTasksButton").GetComponent<Button>();
+        completedTasksButtonImage = GameObject.Find("CompletedTasksButtonImage").GetComponent<RawImage>();
+        // 确保按钮已经绑定
+        if (completedTasksButton != null)
         {
-            AddTask(quest);
+            // 为按钮的 onClick 事件添加监听器
+            completedTasksButton.onClick.AddListener(OnCompletedTasksButtonClick);
         }
+        // 如果任务列表不为空，创建任务项
+        // foreach (var quest in quests)
+        // {
+        //     if(quest.isCompleted == false){
+        //         AddTask(quest);  
+        //         currentQuestId = quest.id;
+        //         break;
+        //     }
+            
+        // }
     }
 
+    void Update()
+    {
+        foreach (var quest in quests)
+        {
+            if(!isCompletedPanel){
+                if(quest.isCompleted == false){
+                    if(quest.id == currentQuestId){
+                        break;
+                    }
+                    else{
+                        AddTask(quest);
+                        currentQuestId = quest.id;
+                        break;
+                    }
+                }
+            }
+            if(isCompletedPanel&&!isCompletedTasksAdded){
+                if(quest.isCompleted == true){
+                    AddTask(quest);
+                }
+                if(quest.isCompleted == false||quest.id == quests.Count){
+                    isCompletedTasksAdded = true;
+                    break;
+                }
+            }
+
+            
+        }   
+        // Debug.Log(isCompletedPanel);     
+    }
+
+    // 重置函数，用于清空当前任务面板中的所有任务
+    public void ResetTasks()
+    {
+        // 清空任务面板中的所有任务项
+        foreach (Transform task in taskPanel)
+        {
+            Destroy(task.gameObject);  // 删除每个任务项
+        }
+        
+        // 重置任务ID
+        currentQuestId = 0;
+        
+        // 你可以在这里添加更多的重置逻辑（例如，清空任务列表等）
+    }
+
+
+    // 按钮点击时调用的函数
+    void OnCompletedTasksButtonClick()
+    {
+        // Debug.Log("CompletedTasksButton clicked!");
+        if (completedTasksButtonImage != null)
+        {
+            ResetTasks();
+            isCompletedPanel = !isCompletedPanel;
+            TaskText.text = isCompletedPanel?"已完成任务" : "当前任务";
+            if (!isCompletedPanel)
+            {
+                completedTasksButtonImage.texture = CompletedSprite.texture;
+                isCompletedTasksAdded = false;
+            }
+            else
+            {
+                completedTasksButtonImage.texture = NotCompletedSprite.texture;
+            }
+            
+            
+        }
+  
+    }
     // 动态创建任务项并添加到任务栏
     public void AddTask(Quest quest)
     {
@@ -117,11 +203,12 @@ public class QuestUIManager : MonoBehaviour
         // 如果任务完成，为标题添加“（已完成）”
         if (quest.isCompleted)
         {
-            taskTitle.text = $"{quest.title}(已完成)"; // 在任务标题末尾添加“（已完成）”
+            // taskTitle.text = $"{quest.title}(已完成)"; // 在任务标题末尾添加“（已完成）”
             // 显示 CompleteTask
             if (completeTaskObj != null)
             {
                 completeTaskObj.SetActive(true); // 显示 CompleteTask
+                mask.padding = new Vector4(0,0,0,0);
             }
         }
 
@@ -258,6 +345,9 @@ public class QuestUIManager : MonoBehaviour
 
         // 确保最终值精确
         mask.padding = new Vector4(padding.x, padding.y, endPadding, padding.w);
+        // 等待1秒
+        yield return new WaitForSeconds(1f);
+        ResetTasks();
     }
 
 }

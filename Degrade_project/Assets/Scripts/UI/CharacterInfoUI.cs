@@ -21,7 +21,7 @@ public class CharacterInfoUI : MonoBehaviour
 
     private void Start()
     {
-        PlayerNameText.text = $"调查员：{PlayerController.Instance.PlayerName}";
+        PlayerNameText.text = $"姓名： {PlayerController.Instance.PlayerName}";
         maxHealth = PlayerController.Instance.MaxHealth;
         maxShield = PlayerController.Instance.MaxShield;
         previousHealth = PlayerController.Instance.PlayerHealth;  // 初始化生命值

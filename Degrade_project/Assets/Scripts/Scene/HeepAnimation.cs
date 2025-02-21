@@ -9,7 +9,8 @@ public class HeepAnimation : MonoBehaviour
 
     private bool isUsingSecondAnimator = false; // 是否已经切换到第二个 Animator
 
-
+    private Transform playerTransform;
+    public float minimumActiveDistance = 1f;
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -19,6 +20,7 @@ public class HeepAnimation : MonoBehaviour
         {
             animator.runtimeAnimatorController = firstAnimatorController;
         }
+        playerTransform = GameObject.Find("PlayerCharacter").transform;
     }
 
     void Update()
@@ -30,7 +32,13 @@ public class HeepAnimation : MonoBehaviour
 
         }
         if(isUsingSecondAnimator&&VillageSceneController.instance.isTimeMachineMasked){
-            animator.SetBool("IsForming", true);
+            Vector2 playerPosition = playerTransform.position;
+            Vector2 heepPosition = transform.position;
+            Debug.Log("distance"+Vector2.Distance(playerPosition, heepPosition));
+            if (Vector2.Distance(playerPosition, heepPosition) < minimumActiveDistance)
+            {
+                animator.SetBool("IsForming", true);
+            }
         }
 
     }

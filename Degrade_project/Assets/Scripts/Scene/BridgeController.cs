@@ -7,10 +7,12 @@ public class BridgeController : MonoBehaviour
     private Transform NewPlayerBridge;
     private Transform NewPlayerRiver;
     private float targetZ = -1.943357f;
-    // private float startZ = 5f;
     private bool isConditionMet = false;  // 控制条件是否满足
     private BoxCollider2D riverCollider;  // 用来表示任务的碰撞体
     private BoxCollider2D[] bridgeContainerColliders;  // 用来表示 BridgeContainer 中的两个碰撞体
+
+    private AudioSource bridgeAudioSource; // 音频源组件
+    private bool isBridgeRaised = false; // 用于标记桥是否升起完成
 
     // Start is called before the first frame update
     void Start()
@@ -19,11 +21,11 @@ public class BridgeController : MonoBehaviour
         NewPlayerBridge = GameObject.Find("NewPlayerBridge").transform;
         NewPlayerRiver = GameObject.Find("NewPlayerRiver").transform;
 
-        // 设置初始位置的 z 坐标为 5
+        // 设置初始位置的 z 坐标为 8
         if (NewPlayerBridge != null)
         {
             Vector3 initialPosition = NewPlayerBridge.position;
-            initialPosition.z = 5f;
+            initialPosition.z = 8f;
             NewPlayerBridge.position = initialPosition;
         }
 
@@ -43,6 +45,9 @@ public class BridgeController : MonoBehaviour
             bridgeContainerColliders = bridgeContainer.GetComponents<BoxCollider2D>();
         }
 
+        // 获取桥的音频源组件
+        bridgeAudioSource = NewPlayerBridge.GetComponent<AudioSource>();
+
         // 根据任务完成状态来启用或禁用 BoxCollider2D
         UpdateriverCollider();
     }
@@ -60,6 +65,19 @@ public class BridgeController : MonoBehaviour
                 Vector3 newPosition = NewPlayerBridge.position;
                 newPosition.z = newZ;
                 NewPlayerBridge.position = newPosition;
+
+                // 如果音频尚未播放，播放音频
+                if (!bridgeAudioSource.isPlaying)
+                {
+                    bridgeAudioSource.Play();
+                }
+
+                // 判断桥是否升起完成
+                if (!isBridgeRaised && Mathf.Abs(NewPlayerBridge.position.z - targetZ) < 0.15f)
+                {
+                    isBridgeRaised = true; // 标记桥已完成升起
+                    StartCoroutine(FadeOutAudio()); // 启动音效淡出
+                }
             }
         }
 
@@ -91,5 +109,22 @@ public class BridgeController : MonoBehaviour
         {
             riverCollider.enabled = !QuestUIManager.QuestManager.quests[0].isCompleted;
         }
+    }
+
+    // 淡出音频的协程
+    private IEnumerator FadeOutAudio()
+    {
+        float fadeDuration = 0.7f;  // 淡出时长
+        float startVolume = bridgeAudioSource.volume;
+
+        // 淡出音量
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            bridgeAudioSource.volume = Mathf.Lerp(startVolume, 0f, t / fadeDuration);
+            yield return null;
+        }
+
+        bridgeAudioSource.volume = 0f;
+        bridgeAudioSource.Stop();
     }
 }

@@ -22,6 +22,7 @@ public class DialogueController : MonoBehaviour
 {
     private TextMeshProUGUI playerDialogue; // 用来存储TextMeshPro组件
     private TextMeshProUGUI speakerName; // 用来存储TextMeshPro组件
+    private string currentNpcName; // 用来存储TextMeshPro组件
     private GameObject DialogueContainer;
     private List<Dialogue> currentDialogues;
     private List<Dialogue> currentVisitedDialogues;
@@ -51,12 +52,15 @@ public class DialogueController : MonoBehaviour
         DialogueContainer.SetActive(false); // 初始对话框隐藏
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
-        DialogueContainer.SetActive(VillageNpcController.instance.isTalking);
+        switchingCurrentDialogues();
+        DialogueContainer.SetActive(isHavingDialogue());
         // 隐藏需要隐藏的UI元素
-        if(VillageNpcController.instance.isTalking){
+        if(isHavingDialogue()){
            HideUIElements(); 
         }
         // 更新对话内容
@@ -64,19 +68,41 @@ public class DialogueController : MonoBehaviour
         {
             playerDialogue.text = currentDialogues[currentDialogueIndex].dialogueText;
             speakerName.text = currentDialogues[currentDialogueIndex].isSpeakerPlayer 
-            ? PlayerController.Instance.PlayerName : VillageNpcController.instance.npcName;
+            ? PlayerController.Instance.PlayerName : currentNpcName;
         }
         if(VillageNpcController.instance.isVisited){
             currentDialogues = currentVisitedDialogues;
         }
     }
 
+    //是否需要隐藏画面上的其他UI
+    //并且处理切换dialogue的逻辑
+    bool isHavingDialogue(){
+        if(VillageNpcController.instance.isTalking||
+        NewPlayerGuide.instance.isGuiding){
+            if(VillageNpcController.instance.isTalking){
+                currentNpcName = VillageNpcController.instance.npcName;
+            }
+            if(NewPlayerGuide.instance.isGuiding){
+                currentNpcName = NewPlayerGuide.instance.npcName;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    void switchingCurrentDialogues(){
+        if(VillageNpcController.instance.isVisited){
+            currentDialogues = VillageNpcController.instance.villageNpcVisitedDialogues;
+        }
+        if(NewPlayerGuide.instance.isGuiding){
+            currentDialogues = NewPlayerGuide.instance.NewPlayerDialogues;
+        }
+    }
+
     // 点击DialogueContainer时的事件
     void OnDialogueContainerClick()
     {
-        // Debug.Log("Dialogue container clicked!");
-
-        
         // 如果不是最后一条对话，则切换到下一条
         if (currentDialogueIndex < currentDialogues.Count - 1)
         {
@@ -85,10 +111,16 @@ public class DialogueController : MonoBehaviour
         else
         {
             // 如果是最后一条对话，则关闭对话框
-            
-            VillageNpcController.instance.isTalking = false; // 可以根据你的需求设置，表示对话结束
-            VillageNpcController.instance.FadeNpc();
-            VillageNpcController.instance.isVisited = true;
+            if(VillageNpcController.instance.isTalking){
+                VillageNpcController.instance.isTalking = false; // 可以根据你的需求设置，表示对话结束
+                VillageNpcController.instance.FadeNpc();
+                VillageNpcController.instance.isVisited = true;                
+            }
+            if(NewPlayerGuide.instance.isGuiding){
+                NewPlayerGuide.instance.isGuiding = false;
+                NewPlayerGuide.instance.isNewPlayerGuiding = true;
+                HintUI.instance.isTalkingOver = true;
+            }
             currentDialogueIndex = 0;
 
             // 恢复所有UI的显示
