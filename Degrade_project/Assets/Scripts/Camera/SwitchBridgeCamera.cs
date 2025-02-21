@@ -35,12 +35,12 @@ public class SwitchBridgeCamera : MonoBehaviour
     private void Update()
     {
         // 输出任务完成状态进行调试
-        Debug.Log("任务完成状态: " + QuestUIManager.QuestManager.quests[0].isCompleted);
+        // Debug.Log("任务完成状态: " + QuestUIManager.QuestManager.quests[0].isCompleted);
 
         // 检查任务是否完成
         if (QuestUIManager.QuestManager.quests[0].isCompleted && !isBridgeCameraSwitched)
         {
-            Debug.Log("任务完成，切换镜头");
+            // Debug.Log("任务完成，切换镜头");
             StartCoroutine(SmoothSwitchToBridgeCamera()); // 使用协程平滑切换到桥摄像机
             StartCoroutine(SwitchBackToMainCameraAfterDelay(5f)); // 5秒后切回主摄像机
             

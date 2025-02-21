@@ -19,7 +19,7 @@ public class audioManager : MonoBehaviour
         }
         else
         {
-            master.value = 10f;
+            master.value = 15f;
         }
         if (PlayerPrefs.HasKey("musicvolume"))
         {
@@ -27,7 +27,7 @@ public class audioManager : MonoBehaviour
         }
         else
         {
-            music.value = 10f;
+            music.value = 15f;
         }
         if (PlayerPrefs.HasKey("soundvolume"))
         {
@@ -35,27 +35,40 @@ public class audioManager : MonoBehaviour
         }
         else
         {
-            sound.value = 10f;
+            sound.value = 15f;
         }
         setMasterVolume(master.value);
         setMusicVolume(music.value);
         setSoundVolume(sound.value);
     }
+
     public void setMasterVolume(float volume)
     {
-        audioMixer.SetFloat("Vmaster", volume);
+        if (volume == -25)
+        {
+            audioMixer.SetFloat("Vmaster", -80);
+        }
+        else audioMixer.SetFloat("Vmaster", volume);
         PlayerPrefs.SetFloat("mastervolume", volume);
         PlayerPrefs.Save();
     }
     public void setMusicVolume(float volume)
     {
-        audioMixer.SetFloat("Vmusic", volume);
+        if (volume == -25)
+        {
+            audioMixer.SetFloat("Vmusic", -80);
+        }
+        else audioMixer.SetFloat("Vmusic", volume);
         PlayerPrefs.SetFloat("musicvolume", volume);
         PlayerPrefs.Save();
     }
     public void setSoundVolume(float volume)
     {
-        audioMixer.SetFloat("Vsound", volume);
+        if (volume == -25)
+        {
+            audioMixer.SetFloat("Vsound", -25);
+        }
+        else audioMixer.SetFloat("Vsound", volume);
         PlayerPrefs.SetFloat("soundvolume", volume);
         PlayerPrefs.Save();
     }
