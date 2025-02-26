@@ -43,12 +43,13 @@ public class HintUI : MonoBehaviour
             hintButton.onClick.AddListener(OnHintButtonClick);
         }
 
-        audioSource = gameObject.GetComponent<AudioSource>();  // 为当前物体添加 AudioSource 组件
+        audioSource = GameObject.Find("HintUI").GetComponent<AudioSource>();
         audioSource.loop = true;  // 循环播放音效
     }
 
     void Update()
     {
+        // Debug.Log(loadManager.instance.isLoaded);
         hintButton.interactable = isTalkingPhone ? false : true;
 
         if (isTalkingOver)
@@ -58,8 +59,8 @@ public class HintUI : MonoBehaviour
             audioSource.PlayOneShot(slamdownSound);  // 播放接听电话音效
         }
 
-        // 如果还没有接听电话并且按钮正在闪烁
-        if (!isTalkingPhone)
+        // 如果还没有接听电话并且按钮正在闪烁+场景切换为游戏画面
+        if (!isTalkingPhone&&loadManager.instance.isLoaded)
         {
             BlinkButton();
             

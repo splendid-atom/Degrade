@@ -9,6 +9,7 @@ using System.Text;
 
 public class BigMapController : MonoBehaviour
 {
+    public static BigMapController instance;
     public GameObject bigMapUI;
     public Camera bigMapCamera;
     public RectTransform bigMapContainer;
@@ -50,14 +51,21 @@ public class BigMapController : MonoBehaviour
     public int currentRotationIndex = 0; // 旋转索引（-4 到 3）
     // 保存当前的旋转角度
     public float currentRotation = 0f;
+    private AudioSource audioSource;  // 添加音频源组件
+    private RectMask2D mask;
 
+    void Awake(){
+        instance = this;
+    }
+    
     void Start()
     {
         player = PlayerController.Instance.transform;
         playerArrowInitialPosition = playerArrow.anchoredPosition;
-        bigMapUI.SetActive(false);
-
-
+        //猜测导致卡顿的原因：setactive重复初始化大地图导致性能耗损大
+        // bigMapUI.SetActive(false);
+        mask = bigMapContainer.GetComponent<RectMask2D>();
+        mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
         originalMapPosition = bigMapImage.anchoredPosition;
 
         bigMapWidth = mapWidth / subGridSize;
@@ -76,6 +84,8 @@ public class BigMapController : MonoBehaviour
         {
             lastPlayerPosition = player.position;
         }        
+        audioSource = gameObject.GetComponent<AudioSource>();  // 为当前物体添加 AudioSource 组件
+
     }
     void Rotate()
     {
@@ -118,12 +128,19 @@ public class BigMapController : MonoBehaviour
     }
     void Update()
     {
+        // if(PlayerController.Instance.IsMoving()){
+        //     CloseMap();
+        //     return;
+        // }
+
         if(Input.GetKeyDown(KeyCode.Escape)){
             CloseMap();
+            audioSource.Play();
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
             ToggleMap();
+            audioSource.Play();
         }
         if (isMapOpen)
         {
@@ -142,12 +159,30 @@ public class BigMapController : MonoBehaviour
     void ToggleMap()
     {
         isMapOpen = !isMapOpen;
-        bigMapUI.SetActive(isMapOpen);
+        // bigMapUI.SetActive(isMapOpen);
+        if(mask.padding.x == 0){
+            mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
+        }
+        else{
+            mask.padding = new Vector4(0, mask.padding.y, mask.padding.z, mask.padding.w);
+
+        }
+
     }
-    void CloseMap()
+    public void CloseMap()
     {
         isMapOpen = false;
-        bigMapUI.SetActive(isMapOpen);
+        // bigMapUI.SetActive(isMapOpen);
+        mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
+
+    }
+    public void DisableMap()
+    {
+        bigMapUI.SetActive(false);
+    }
+    public void EnableMap()
+    {
+        bigMapUI.SetActive(true);
     }
     // void HandleBigMapZoom()
     // {

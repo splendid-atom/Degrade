@@ -7,12 +7,17 @@ using System.Threading;
 
 public class loadManager : MonoBehaviour
 {
+    public static loadManager instance;
     public GameObject loadScreen;
     public GameObject loadSetting;
     public Slider slider;
     public Text text;
     private int timer;
-
+    public bool isLoaded = false;
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         slider.interactable = false;
@@ -21,6 +26,7 @@ public class loadManager : MonoBehaviour
     {
         timer = 0;
         StartCoroutine(loadLevel());
+        
     }
     public void openSetting()
     {
@@ -60,13 +66,14 @@ public class loadManager : MonoBehaviour
         while (timer <= 100)
         {
             slider.value = timer / 100f;
-            Debug.Log(slider.value);
-            Debug.Log(timer);
+            // Debug.Log(slider.value);
+            // Debug.Log(timer);
             text.text = timer + "%";
             timer += 1;
             yield return new WaitForSeconds(0.05f);
 
         }
         operation.allowSceneActivation = true;
+        isLoaded = true;
     }
 }

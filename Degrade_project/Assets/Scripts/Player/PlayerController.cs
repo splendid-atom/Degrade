@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public float speed = 3.0f;
     public InputAction MoveActionWASD;
     Vector2 move;
+    Vector2 globalmove;
     Animator animator;
     public Vector2 moveDirection = new Vector2(1, 0);
     public Transform arrowIndicator;  // 引用ArrowIndicator
@@ -30,7 +31,10 @@ public class PlayerController : MonoBehaviour
     private bool isOnBridge = false;  // 判断玩家是否在桥上
     private Collider2D activeBridge = null;
     private float zVelocity = 0f;  // 用于平滑过渡的速度变量
-
+    // 新增变量：判断玩家是否在移动
+    private bool isMoving = false;
+    public float veticalFactor = 1.5f;
+    private float verticalSpeed;
     // Start is called before the first frame update
     void Start()
     {
@@ -70,6 +74,10 @@ public class PlayerController : MonoBehaviour
             return;
         }
         move = MoveActionWASD.ReadValue<Vector2>();
+        globalmove = move;
+        // 判断是否在移动，更新isMoving
+        isMoving = !Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f);
+
         if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
         {
             moveDirection.Set(move.x, move.y);
@@ -79,7 +87,8 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Look X", moveDirection.x);
         animator.SetFloat("Look Y", moveDirection.y);
         animator.SetFloat("Speed", move.magnitude);
-
+        // 打印玩家的移动方向
+        // Debug.Log("Move Direction: " + moveDirection);
         // 确保ArrowIndicator的旋转与角色的移动方向一致
         if (arrowIndicator != null)
         {
@@ -92,16 +101,29 @@ public class PlayerController : MonoBehaviour
     {
         if (VillageNpcController.instance.isTalking)
         {
-            // Debug.Log("Player is talking");
             return;
         }
+
         // 使用角色自身的坐标系移动
         move = move.x * transform.right + move.y * transform.up;
-        Vector2 position = (Vector2)rigidbody2d.position + move * speed * Time.deltaTime;
-        // Debug.Log("isOnBridge: " + isOnBridge);
-        // if(activeBridge){
-        //     Debug.Log("activeBridge: " + activeBridge.name);
-        // }
+
+        // 调整垂直方向的速度，只在按W或S时加速
+        
+        // Debug.Log($"(move.x,move.y): ({globalmove.x}, {globalmove.y})");
+
+        // 判断是否为上下移动（只要 move.y 不为 0）
+        if (Mathf.Abs(globalmove.y) > 0.7)  // 如果 move.y 非零，则认为是上下移动
+        {
+            verticalSpeed = speed * veticalFactor; // 提高垂直移动速度，例如增加50%
+        }
+        else
+        {
+            verticalSpeed = speed; // 保持水平移动的速度
+        }
+
+        // 计算玩家新位置
+        Vector2 position = (Vector2)rigidbody2d.position + move * verticalSpeed * Time.deltaTime;
+
         if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
         {
             // 获取玩家当前位置的 X 值
@@ -133,6 +155,8 @@ public class PlayerController : MonoBehaviour
     }
 
 
+
+
     // 当玩家进入桥的碰撞体时
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -153,5 +177,10 @@ public class PlayerController : MonoBehaviour
             activeBridge = null;
             // Debug.Log("玩家离开桥");
         }
+    }
+    // 获取玩家是否在移动
+    public bool IsMoving()
+    {
+        return isMoving;
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro; // 引入TextMeshPro命名空间
+using UnityEngine.UI;
 public class VillageNpcController : MonoBehaviour
 {
     public static VillageNpcController instance;
@@ -23,6 +24,11 @@ public class VillageNpcController : MonoBehaviour
     public List<Dialogue> villageNpcVisitedDialogues;  //第二次对话
     public bool isVisited = false;
     public string npcName;
+    private AudioSource audioSource;  // 添加音频源组件
+    public AudioClip knockdoorsound;   //敲门音效
+    public AudioClip opendoorsound;    // 开门音效
+    public AudioClip closedoorsound;   // 关门音效
+    private RectMask2D hintMask;
     void Awake()
     {
         if (instance == null)
@@ -37,7 +43,9 @@ public class VillageNpcController : MonoBehaviour
     void Start()
     {
         PlayerInteractHint = GameObject.Find("PlayerInteractHint").GetComponent<TextMeshProUGUI>();
-        PlayerInteractHint.gameObject.SetActive(false);
+        hintMask = GameObject.Find("PlayerInteractHintContainer").GetComponent<RectMask2D>();
+        hintMask.padding = new Vector4(1000, 0, 0, 0);
+        // PlayerInteractHint.gameObject.SetActive(false);
         player = GameObject.Find("PlayerCharacter");
         VillageNpc = GameObject.Find("VillageNpc");
 
@@ -78,6 +86,8 @@ public class VillageNpcController : MonoBehaviour
         {
             npcCollider.enabled = false;
         }
+        audioSource = gameObject.GetComponent<AudioSource>();  // 为当前物体添加 AudioSource 组件
+
     }
 
     // Update is called once per frame
@@ -88,28 +98,32 @@ public class VillageNpcController : MonoBehaviour
         if (canTriggerNpc&&!isTalking)
         {
             // 显示提示文本：启用父对象
-            PlayerInteractHint.gameObject.SetActive(true);
+            // PlayerInteractHint.gameObject.SetActive(true);
+            hintMask.padding = new Vector4(0, 0, 0, 0);
         }
         if(!canTriggerNpc&&!isTalking){
-            PlayerInteractHint.gameObject.SetActive(false);
+            // PlayerInteractHint.gameObject.SetActive(false);
+            hintMask.padding = new Vector4(1000, 0, 0, 0);
+
         }
         // 如果玩家在触发器范围内，才允许按F触发渐变
         if (canTriggerNpc && Input.GetKeyDown(KeyCode.F))
         {
             
             // 隐藏提示文本：禁用父对象
-            PlayerInteractHint.gameObject.SetActive(false);
+            // PlayerInteractHint.gameObject.SetActive(false);
+            hintMask.padding = new Vector4(1000, 0, 0, 0);
             if (!isFadingIn && !isFadingOut)  // 确保没有正在进行的渐变
             {
                 // 检查当前透明度，决定是渐变显示还是渐变消失
                 Color currentColor = npcRenderer.material.color;
                 if (currentColor.a <= 0f+0.2f) // 当前是透明，执行FadeIn
                 {
+                    
                     StartCoroutine(FadeIn());
                     isTalking = true; // 标记为正在对话
-                    // 完成任务
-                    QuestUIManager.QuestManager.CompleteTask("", 2);
-                    // ShowDialogue();
+
+
                 }
                 if(currentColor.a >= 1f-0.2f) // 当前是显示，执行FadeOut
                 {
@@ -137,6 +151,10 @@ public class VillageNpcController : MonoBehaviour
     // 渐变显示（协程）
     IEnumerator FadeIn()
     {
+        audioSource.PlayOneShot(knockdoorsound);
+        yield return new WaitForSeconds(1f);
+        audioSource.PlayOneShot(opendoorsound);
+        yield return new WaitForSeconds(0.5f);
         isFadingIn = true;
 
         Color currentColor = npcRenderer.material.color;
@@ -174,6 +192,7 @@ public class VillageNpcController : MonoBehaviour
     // 渐变消失（协程）
     IEnumerator FadeOut()
     {
+        
         isFadingOut = true;
 
         Color currentColor = npcRenderer.material.color;
@@ -204,7 +223,7 @@ public class VillageNpcController : MonoBehaviour
         {
             npcCollider.enabled = false;
         }
-
+        audioSource.PlayOneShot(closedoorsound);
         isFadingOut = false;
     }
 

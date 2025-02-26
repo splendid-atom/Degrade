@@ -37,6 +37,10 @@ public class SortingFences : MonoBehaviour
 
     void Update()
     {   
+        if(BambooMazeTriggerController.instance.isInMaze){
+            sortingGroup.sortingOrder = -1;
+            return;
+        }
         if (gameObject.layer == LayerMask.NameToLayer("MinimapOnly")){
             return;
         }

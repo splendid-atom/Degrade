@@ -20,6 +20,7 @@ public class Dialogue
 
 public class DialogueController : MonoBehaviour
 {
+    public static DialogueController instance;
     private TextMeshProUGUI playerDialogue; // 用来存储TextMeshPro组件
     private TextMeshProUGUI speakerName; // 用来存储TextMeshPro组件
     private string currentNpcName; // 用来存储TextMeshPro组件
@@ -30,8 +31,18 @@ public class DialogueController : MonoBehaviour
 
     private int currentDialogueIndex = 0; // 当前对话索引
     public List<GameObject> uiElementsToHide; // 用于存储需要隐藏的UI对象列表
-
-    // Start is called before the first frame update
+    private RectMask2D mask;
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         playerDialogue = GameObject.Find("PlayerDialogue").GetComponent<TextMeshProUGUI>();
@@ -39,7 +50,7 @@ public class DialogueController : MonoBehaviour
         DialogueContainer = GameObject.Find("DialogueContainer");
         currentDialogues = VillageNpcController.instance.villageNpcDialogues;
         currentVisitedDialogues = VillageNpcController.instance.villageNpcVisitedDialogues;
-
+        mask = GameObject.Find("DialogueContainerMask").GetComponent<RectMask2D>();
         // 获取Button组件
         dialogueButton = DialogueContainer.GetComponent<Button>();
 
@@ -49,7 +60,8 @@ public class DialogueController : MonoBehaviour
             dialogueButton.onClick.AddListener(OnDialogueContainerClick);
         }
 
-        DialogueContainer.SetActive(false); // 初始对话框隐藏
+        // DialogueContainer.SetActive(false); // 初始对话框隐藏
+        mask.padding = new Vector4(1300, 0, 0, 0);
     }
 
 
@@ -57,8 +69,8 @@ public class DialogueController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        switchingCurrentDialogues();
-        DialogueContainer.SetActive(isHavingDialogue());
+        switchingCurrentDialogues();    
+        ShowDialogueContainer();
         // 隐藏需要隐藏的UI元素
         if(isHavingDialogue()){
            HideUIElements(); 
@@ -77,13 +89,17 @@ public class DialogueController : MonoBehaviour
 
     //是否需要隐藏画面上的其他UI
     //并且处理切换dialogue的逻辑
-    bool isHavingDialogue(){
+    public bool isHavingDialogue(){
         if(VillageNpcController.instance.isTalking||
-        NewPlayerGuide.instance.isGuiding){
+        NewPlayerGuide.instance.isGuiding||
+        SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
             if(VillageNpcController.instance.isTalking){
                 currentNpcName = VillageNpcController.instance.npcName;
             }
             if(NewPlayerGuide.instance.isGuiding){
+                currentNpcName = NewPlayerGuide.instance.npcName;
+            }
+            if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
                 currentNpcName = NewPlayerGuide.instance.npcName;
             }
             return true;
@@ -98,11 +114,15 @@ public class DialogueController : MonoBehaviour
         if(NewPlayerGuide.instance.isGuiding){
             currentDialogues = NewPlayerGuide.instance.NewPlayerDialogues;
         }
+        if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
+            currentDialogues = SwitchToMazeSceneTrigger.instance.bambooMazeDialogues;
+        }
     }
 
     // 点击DialogueContainer时的事件
     void OnDialogueContainerClick()
     {
+        Debug.Log("DialogueContainer clicked!");    
         // 如果不是最后一条对话，则切换到下一条
         if (currentDialogueIndex < currentDialogues.Count - 1)
         {
@@ -112,8 +132,13 @@ public class DialogueController : MonoBehaviour
         {
             // 如果是最后一条对话，则关闭对话框
             if(VillageNpcController.instance.isTalking){
+
                 VillageNpcController.instance.isTalking = false; // 可以根据你的需求设置，表示对话结束
                 VillageNpcController.instance.FadeNpc();
+                if(!VillageNpcController.instance.isVisited){
+                    // 完成任务
+                    QuestUIManager.QuestManager.CompleteTask("", 2);
+                }
                 VillageNpcController.instance.isVisited = true;                
             }
             if(NewPlayerGuide.instance.isGuiding){
@@ -121,13 +146,23 @@ public class DialogueController : MonoBehaviour
                 NewPlayerGuide.instance.isNewPlayerGuiding = true;
                 HintUI.instance.isTalkingOver = true;
             }
+            if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
+                SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger = false;
+                SwitchToMazeSceneTrigger.instance.isStartSwitchScene = true;
+            }
             currentDialogueIndex = 0;
 
             // 恢复所有UI的显示
             ShowUIElements();
-            DialogueContainer.SetActive(false);
+            // DialogueContainer.SetActive(false);
+            mask.padding = new Vector4(1300, 0, 0, 0);
+
         }
     }
+
+
+
+    
     // 隐藏需要隐藏的UI元素
     void HideUIElements()
     {
@@ -135,6 +170,7 @@ public class DialogueController : MonoBehaviour
         {
             uiElement.SetActive(false); // 隐藏UI元素
         }
+        BigMapController.instance.CloseMap();
     }
 
     // 恢复所有UI元素的显示
@@ -145,4 +181,27 @@ public class DialogueController : MonoBehaviour
             uiElement.SetActive(true); // 显示UI元素
         }
     }
+    void ShowDialogueContainer()
+    {
+        //村民开门1.5秒后才显示对话框
+        if(VillageNpcController.instance.isTalking){
+            StartCoroutine(DelayedDialogueContainer());
+        }
+        //电话的对话框立即显示
+        else{
+            // DialogueContainer.SetActive(isHavingDialogue());
+            mask.padding = new Vector4(isHavingDialogue()?0:1300, 0, 0, 0);
+
+        }
+        
+    }
+    // 使用协程来延迟执行
+    IEnumerator DelayedDialogueContainer()
+    {
+        yield return new WaitForSeconds(1.5f);  // 延迟 1 秒
+        // DialogueContainer.SetActive(isHavingDialogue());
+        mask.padding = new Vector4(isHavingDialogue()?0:1300, 0, 0, 0);
+
+    }
+
 }

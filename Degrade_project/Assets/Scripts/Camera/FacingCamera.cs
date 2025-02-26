@@ -9,7 +9,6 @@ public class FacingCamera : MonoBehaviour
     private bool returnInitial = false;
 
     private Quaternion initialCameraRotation;  // 记录摄像机的初始旋转
-
     void Start()
     {
         // 获取主摄像机的引用

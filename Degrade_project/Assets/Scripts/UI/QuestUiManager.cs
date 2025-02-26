@@ -184,7 +184,7 @@ public class QuestUIManager : MonoBehaviour
         // 将 CompleteTask 初始设置为隐藏
         if (completeTaskObj != null)
         {
-            completeTaskObj.SetActive(false); // 初始时隐藏
+            // completeTaskObj.SetActive(false); // 初始时隐藏
             if (mask != null)
             {
                 // 设置 padding 的右侧值为 300
@@ -207,7 +207,7 @@ public class QuestUIManager : MonoBehaviour
             // 显示 CompleteTask
             if (completeTaskObj != null)
             {
-                completeTaskObj.SetActive(true); // 显示 CompleteTask
+                // completeTaskObj.SetActive(true); // 显示 CompleteTask
                 mask.padding = new Vector4(0,0,0,0);
             }
         }
@@ -304,7 +304,7 @@ public class QuestUIManager : MonoBehaviour
                     {
                         // 播放任务完成音效
                         audioSource.Play();
-                        completeTaskObj.SetActive(true); // 显示 CompleteTask
+                        // completeTaskObj.SetActive(true); // 显示 CompleteTask
                         // 获取 CompleteMask 并启动协程
                         RectMask2D mask = taskTitle.transform.Find("CompleteMask")?.GetComponent<RectMask2D>();
                         if (mask != null)
