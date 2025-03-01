@@ -4,19 +4,22 @@ using UnityEngine;
 
 public class FacingCamera : MonoBehaviour
 {
+    public static FacingCamera instance;
     private List<Transform> childs = new List<Transform>();  // 使用List动态管理子物体
     private Camera mainCamera;  // 引用摄像机
     private bool returnInitial = false;
-
     private Quaternion initialCameraRotation;  // 记录摄像机的初始旋转
+    void Awake()
+    {
+        instance = this;
+
+    }
     void Start()
     {
-        // 获取主摄像机的引用
         mainCamera = Camera.main;
-        // 记录摄像机的初始旋转
         initialCameraRotation = mainCamera.transform.rotation;
-        // 初始化时检查当前所有子物体
-        UpdateChilds(true);  // 标记为初始化时调用
+        UpdateChilds(true);  // 初始化时更新子物体列表
+        StartCoroutine(PeriodicUpdateChilds());  // 启动定期更新协程
     }
 
     // Update is called once per frame
@@ -39,8 +42,17 @@ public class FacingCamera : MonoBehaviour
         RotateObjects();
     }
 
+    private IEnumerator PeriodicUpdateChilds()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);  // 等待1秒
+            UpdateChilds(false);  // 更新子物体列表
+        }
+    }
+
     // 更新子物体列表
-    void UpdateChilds(bool isStart)
+    public void UpdateChilds(bool isStart)
     {
         if (isStart)
         {

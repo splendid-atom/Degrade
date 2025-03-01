@@ -16,7 +16,17 @@ public class BambooMazeExitTrigger : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
+        // 如果没有实例，确保保持这个脚本和它的对象在场景切换时不被销毁
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);  // 保证该对象在切换场景时不被销毁
+        }
+        else
+        {
+            Destroy(gameObject);  // 如果已经有实例，销毁新创建的对象
+        }
+
         BambooMazeTrigger = GetComponent<Collider2D>(); // 修正大小写
     }
 
@@ -25,16 +35,23 @@ public class BambooMazeExitTrigger : MonoBehaviour
         // 不需要每帧做什么逻辑，主要通过触发器触发场景切换
     }
 
+    private IEnumerator WaitForSecondsAndMoveOn(float seconds){
+        yield return new WaitForSeconds(seconds);
+        //停止玩家移动
+        PlayerController.Instance.isDisableMovement = true;
+        isInMaze = false;
+        if (!isSwitchingScene)
+        {
+            StartCoroutine(SwitchScene());  // 当玩家离开迷宫时，启动场景切换协程
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("玩家进入触发器: " + gameObject.name);
         if (collision.gameObject.CompareTag("Player"))
         {
-            isInMaze = false;
-            if (!isSwitchingScene)
-            {
-                StartCoroutine(SwitchScene());  // 当玩家离开迷宫时，启动场景切换协程
-            }
+            StartCoroutine(WaitForSecondsAndMoveOn(1f));
         }
     }
 

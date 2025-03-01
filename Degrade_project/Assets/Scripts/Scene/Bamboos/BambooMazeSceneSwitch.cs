@@ -27,6 +27,7 @@ public class SwitchToMazeSceneTrigger : MonoBehaviour
     {
         if (isStartSwitchScene && !isSwitchingScene)
         {
+
             // 如果场景切换标志为true且没有正在执行切换场景的协程，则开始执行
             StartCoroutine(SwitchScene());
         }
@@ -36,6 +37,8 @@ public class SwitchToMazeSceneTrigger : MonoBehaviour
     {
         if (!isInMazeSwitchTrigger)
         {
+            Debug.Log("player in trigger!");
+            PlayerController.Instance.isDisableMovement = true;
             isInMazeSwitchTrigger = true;
         }
 
@@ -46,6 +49,7 @@ public class SwitchToMazeSceneTrigger : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
+
             // 当玩家进入触发器时，开始平滑切换场景
             if (!isSwitchingScene)  // 确保场景切换只执行一次
             {

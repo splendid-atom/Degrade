@@ -22,9 +22,7 @@ public class BambooForestPolygon : MonoBehaviour
 
     // 存储已生成的竹子位置
     private List<Vector3> bambooPositions = new List<Vector3>();
-
-    void Start()
-    {
+    void Awake(){
         if (bambooArea == null)
         {
             Debug.LogError("PolygonCollider2D 未设置！");
@@ -35,7 +33,11 @@ public class BambooForestPolygon : MonoBehaviour
         InitializeBambooPool();
 
         // 创建竹林
-        CreateBambooForest();
+        CreateBambooForest();        
+    }
+    void Start()
+    {
+
     }
 
     // 初始化竹子对象池

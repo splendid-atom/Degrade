@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class gamesettingManager : MonoBehaviour
 {
@@ -12,5 +13,8 @@ public class gamesettingManager : MonoBehaviour
     public void closeSet()
     {
         settingboard.SetActive(false);
+    }
+    public void quit(){
+        SceneManager.LoadScene("Menu");
     }
 }

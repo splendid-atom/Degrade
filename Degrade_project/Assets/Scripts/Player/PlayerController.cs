@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
     private bool isMoving = false;
     public float veticalFactor = 1.5f;
     private float verticalSpeed;
+    public bool isDisableMovement = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -68,9 +69,18 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (VillageNpcController.instance.isTalking)
-        {
-            // Debug.Log("Player is talking");
+        // Debug.Log(moveDirection);
+        // Debug.Log("isDisableMovement:"+isDisableMovement);
+        if(VillageNpcController.instance!=null){
+            if (VillageNpcController.instance.isTalking)
+            {
+                return;
+            }            
+        }
+        if(isDisableMovement){
+            animator.SetFloat("Look X", 0.0f);
+            animator.SetFloat("Look Y", 0.0f);
+            animator.SetFloat("Speed", 0.0f);
             return;
         }
         move = MoveActionWASD.ReadValue<Vector2>();
@@ -99,10 +109,16 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (VillageNpcController.instance.isTalking)
-        {
+        if(VillageNpcController.instance!=null){
+            if (VillageNpcController.instance.isTalking)
+            {
+                return;
+            }            
+        }
+        if(isDisableMovement){
             return;
         }
+
 
         // 使用角色自身的坐标系移动
         move = move.x * transform.right + move.y * transform.up;

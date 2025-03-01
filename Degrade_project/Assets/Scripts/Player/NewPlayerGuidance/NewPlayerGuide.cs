@@ -61,8 +61,10 @@ public class NewPlayerGuide : MonoBehaviour
         if(!isNewPlayerGuiding){
             return;
         }
-        if(isNewPlayerGuiding){
+        if(isNewPlayerGuiding&&!InterSceneMemory.instance.isBeenToBambooMaze){
             StartCoroutine(ShowArrowAndKey(currentArrowIndex));
+            //刷新一下镜头
+            FacingCamera.instance.UpdateChilds(true);
             isNewPlayerGuiding = false;
         }
     }
