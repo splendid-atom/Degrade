@@ -33,19 +33,29 @@ public class DegradeBambooForest : MonoBehaviour
     public float fadeDuration = 0.5f; // 渐变持续时间
     public int maxFadeBatch = 4;      // 每次处理的最大竹子数量
     public bool isAllWilted = false;
+    private GameObject portalTransform;
+    private bool startWilt = false;
+
     void Awake()
     {
         instance = this;
     }
     void Start()
     {
+        portalTransform = GameObject.Find("degradePortal");
+        portalTransform.SetActive(false);
         originPosition = transform.position; // 在Start时计算一次位置
         CreateBambooForest();
     }
-
+    // 协程：等待 delay 秒后激活传送门
+    IEnumerator ActivatePortalWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        startWilt = true;
+    }
     void Update()
     {
-        Debug.Log("isAllWilted:"+isAllWilted);
+        // Debug.Log("isAllWilted:"+isAllWilted);
         // 检测U键按下，开始枯萎过程
         if (Input.GetKeyDown(KeyCode.U))
         {
@@ -53,10 +63,16 @@ public class DegradeBambooForest : MonoBehaviour
             isWilted = true;
             currentBambooIndex = 0;
             globalWiltTimer = 0; // 重置全局计时器
+            if (portalTransform != null)
+            {
+                portalTransform.SetActive(true);
+                StartCoroutine(ActivatePortalWithDelay(2f));
+            }
+
         }
 
         // 处理枯萎动画
-        if (isWilted)
+        if (isWilted&&startWilt)
         {
             globalWiltTimer += Time.deltaTime;
             

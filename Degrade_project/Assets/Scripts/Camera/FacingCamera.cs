@@ -12,42 +12,58 @@ public class FacingCamera : MonoBehaviour
     void Awake()
     {
         instance = this;
+        mainCamera = Camera.main;
+        initialCameraRotation = mainCamera.transform.rotation;
 
     }
     void Start()
     {
-        mainCamera = Camera.main;
-        initialCameraRotation = mainCamera.transform.rotation;
         UpdateChilds(true);  // 初始化时更新子物体列表
-        StartCoroutine(PeriodicUpdateChilds());  // 启动定期更新协程
+        // StartCoroutine(PeriodicUpdateChilds());  // 启动定期更新协程
     }
+
 
     // Update is called once per frame
     void Update()
     {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                initialCameraRotation = mainCamera.transform.rotation; // 重新获取初始旋转
+            }
+        }        
         // 更新 returnInitial 状态
-        if (QuestUIManager.QuestManager.quests[0].isCompleted && 
-            !SwitchBridgeCamera.instance.isBridgeCameraSwitched)
-        {
-            returnInitial = true;
+        if (!QuestUIManager.QuestManager == null && !SwitchBridgeCamera.instance == null){
+            if (QuestUIManager.QuestManager.quests[0].isCompleted && 
+                !SwitchBridgeCamera.instance.isBridgeCameraSwitched)
+            {
+                returnInitial = true;
+            }
+            if (QuestUIManager.QuestManager.quests[0].isCompleted && 
+                SwitchBridgeCamera.instance.isBridgeCameraSwitched)
+            {
+                returnInitial = false;
+            }
         }
-        if (QuestUIManager.QuestManager.quests[0].isCompleted && 
-            SwitchBridgeCamera.instance.isBridgeCameraSwitched)
-        {
-            returnInitial = false;
-        }
+
+
 
         // 每帧更新子物体列表，确保新添加的子物体被包含
         UpdateChilds(false);  // 标记为每帧更新
         RotateObjects();
     }
 
-    private IEnumerator PeriodicUpdateChilds()
+    public IEnumerator PeriodicUpdateChilds()
     {
         while (true)
         {
             yield return new WaitForSeconds(1.0f);  // 等待1秒
+            UpdateChilds(true);  // 更新子物体列表
+            yield return new WaitForSeconds(1.0f);  // 等待1秒
             UpdateChilds(false);  // 更新子物体列表
+
         }
     }
 

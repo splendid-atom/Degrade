@@ -51,13 +51,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bambooPrefabs:
-  - {fileID: 8232406592286010564, guid: 3b083cf18209d854ea5f8b979d5ed924, type: 3}
-  - {fileID: 8232406592286010564, guid: 4ef0bb9f381b26b4c8f7226acd79ccf2, type: 3}
-  - {fileID: 8232406592286010564, guid: 7e7ebf08f7fa59d44b6d7e14b28552e5, type: 3}
-  bambooCount: 220
+  - {fileID: 8232406592286010564, guid: 2cea3c4a89512f2499bf919ec3dbbf08, type: 3}
+  - {fileID: 8232406592286010564, guid: 7563938d360a2644296d1b34622a60e0, type: 3}
+  - {fileID: 8232406592286010564, guid: d39526c5457f16841863cb25745f7b10, type: 3}
+  wiltedBambooPrefabs:
+  - {fileID: 8232406592286010564, guid: f6e4de10c19993249bb8600706d919a2, type: 3}
+  - {fileID: 8232406592286010564, guid: d2a89f4caddc6504f92e213b708c15b8, type: 3}
+  - {fileID: 8232406592286010564, guid: 0fac6e4bb0112df43a8f7036d60bd547, type: 3}
+  bambooCount: 120
   areaRadius: 20.5
   playerObject: {fileID: 0}
   parentObject: {fileID: 0}
+  wiltSpeed: 0.1
+  isWilted: 0
+  fadeDuration: 0.1
+  maxFadeBatch: 5
+  isAllWilted: 0
 --- !u!222 &5837947841554200017
 CanvasRenderer:
   m_ObjectHideFlags: 0

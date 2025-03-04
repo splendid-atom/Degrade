@@ -15,6 +15,11 @@ public class Bullet_projectile : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
+    public void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
+
     // 让子弹沿着给定的方向飞行
     void Update()
     {

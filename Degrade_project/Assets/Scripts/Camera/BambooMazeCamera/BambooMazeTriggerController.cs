@@ -10,6 +10,7 @@ public class BambooMazeTriggerController : MonoBehaviour
     private Collider2D BambooMazeTrigger;
     public bool isInMaze = false;
     private TextMeshPro BambooMovementHint;
+    private bool isHintShowed = false;
     private Material bambooMovementHintMaterial;  // 用于控制材质透明度
 
     void Awake()
@@ -65,7 +66,9 @@ public class BambooMazeTriggerController : MonoBehaviour
         {
             isInMaze = false;
             // 隐藏提示信息，并开始渐隐
-            StartCoroutine(FadeOutHint());
+            if(!isHintShowed){
+                StartCoroutine(FadeOutHint());
+            }
             BambooMazeCameraController.instance.isInMaze = false;
         }
     }
@@ -87,6 +90,7 @@ public class BambooMazeTriggerController : MonoBehaviour
         SetAlpha(1);  // 确保最终为完全不透明
         yield return new WaitForSeconds(1f);
         StartCoroutine(FadeOutHint());
+        isHintShowed = true;
     }
 
     // 渐隐提示信息

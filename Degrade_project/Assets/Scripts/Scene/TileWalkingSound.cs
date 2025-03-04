@@ -55,7 +55,7 @@ public class TileWalkingSound : MonoBehaviour
 
         if (tile != null && grassTiles.Contains(tile)) // 如果该tile在草地列表中
         {
-            Debug.Log("Player is on grass!");
+            // Debug.Log("Player is on grass!");
             PlayGrassSound(); // 播放草地音效
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BridgeController : MonoBehaviour
 {
-    private Transform NewPlayerBridge;
+    public Transform NewPlayerBridge;
     private Transform NewPlayerRiver;
     private float targetZ = -1.943357f;
     private bool isConditionMet = false;  // 控制条件是否满足
@@ -12,7 +12,7 @@ public class BridgeController : MonoBehaviour
     private BoxCollider2D[] bridgeContainerColliders;  // 用来表示 BridgeContainer 中的两个碰撞体
 
     private AudioSource bridgeAudioSource; // 音频源组件
-    private bool isBridgeRaised = false; // 用于标记桥是否升起完成
+    public bool isBridgeRaised = false; // 用于标记桥是否升起完成
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +55,15 @@ public class BridgeController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // 如果桥已经升起，直接设置 z 坐标并退出
+        if (InterSceneMemory.instance.isBridgeRised)
+        {
+            if (NewPlayerBridge.position.z != targetZ)
+            {
+                NewPlayerBridge.position = new Vector3(NewPlayerBridge.position.x, NewPlayerBridge.position.y, targetZ);
+            }
+            return;
+        }
         TriggerCondition();
         if (NewPlayerBridge != null)
         {
@@ -77,6 +86,7 @@ public class BridgeController : MonoBehaviour
                 {
                     isBridgeRaised = true; // 标记桥已完成升起
                     StartCoroutine(FadeOutAudio()); // 启动音效淡出
+                    InterSceneMemory.instance.isBridgeRised = true;
                 }
             }
         }

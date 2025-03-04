@@ -28,6 +28,7 @@ public class HintUI : MonoBehaviour
     void Awake()
     {
         instance = this;
+        // DontDestroyOnLoad(gameObject);
     }
 
     void Start()
@@ -49,7 +50,6 @@ public class HintUI : MonoBehaviour
 
     void Update()
     {
-        // Debug.Log(loadManager.instance.isLoaded);
         hintButton.interactable = isTalkingPhone ? false : true;
 
         if (isTalkingOver)
@@ -60,7 +60,7 @@ public class HintUI : MonoBehaviour
         }
 
         // 如果还没有接听电话并且按钮正在闪烁+场景切换为游戏画面
-        if (!isTalkingPhone&&loadManager.instance.isLoaded)
+        if (!isTalkingPhone&&gameManager.instance.isLoaded)
         {
             BlinkButton();
             

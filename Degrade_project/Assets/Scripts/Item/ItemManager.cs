@@ -1,11 +1,29 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 
 public class ItemManager : MonoBehaviour
 {
-    public InventoryItem[] inventoryItems;  // 管理每个物品的数量和获得状态
+    public List<InventoryItem> inventoryItems; // 管理每个物品的数量和获得状态
     public static ItemManager itemManager;
     private AudioSource audioSource;   // 音频源，用于播放音效
-
+    public delegate void ItemAddedHandler(int index);
+    public event ItemAddedHandler OnItemAdded;
+    public void AddItem(int itemId, int amount)
+    {
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].item.itemID == itemId && !inventoryItems[i].isObtained)
+            {
+                inventoryItems[i].isObtained = true;
+                inventoryItems[i].amount = amount;
+                Debug.Log($"Item added at index {i}");
+                OnItemAdded?.Invoke(i);
+                return;
+            }
+        }
+        Debug.LogWarning("Item with ID " + itemId + " not found or already obtained.");
+    }
     void Awake()
     {
         if (itemManager == null)
@@ -28,7 +46,16 @@ public class ItemManager : MonoBehaviour
             Debug.Log($"Item: {inventoryItem.item.itemName}, Amount: {inventoryItem.amount}, Obtained: {inventoryItem.isObtained}");
         }
     }
-
+    public void AddAmount(string itemName, int addedAmount){
+        foreach (var inventoryItem in inventoryItems)
+        {
+            if (inventoryItem.item.itemName == itemName)
+            {
+                inventoryItem.AddAmount(addedAmount);
+                break;
+            }
+        }
+    }
     void Update()
     {
 
@@ -36,7 +63,7 @@ public class ItemManager : MonoBehaviour
 
     public void UseItem(int index)
     {
-        if (index >= 0 && index < inventoryItems.Length)
+        if (index >= 0 && index < inventoryItems.Count)
         {
             // 使用物品
             inventoryItems[index].Use(audioSource);

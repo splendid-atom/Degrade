@@ -54,6 +54,7 @@ public class BambooMazeCameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (mainCamera == null || player == null || cameraContainer == null)
         {
             return; // 如果任何一个关键对象未找到，直接跳出

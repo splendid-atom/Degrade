@@ -36,6 +36,7 @@ public class BambooMazeExitTrigger : MonoBehaviour
     }
 
     private IEnumerator WaitForSecondsAndMoveOn(float seconds){
+        QuestUIManager.QuestManager.CompleteTask("", 2);
         yield return new WaitForSeconds(seconds);
         //停止玩家移动
         PlayerController.Instance.isDisableMovement = true;

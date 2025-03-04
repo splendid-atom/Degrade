@@ -13,5 +13,8 @@ public class GeneralItem : Item
         if(itemID == 5){//时光手表
             VillageSceneController.instance.isTimeMachine = true;
         }
+        if(itemID == 4){//时空碎片
+            Debug.Log("TimePiece");
+        }
     }
 }

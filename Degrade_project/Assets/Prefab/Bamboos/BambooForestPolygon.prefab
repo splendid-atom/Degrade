@@ -59,14 +59,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bambooPrefabs:
-  - {fileID: 8232406592286010564, guid: 3b083cf18209d854ea5f8b979d5ed924, type: 3}
-  - {fileID: 8232406592286010564, guid: 4ef0bb9f381b26b4c8f7226acd79ccf2, type: 3}
-  - {fileID: 8232406592286010564, guid: 7e7ebf08f7fa59d44b6d7e14b28552e5, type: 3}
+  - {fileID: 8232406592286010564, guid: 2cea3c4a89512f2499bf919ec3dbbf08, type: 3}
+  - {fileID: 8232406592286010564, guid: 7563938d360a2644296d1b34622a60e0, type: 3}
+  - {fileID: 8232406592286010564, guid: d39526c5457f16841863cb25745f7b10, type: 3}
   bambooCount: 200
   bambooArea: {fileID: 8737001731104075902}
   playerObject: {fileID: 0}
   parentObject: {fileID: 0}
-  minimapContainer: {fileID: 0}
 --- !u!60 &8737001731104075902
 PolygonCollider2D:
   m_ObjectHideFlags: 0

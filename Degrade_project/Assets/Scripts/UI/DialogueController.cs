@@ -92,16 +92,17 @@ public class DialogueController : MonoBehaviour
     public bool isHavingDialogue(){
         if(VillageNpcController.instance.isTalking||
         NewPlayerGuide.instance.isGuiding||
-        SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
+        SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger||
+        HeepAnimation.instance.isHeepDialogue){
             if(VillageNpcController.instance.isTalking){
                 currentNpcName = VillageNpcController.instance.npcName;
             }
-            if(NewPlayerGuide.instance.isGuiding){
+            if(NewPlayerGuide.instance.isGuiding||
+            SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger||
+            HeepAnimation.instance.isHeepDialogue){
                 currentNpcName = NewPlayerGuide.instance.npcName;
             }
-            if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
-                currentNpcName = NewPlayerGuide.instance.npcName;
-            }
+
             return true;
         }
         return false;
@@ -116,6 +117,9 @@ public class DialogueController : MonoBehaviour
         }
         if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
             currentDialogues = SwitchToMazeSceneTrigger.instance.bambooMazeDialogues;
+        }
+        if(HeepAnimation.instance.isHeepDialogue){
+            currentDialogues = HeepAnimation.instance.HeepDialogues;
         }
     }
 
@@ -137,7 +141,7 @@ public class DialogueController : MonoBehaviour
                 VillageNpcController.instance.FadeNpc();
                 if(!VillageNpcController.instance.isVisited){
                     // 完成任务
-                    QuestUIManager.QuestManager.CompleteTask("", 2);
+                    QuestUIManager.QuestManager.CompleteTask("", 3);
                 }
                 VillageNpcController.instance.isVisited = true;                
             }
@@ -149,6 +153,15 @@ public class DialogueController : MonoBehaviour
             if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
                 SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger = false;
                 SwitchToMazeSceneTrigger.instance.isStartSwitchScene = true;
+            }
+            if(HeepAnimation.instance.isHeepDialogue){
+                HeepAnimation.instance.isHeepDialogue = false;
+                QuestUIManager.QuestManager.CompleteTask("", 4);
+                // 标记 Heep 对话已显示并保存
+                // HeepAnimation.instance.hasHeepDialogueShown = true;
+                // PlayerPrefs.SetInt("HasHeepDialogueShown", 1);
+                // PlayerPrefs.Save();
+                HeepAnimation.instance.OnDialogueEnd();
             }
             currentDialogueIndex = 0;
 
@@ -191,7 +204,6 @@ public class DialogueController : MonoBehaviour
         else{
             // DialogueContainer.SetActive(isHavingDialogue());
             mask.padding = new Vector4(isHavingDialogue()?0:1300, 0, 0, 0);
-
         }
         
     }

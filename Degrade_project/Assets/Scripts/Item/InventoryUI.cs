@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
-using UnityEngine.EventSystems; // 添加这个命名空间以使用EventSystem和PointerEventData
+using UnityEngine.EventSystems;
+
 public class InventoryUI : MonoBehaviour
 {
     public GameObject itemButtonPrefab;  // 物品按钮预设
@@ -13,10 +14,9 @@ public class InventoryUI : MonoBehaviour
     private Button[] itemButtons; // 存储按钮引用
 
     public GameObject itemsSwitchScroll; // 物品切换的 ScrollRect
-    // public GameObject itemList; // 物品列表容器
 
     private int currentPage = 0;  // 当前显示的物品栏页（0表示第一行，1表示第二行）
-     private bool isMouseOverInventoryPanel = false; // 添加一个变量来跟踪鼠标是否在物品栏上
+    private bool isMouseOverInventoryPanel = false; // 跟踪鼠标是否在物品栏上
 
     void Start()
     {
@@ -26,131 +26,153 @@ public class InventoryUI : MonoBehaviour
         ScrollRect scrollRect = itemsSwitchScroll.GetComponent<ScrollRect>();
         if (scrollRect != null)
         {
-            // 监听拖动时，更新物品栏行
-            scrollRect.onValueChanged.AddListener((Vector2 value) => {
-                // 根据 ScrollRect 的垂直位置更新当前页数
+            scrollRect.onValueChanged.AddListener((Vector2 value) =>
+            {
                 currentPage = Mathf.RoundToInt((1f - value.y) * (Mathf.CeilToInt(maxItems / (float)itemsPerRow) - 1));
                 UpdateInventoryDisplay();
             });
         }
-    }
 
+        // 订阅 ItemManager 的物品变更事件
+        ItemManager.itemManager.OnItemAdded += (index) => UpdateItemDisplay(index);
+    }
 
     void Update()
     {
         isMouseOverInventoryPanel = RectTransformUtility.RectangleContainsScreenPoint(inventoryPanel, Input.mousePosition);
-        // 如果鼠标在物品栏上，则监听滚轮滑动来切换物品页
-        if (isMouseOverInventoryPanel){
-            // 监听滚轮滑动来切换物品页
+        if (isMouseOverInventoryPanel)
+        {
             if (Input.GetAxis("Mouse ScrollWheel") > 0f) // 滚轮向上
             {
-                SwitchPage(-1); // 切换到上一行
-                // Debug.Log("切换到上一页");
-                // Debug.Log("itemButtons.Length:"+itemButtons.Length);
+                SwitchPage(-1);
             }
             else if (Input.GetAxis("Mouse ScrollWheel") < 0f) // 滚轮向下
             {
-                SwitchPage(1); // 切换到下一行
-                // Debug.Log("切换到下一页");
+                SwitchPage(1);
             }
         }
 
         GetScrollBarValue();
-        // 监听快捷键 1-5 对应当前显示的物品
-        for (int i = 0; i < Mathf.Min(itemsPerRow, ItemManager.itemManager.inventoryItems.Length - currentPage * itemsPerRow); i++)
+
+        for (int i = 0; i < Mathf.Min(itemsPerRow, ItemManager.itemManager.inventoryItems.Count - currentPage * itemsPerRow); i++)
         {
             int itemIndex = currentPage * itemsPerRow + i;
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i)) // 监听数字键 1-5
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
-                if (itemIndex < itemButtons.Length && itemButtons[itemIndex] != null) // 确保按钮存在
+                if (itemIndex < itemButtons.Length && itemButtons[itemIndex] != null)
                 {
-                    itemButtons[itemIndex].onClick.Invoke(); // 触发按钮点击事件
+                    itemButtons[itemIndex].onClick.Invoke();
                 }
             }
         }
     }
 
-    void InitializeInventory()
-    {
-        int itemCount = Mathf.Min(maxItems, ItemManager.itemManager.inventoryItems.Length);
-
+    void InitializeInventory() {
+        int itemCount = Mathf.Min(maxItems, ItemManager.itemManager.inventoryItems.Count);
         cooldownTimers = new float[maxItems];
         itemButtons = new Button[maxItems];
 
-        for (int i = 0; i < maxItems; i++)
-        {
+        for (int i = 0; i < maxItems; i++) {
             GameObject itemButton = Instantiate(itemButtonPrefab, inventoryPanel);
+            itemButtons[i] = itemButton.GetComponent<Button>();
             TextMeshProUGUI itemName = itemButton.transform.Find("ItemName")?.GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI itemNumber = itemButton.transform.Find("ItemNumber")?.GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI itemAmount = itemButton.transform.Find("ItemAmount")?.GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI itemCooldown = itemButton.transform.Find("ItemCooldown")?.GetComponent<TextMeshProUGUI>();
             Image isObtainedImage = itemButton.transform.Find("IsObtained")?.GetComponent<Image>();
             Image itemIconImage = itemButton.transform.Find("ItemIcon")?.GetComponent<Image>();
-            Image cooldownMask = itemButton.transform.Find("CooldownMask")?.GetComponent<Image>(); // 冷却遮罩
-            int index = i;  // 关键！创建局部变量
-            if (i < itemCount)
-            {
+            Image cooldownMask = itemButton.transform.Find("CooldownMask")?.GetComponent<Image>();
+            int index = i;
+
+            // 默认设置为未取得状态
+            itemName.text = "";
+            itemNumber.text = "";
+            itemAmount.text = "";
+            itemIconImage.gameObject.SetActive(false);
+            itemButtons[i].interactable = false;
+            cooldownMask.fillAmount = 1f;
+            isObtainedImage.gameObject.SetActive(true);
+            itemCooldown.text = "";
+
+            if (i < itemCount) {
                 InventoryItem inventoryItem = ItemManager.itemManager.inventoryItems[i];
-                if (inventoryItem.isObtained)
-                {
+                if (inventoryItem.isObtained) {
                     itemName.text = inventoryItem.item.itemName;
                     itemNumber.text = $"{i + 1}";
                     itemAmount.text = $"{inventoryItem.amount}";
                     cooldownMask.fillAmount = 0f;
+                    itemButtons[i].interactable = true;
+                    if (inventoryItem.item.itemIcon != null) {
+                        itemIconImage.sprite = inventoryItem.item.itemIcon;
+                        itemIconImage.gameObject.SetActive(true);
+                    }
+                    isObtainedImage.gameObject.SetActive(false);
                 }
-                else
-                {
-                    itemName.text = "";
-                    itemNumber.text = "";
-                    itemAmount.text = "";
-                    itemButton.GetComponent<Button>().interactable = false;
-                    cooldownMask.fillAmount = 1f;
-                }
-
-                if (inventoryItem.item.itemIcon != null)
-                {
-                    itemIconImage.sprite = inventoryItem.item.itemIcon;
-                    itemIconImage.gameObject.SetActive(true);
-                }
-                else
-                {
-                    itemIconImage.gameObject.SetActive(false);
-                }
-
-                isObtainedImage.gameObject.SetActive(!inventoryItem.isObtained);
-
-                // int index = i;  // 关键！创建局部变量
                 inventoryItem.OnAmountChanged += () => UpdateItemAmount(index, itemAmount);
-
-                
-                itemCooldown.text = "";
-                Button itemButtonComponent = itemButton.GetComponent<Button>();
-                itemButtons[i] = itemButtonComponent;
-                itemButtonComponent.onClick.AddListener(() => UseItem(index, cooldownMask, itemCooldown));
-            }
-            else
-            {
-                itemName.text = "";
-                itemNumber.text = "";
-                itemAmount.text = "";
-                itemIconImage.gameObject.SetActive(false);
-                itemButton.GetComponent<Button>().interactable = false;
-                itemCooldown.text = "";
-                Button itemButtonComponent = itemButton.GetComponent<Button>();
-                itemButtons[i] = itemButtonComponent;
-                itemButtonComponent.onClick.AddListener(() => UseItem(index, cooldownMask, itemCooldown));
             }
 
-            if (i >= itemsPerRow) // Hide all items except the first row initially
-            {
+            itemButtons[i].onClick.AddListener(() => UseItem(index, cooldownMask, itemCooldown));
+            if (i >= itemsPerRow) {
                 itemButton.gameObject.SetActive(false);
             }
         }
+        UpdateInventoryDisplay();
+    }
+    void UpdateItemDisplay(int itemIndex) {
+        if (itemIndex >= maxItems || itemIndex >= itemButtons.Length || itemButtons[itemIndex] == null) {
+            Debug.LogWarning("Invalid item index: " + itemIndex);
+            return;
+        }
 
-        // 设置滚动区域的大小
-        // RectTransform content = itemList.GetComponent<RectTransform>();
-        // int totalRows = Mathf.CeilToInt(ItemManager.itemManager.inventoryItems.Length / (float)itemsPerRow);
-        // content.sizeDelta = new Vector2(content.sizeDelta.x, totalRows * 100f);      
+        InventoryItem inventoryItem = ItemManager.itemManager.inventoryItems[itemIndex];
+        GameObject itemButton = itemButtons[itemIndex].gameObject;
+
+        TextMeshProUGUI itemName = itemButton.transform.Find("ItemName")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemNumber = itemButton.transform.Find("ItemNumber")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemAmount = itemButton.transform.Find("ItemAmount")?.GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI itemCooldown = itemButton.transform.Find("ItemCooldown")?.GetComponent<TextMeshProUGUI>();
+        Image isObtainedImage = itemButton.transform.Find("IsObtained")?.GetComponent<Image>();
+        Image itemIconImage = itemButton.transform.Find("ItemIcon")?.GetComponent<Image>();
+        Image cooldownMask = itemButton.transform.Find("CooldownMask")?.GetComponent<Image>();
+        Button itemButtonComponent = itemButton.GetComponent<Button>();
+
+        Debug.Log($"Updating item {itemIndex}: {inventoryItem.item.itemName}, isObtained: {inventoryItem.isObtained}");
+
+        if (inventoryItem.isObtained) {
+            itemName.text = inventoryItem.item.itemName;
+            itemNumber.text = $"{itemIndex + 1}";
+            itemAmount.text = $"{inventoryItem.amount}";
+            cooldownMask.fillAmount = 0f;
+            itemButtonComponent.interactable = true;
+            if (inventoryItem.item.itemIcon != null) {
+                itemIconImage.sprite = inventoryItem.item.itemIcon;
+                itemIconImage.gameObject.SetActive(true);
+            } else {
+                itemIconImage.gameObject.SetActive(false);
+            }
+            isObtainedImage.gameObject.SetActive(false);
+        } else {
+            itemName.text = "";
+            itemNumber.text = "";
+            itemAmount.text = "";
+            cooldownMask.fillAmount = 1f;
+            itemButtonComponent.interactable = false;
+            itemIconImage.gameObject.SetActive(false);
+            isObtainedImage.gameObject.SetActive(true);
+        }
+        itemCooldown.text = cooldownTimers[itemIndex] > 0 ? $"{cooldownTimers[itemIndex]:F1}" : "";
+
+        int itemPage = itemIndex / itemsPerRow;
+        if (itemPage != currentPage) {
+            currentPage = itemPage;
+            ScrollRect scrollRect = itemsSwitchScroll.GetComponent<ScrollRect>();
+            if (scrollRect != null) {
+                int totalPages = Mathf.CeilToInt(maxItems / (float)itemsPerRow);
+                float targetNormalizedPosition = totalPages > 1 ? 1f - (currentPage / (float)(totalPages - 1)) : 1f;
+                scrollRect.normalizedPosition = new Vector2(0f, targetNormalizedPosition);
+            }
+        }
+        UpdateInventoryDisplay();
     }
 
     void SwitchPage(int direction)
@@ -158,51 +180,74 @@ public class InventoryUI : MonoBehaviour
         int totalPages = Mathf.CeilToInt(maxItems / (float)itemsPerRow);
         currentPage = Mathf.Clamp(currentPage + direction, 0, totalPages - 1);
 
-        // 打印当前页数，查看是否有正确更新
-        // Debug.Log($"当前页数: {currentPage}, 总页数: {totalPages}");
-
-        // 检查 currentPage 是否有效
-        if (currentPage < 0 || currentPage >= totalPages)
-        {
-            Debug.LogError($"Invalid page index: {currentPage}");
-            return;
-        }
-
-        // 计算目标滚动位置
         ScrollRect scrollRect = itemsSwitchScroll.GetComponent<ScrollRect>();
         if (scrollRect != null)
         {
-            float targetNormalizedPosition = 1f - (currentPage / (float)(totalPages - 1));
+            float targetNormalizedPosition = totalPages > 1 ? 1f - (currentPage / (float)(totalPages - 1)) : 1f;
             scrollRect.verticalNormalizedPosition = Mathf.Clamp01(targetNormalizedPosition);
         }
 
         UpdateInventoryDisplay();
     }
 
-
-
-
     void UpdateInventoryDisplay()
     {
         int startIndex = currentPage * itemsPerRow;
         int endIndex = Mathf.Min(startIndex + itemsPerRow, maxItems);
 
-        // 隐藏所有物品
-        for (int i = 0; i < itemButtons.Length; i++)
+        for (int i = 0; i < maxItems; i++)
         {
-            itemButtons[i].gameObject.SetActive(false);
-        }
-
-        // 显示当前页的物品
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            if (i < itemButtons.Length) // 确保索引不超出数组范围
+            if (i >= startIndex && i < endIndex && i < ItemManager.itemManager.inventoryItems.Count)
             {
                 itemButtons[i].gameObject.SetActive(true);
+                InventoryItem inventoryItem = ItemManager.itemManager.inventoryItems[i];
+                TextMeshProUGUI itemName = itemButtons[i].transform.Find("ItemName")?.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI itemNumber = itemButtons[i].transform.Find("ItemNumber")?.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI itemAmount = itemButtons[i].transform.Find("ItemAmount")?.GetComponent<TextMeshProUGUI>();
+                Image itemIconImage = itemButtons[i].transform.Find("ItemIcon")?.GetComponent<Image>();
+                Image cooldownMask = itemButtons[i].transform.Find("CooldownMask")?.GetComponent<Image>();
+                Image isObtainedImage = itemButtons[i].transform.Find("IsObtained")?.GetComponent<Image>();
+                Button itemButtonComponent = itemButtons[i].GetComponent<Button>();
+
+                if (inventoryItem.isObtained)
+                {
+                    itemName.text = inventoryItem.item.itemName;
+                    itemNumber.text = $"{i + 1}";
+                    itemAmount.text = $"{inventoryItem.amount}";
+                    cooldownMask.fillAmount = cooldownTimers[i] > 0 ? cooldownTimers[i] / inventoryItem.item.cooldownTime : 0f;
+                    if (inventoryItem.item.itemIcon != null)
+                    {
+                        itemIconImage.sprite = inventoryItem.item.itemIcon;
+                        itemIconImage.gameObject.SetActive(true);
+                    }
+                    isObtainedImage.gameObject.SetActive(false);
+
+                    // 特殊处理“时空碎片”的按钮可交互性
+                    if (inventoryItem.item.itemName == "时空碎片")
+                    {
+                        itemButtonComponent.interactable = inventoryItem.amount >= 3;
+                    }
+                    else
+                    {
+                        itemButtonComponent.interactable = true;
+                    }
+                }
+                else
+                {
+                    itemName.text = "";
+                    itemNumber.text = "";
+                    itemAmount.text = "";
+                    itemButtonComponent.interactable = false;
+                    cooldownMask.fillAmount = 1f;
+                    itemIconImage.gameObject.SetActive(false);
+                    isObtainedImage.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                itemButtons[i].gameObject.SetActive(false);
             }
         }
-
-        // 更新滚动条的值
         UpdateScrollbarValue();
     }
 
@@ -228,9 +273,7 @@ public class InventoryUI : MonoBehaviour
             float normalizedPosition = scrollbar.value;
             int totalPages = Mathf.CeilToInt(maxItems / (float)itemsPerRow);
             currentPage = Mathf.FloorToInt(normalizedPosition * (totalPages - 1));
-            int direction = (normalizedPosition > 0.5f) ? 1 : -1;
-            SwitchPage(direction);
-            // Debug.Log($"当前页数: {currentPage}");
+            UpdateInventoryDisplay();
         }
     }
 
@@ -246,7 +289,6 @@ public class InventoryUI : MonoBehaviour
                     Debug.Log($"物品 {inventoryItem.item.itemName} 正在冷却，剩余时间: {cooldownTimers[itemIndex]:F1} 秒");
                     return;
                 }
-                // Debug.Log($"使用物品：{inventoryItem.item.itemName}");
                 ItemManager.itemManager.UseItem(itemIndex);
                 if (inventoryItem.item.cooldownTime > 0)
                 {
@@ -281,7 +323,6 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateItemAmount(int index, TextMeshProUGUI itemAmount)
     {
-        // Debug.Log($"物品index：{index}");
         InventoryItem inventoryItem = ItemManager.itemManager.inventoryItems[index];
         itemAmount.text = $"{inventoryItem.amount}";
     }
