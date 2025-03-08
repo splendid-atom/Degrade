@@ -53,24 +53,23 @@ public class DegradeBambooForest : MonoBehaviour
         yield return new WaitForSeconds(delay);
         startWilt = true;
     }
+    public void StartWilt()
+    {
+        Debug.Log("开始枯萎过程");
+        isWilted = true;
+        currentBambooIndex = 0;
+        globalWiltTimer = 0; // 重置全局计时器
+        if (portalTransform != null)
+        {
+            portalTransform.SetActive(true);
+            StartCoroutine(ActivatePortalWithDelay(2f));
+        }
+        //调用枯萎竹林摄像机
+        SwitchDegradeBambooCamera.instance.SwitchToDegradeBambooCamera();
+    }
+
     void Update()
     {
-        // Debug.Log("isAllWilted:"+isAllWilted);
-        // 检测U键按下，开始枯萎过程
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            Debug.Log("开始枯萎过程");
-            isWilted = true;
-            currentBambooIndex = 0;
-            globalWiltTimer = 0; // 重置全局计时器
-            if (portalTransform != null)
-            {
-                portalTransform.SetActive(true);
-                StartCoroutine(ActivatePortalWithDelay(2f));
-            }
-
-        }
-
         // 处理枯萎动画
         if (isWilted&&startWilt)
         {

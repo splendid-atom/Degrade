@@ -82,7 +82,7 @@ public class DialogueController : MonoBehaviour
             speakerName.text = currentDialogues[currentDialogueIndex].isSpeakerPlayer 
             ? PlayerController.Instance.PlayerName : currentNpcName;
         }
-        if(VillageNpcController.instance.isVisited){
+        if(VillageNpcController.instance.isVisited&&VillageNpcController.instance.canTriggerNpc){
             currentDialogues = currentVisitedDialogues;
         }
     }
@@ -93,13 +93,24 @@ public class DialogueController : MonoBehaviour
         if(VillageNpcController.instance.isTalking||
         NewPlayerGuide.instance.isGuiding||
         SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger||
-        HeepAnimation.instance.isHeepDialogue){
+        HeepAnimation.instance.isHeepDialogue||
+        RiverPortalAnimation.instance.isTalking||
+        RiverPortalAnimation.instance.isSecondTalking||
+        PortalAnimation.instance.isTalking||
+        PortalAnimation.instance.isSecondTalking||
+        FetchItemController.instance.isTalking
+        ){
+            // 赋值当前 NPC 名称（优先 VillageNpcController）
             if(VillageNpcController.instance.isTalking){
                 currentNpcName = VillageNpcController.instance.npcName;
             }
-            if(NewPlayerGuide.instance.isGuiding||
-            SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger||
-            HeepAnimation.instance.isHeepDialogue){
+            // else if(FetchItemController.instance.isTalking){
+            //     currentNpcName = FetchItemController.instance.npcName;
+            // }
+            // else if(NewPlayerGuide.instance.isGuiding){
+            //     currentNpcName = NewPlayerGuide.instance.npcName;
+            // }
+            else{
                 currentNpcName = NewPlayerGuide.instance.npcName;
             }
 
@@ -121,12 +132,28 @@ public class DialogueController : MonoBehaviour
         if(HeepAnimation.instance.isHeepDialogue){
             currentDialogues = HeepAnimation.instance.HeepDialogues;
         }
+        if(RiverPortalAnimation.instance.isTalking){
+            currentDialogues = RiverPortalAnimation.instance.PollutedRiverDialogues;
+        }
+        if(RiverPortalAnimation.instance.isSecondTalking){
+            currentDialogues = RiverPortalAnimation.instance.PollutedRiverReturnDialogues;
+        }
+        if(PortalAnimation.instance.isTalking){
+            currentDialogues = PortalAnimation.instance.DegradeBambooDialogues;
+        }
+        if(PortalAnimation.instance.isSecondTalking){
+            currentDialogues = PortalAnimation.instance.SecondDegradeBambooDialogues;
+        }
+        if(FetchItemController.instance.isTalking){
+            currentDialogues = FetchItemController.instance.CollectedTimePieceDialogues;
+        }
     }
 
     // 点击DialogueContainer时的事件
     void OnDialogueContainerClick()
     {
-        Debug.Log("DialogueContainer clicked!");    
+        // Debug.Log("DialogueContainer clicked!");    
+        Debug.Log("currentDialogue.Count"+currentDialogues.Count);
         // 如果不是最后一条对话，则切换到下一条
         if (currentDialogueIndex < currentDialogues.Count - 1)
         {
@@ -163,6 +190,28 @@ public class DialogueController : MonoBehaviour
                 // PlayerPrefs.Save();
                 HeepAnimation.instance.OnDialogueEnd();
             }
+            if(RiverPortalAnimation.instance.isTalking){
+                RiverPortalAnimation.instance.isTalking = false;
+                RiverPortalAnimation.instance.OnDialogueEnd();
+            }
+            if(RiverPortalAnimation.instance.isSecondTalking){
+                RiverPortalAnimation.instance.isSecondTalking = false;
+                RiverPortalAnimation.instance.OnSecondDialogueEnd();
+            }
+            if(PortalAnimation.instance.isTalking){
+                PortalAnimation.instance.isTalking = false;
+                PortalAnimation.instance.OnDialogueEnd();
+            }
+            if(PortalAnimation.instance.isSecondTalking){
+                PortalAnimation.instance.isSecondTalking = false;
+                PortalAnimation.instance.OnSecondDialogueEnd();
+            }
+            if(FetchItemController.instance.isTalking){
+                FetchItemController.instance.isTalking = false;
+                //完成报告长官的任务
+                QuestUIManager.QuestManager.CompleteTask("", 7);
+            }
+
             currentDialogueIndex = 0;
 
             // 恢复所有UI的显示

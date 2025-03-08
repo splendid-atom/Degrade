@@ -24,6 +24,16 @@ public class ItemManager : MonoBehaviour
         }
         Debug.LogWarning("Item with ID " + itemId + " not found or already obtained.");
     }
+    public int GetItemAmount(string itemName){
+        foreach (var inventoryItem in inventoryItems)
+        {
+            if (inventoryItem.item.itemName == itemName)
+            {
+                return inventoryItem.amount;
+            }
+        }
+        return -1;//没有这个物品
+    }
     void Awake()
     {
         if (itemManager == null)

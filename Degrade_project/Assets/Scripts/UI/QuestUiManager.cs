@@ -21,13 +21,14 @@ public class QuestUIManager : MonoBehaviour
     private RawImage completedTasksButtonImage;
     private bool isCompletedTasksAdded = false;
     private TextMeshProUGUI TaskText;//任务栏标题
-    private bool hasFirstTaskCompleted = false; // 标记是否有第一个任务完成
+    // private bool hasFirstTaskCompleted = false; // 标记是否有第一个任务完成
     private bool isSpecialQuestAdded = false;   // 标记特殊任务是否已添加
     private const int SPECIAL_QUEST_ID = 100;   // 特殊任务的固定ID
     private Quest specialQuest = null;          // 特殊任务引用
 
     // 滑动条引用（挂在 QuestScroll 对象上的 Scrollbar 组件）
     private Scrollbar questScrollbar;
+    private GameObject QuestMask;
     // 定义任务列表可滑动的范围，需根据 QuestMask 遮挡区域设置
     // public float scrollMinY = -200f;  // 下边界（根据实际情况调整）
     // public float scrollMaxY = 0f;     // 上边界（根据实际情况调整）
@@ -68,7 +69,7 @@ public class QuestUIManager : MonoBehaviour
 
     // 任务列表
     public List<Quest> quests = new List<Quest>();
-    private int currentQuestId;
+    public int currentQuestId;
     // 音效
     private AudioSource audioSource;   // 音频源，用于播放音效
 
@@ -93,6 +94,7 @@ public class QuestUIManager : MonoBehaviour
 
     void Start()
     {
+        QuestMask = GameObject.Find("QuestMask");
         TaskPanelInitialY = taskPanel.anchoredPosition.y;
         TaskText = GameObject.Find("TaskText").GetComponent<TextMeshProUGUI>();
         completedTasksButton = GameObject.Find("CompletedTasksButton").GetComponent<Button>();
@@ -112,8 +114,13 @@ public class QuestUIManager : MonoBehaviour
 
     void Update()
     {
-
-        TaskPanelHeight = taskPanel.sizeDelta.y;;
+        Debug.Log("isAllComplete:"+isCompleteAllInitialWorldTasks());
+        TaskPanelHeight = taskPanel.sizeDelta.y;
+        //令滑块高度和panel高度一致
+        questScrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(
+            questScrollbar.GetComponent<RectTransform>().sizeDelta.x, // 保持原来的宽度
+            Mathf.Min(taskPanel.sizeDelta.y,QuestMask.GetComponent<RectTransform>().sizeDelta.y)  // 让高度等于 taskPanel
+        );
         // 如果当前不是已完成任务面板
         if (!isCompletedPanel)
         {
@@ -168,6 +175,17 @@ public class QuestUIManager : MonoBehaviour
         {
             AddSpecialQuest(); // 添加特殊任务
         }
+    }
+
+    public bool isCompleteAllInitialWorldTasks(){
+        foreach (var quest in quests)
+        {
+            if((quest.id <= 7 || quest.id==100) && !quest.isCompleted)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     // 处理滑动条数值变化，更新 taskPanel 的 y 坐标，实现任务列表滑动效果
@@ -232,11 +250,11 @@ public class QuestUIManager : MonoBehaviour
             if (taskCollectivesCounting != null)
             {
                 // 初始设置计数文本
-                taskCollectivesCounting.text = "(" + quest.collectedAmount + "/" + quest.requiredAmount + ")";
+                taskCollectivesCounting.text = "-(" + quest.collectedAmount + "/" + quest.requiredAmount + ")";
                 // 订阅收集数量变化事件
                 quest.OnCollectedAmountChanged += () =>
                 {
-                    taskCollectivesCounting.text = "(" + quest.collectedAmount + "/" + quest.requiredAmount + ")";
+                    taskCollectivesCounting.text = "-(" + quest.collectedAmount + "/" + quest.requiredAmount + ")";
                 };
             }
         }

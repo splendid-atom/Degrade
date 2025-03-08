@@ -64,12 +64,15 @@ public class NewPlayerGuide : MonoBehaviour
         if(QuestUIManager.QuestManager.quests[0].isCompleted){
             return;
         }
-        if(isNewPlayerGuiding&&!InterSceneMemory.instance.isBeenToBambooMaze){
-            StartCoroutine(ShowArrowAndKey(currentArrowIndex));
-            //刷新一下镜头
-            FacingCamera.instance.UpdateChilds(true);
-            isNewPlayerGuiding = false;
-        }            
+        if(InterSceneMemory.instance.isInSampleScene()){
+            if(isNewPlayerGuiding&&!InterSceneMemory.instance.isBeenToBambooMaze){
+                StartCoroutine(ShowArrowAndKey(currentArrowIndex));
+                //刷新一下镜头
+                FacingCamera.instance.UpdateChilds(true);
+                isNewPlayerGuiding = false;
+            }             
+        }
+           
     }
 
     IEnumerator ShowArrowAndKey(int index)

@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: QuestUIManager
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: c99ff68a529de764594a6c5df205313e, type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: taskPrefab
+    value: 
+    objectReference: {fileID: 6926235206960213130, guid: 26cc9f3e054d2ea4c8f5235f3d631221, type: 3}
+  - target: {fileID: 0}
+    propertyPath: taskPrefabCollectives
+    value: 
+    objectReference: {fileID: 5776916285119600951, guid: c2c453f2e100eb54eaa5ca10664a6ee3, type: 3}
+  - target: {fileID: 0}
+    propertyPath: taskPanel
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: CompletedSprite
+    value: 
+    objectReference: {fileID: 21300000, guid: 941c7c4ed9b373d48b7bffd8e445e324, type: 3}
+  - target: {fileID: 0}
+    propertyPath: NotCompletedSprite
+    value: 
+    objectReference: {fileID: 21300000, guid: 7f81225df71653d43857efeea059779b, type: 3}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.size
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].id
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].title
+    value: "\u563F!\u6CA1\u75C5\u8D70\u4E24\u6B65!"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].description
+    value: "-\u5B8C\u6210\u65B0\u624B\u6559\u7A0B"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].isCollectable
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[0].requiredAmount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].id
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].title
+    value: "\u771F\u8981\u8FDB\u53BB\u5417\uFF1F"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].description
+    value: "-\u7A7F\u8D8A\u7AF9\u6797"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].isCollectable
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[1].requiredAmount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].id
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].title
+    value: "\u662F\u8C01\u62A5\u7684\u5B98\uFF1F"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].description
+    value: "-\u5BFB\u627E\u7AF9\u6797\u4E2D\u7684\u6C42\u52A9\u8005"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].isCollectable
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[2].requiredAmount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].id
+    value: 4
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].title
+    value: "\u8C01\u4E22\u7684\u5783\u573E\uFF1F\uFF01"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].description
+    value: "-\u4F7F\u7528\u65F6\u5149\u624B\u8868\u56DE\u5230\u51E0\u4E2A\u6708\u524D\uFF0C\u8C03\u67E5\u5783\u573E\u5806"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].isCollectable
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[3].requiredAmount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].id
+    value: 5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].title
+    value: "\u597D\u81ED\uFF01"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].description
+    value: "-\u8C03\u67E5\u6CB3\u6D41\u6C61\u67D3"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].isCollectable
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[4].requiredAmount
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].id
+    value: 100
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].title
+    value: "\u6536\u96C6\u4EAE\u95EA\u95EA\uFF01"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].description
+    value: "-\u62FE\u53D6\u65F6\u7A7A\u788E\u7247"
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].isCompleted
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].isCollectable
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: quests.Array.data[5].requiredAmount
+    value: 3
+    objectReference: {fileID: 0}
+  m_ExcludedProperties: []

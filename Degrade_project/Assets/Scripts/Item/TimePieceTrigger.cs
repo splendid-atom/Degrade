@@ -13,7 +13,7 @@ public class TimePieceTrigger : MonoBehaviour
         // 只有玩家在触发区时才检测按键
         if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("Timepiece is fetched");
+            // Debug.Log("Timepiece is fetched");
             StartCoroutine(FloatUpAndDisappear()); // 启动协程执行动画
         }
     }

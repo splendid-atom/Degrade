@@ -13,7 +13,7 @@ public class VillageNpcController : MonoBehaviour
     public float fadeSpeed = 0.5f; // 渐变速度
     private bool isFadingIn = false; // 当前是否在渐变显示
     private bool isFadingOut = false; // 当前是否在渐变消失
-    private bool canTriggerNpc = false; // 玩家是否可以触发NPC的渐变显示
+    public bool canTriggerNpc = false; // 玩家是否可以触发NPC的渐变显示
 
     private BoxCollider2D triggerCollider; // 触发器的BoxCollider2D
     private GameObject player; // 玩家对象

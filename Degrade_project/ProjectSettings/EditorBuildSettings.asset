@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BambooMazeScene.unity
     guid: 5779b80117033bb47962046ac5b331d3
+  - enabled: 1
+    path: Assets/Scenes/Factory1.unity
+    guid: 789a545255c6c6d4dae56451ab71a71b
   m_configObjects: {}

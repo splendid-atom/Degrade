@@ -8,7 +8,7 @@ public class PollutedRiverCamera : MonoBehaviour
     private Camera pollutedRiverCamera; 
 
     private Camera mainCamera; // 引用传统的主摄像机
-    public GameObject riverPortal; // 引用河流传送门
+    // public GameObject riverPortal; // 引用河流传送门
     public bool isRiverCameraSwitched = false;
     private Vector3 riverCameraInitialPosition; // 记录河流摄像机的初始位置
     private Quaternion riverCameraInitialRotation; // 记录河流摄像机的初始旋转
@@ -38,7 +38,6 @@ public class PollutedRiverCamera : MonoBehaviour
         {
             isSwitchingCamera = true;
             StartCoroutine(SmoothSwitchToRiverCamera()); // 使用协程平滑切换到桥摄像机
-            StartCoroutine(SwitchBackToMainCameraAfterDelay(5f)); // 5秒后切回主摄像机
         }        
 
     }
@@ -77,8 +76,13 @@ public class PollutedRiverCamera : MonoBehaviour
         if(isSwitchingCamera){
             RiverPortalAnimation.instance.riverPortal.SetActive(true);
             RiverAnimation.instance.StartShrink();
-            // RiverAnimation.instance.SetRiverMaterialPolluted();
+            RiverPortalAnimation.instance.OnDialogueStart();
         }
+        //在对话完成前镜头不归位
+        while(RiverPortalAnimation.instance.isTalking){
+            yield return null;
+        }
+        StartCoroutine(SwitchBackToMainCameraAfterDelay(1f)); // 1秒后切回主摄像机
     }
 
     // 协程：5秒后切换回主摄像机

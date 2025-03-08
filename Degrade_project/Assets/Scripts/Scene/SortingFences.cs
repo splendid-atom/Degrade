@@ -37,6 +37,9 @@ public class SortingFences : MonoBehaviour
 
     void Update()
     {   
+        if(!negativeTrigger.isPlayerInside&&!positiveTrigger.isPlayerInside){
+            return;
+        }
         if(BambooMazeTriggerController.instance.isInMaze){
             sortingGroup.sortingOrder = -1;
             return;

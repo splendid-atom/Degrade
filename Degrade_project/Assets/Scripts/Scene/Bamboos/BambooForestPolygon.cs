@@ -120,7 +120,7 @@ public class BambooForestPolygon : MonoBehaviour
                 return new Vector3(randomPoint.x, randomPoint.y, 0);
             }
         }
-
+        Debug.Log("gameobject.name:"+gameObject.name);
         Debug.LogWarning("无法找到合适的竹子位置，返回 PolygonCollider2D 的中心点");
         return bambooArea.bounds.center;
     }

@@ -174,7 +174,7 @@ public class gameManager : MonoBehaviour
         save.x = GameObject.Find("PlayerCharacter").transform.position.x;
         save.y = GameObject.Find("PlayerCharacter").transform.position.y;
         //存入人物坐标位置
-        save.PlayerHealth = GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth;
+        save.PlayerHealth = (int)GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth;
         save.PlayerShield = GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerShield;
         //存入人物生命护盾值
         BinaryFormatter bf = new BinaryFormatter();

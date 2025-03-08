@@ -49,4 +49,10 @@ public class DronesAnimation : MonoBehaviour
         animator.SetBool("isAimming", true);
         animator.SetBool("isShoting", false);
     }
+    public void OnAnimationAimmingAndShoting()
+    {
+        animator.SetBool("isIdling", false);
+        animator.SetBool("isAimming", false);
+        animator.SetBool("isShoting", true);
+    }
 }

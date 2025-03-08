@@ -8,7 +8,7 @@ public class BambooMazeExitTrigger : MonoBehaviour
     private Collider2D BambooMazeTrigger; // 修正大小写
     public bool isInMaze = false;
 
-    public CanvasGroup fadeCanvasGroup;  // 用于控制渐变效果的CanvasGroup
+    private CanvasGroup fadeCanvasGroup;  // 用于控制渐变效果的CanvasGroup
     public string targetSceneName = "SampleScene";  // 返回的目标场景名称
     public string playerStartObjectName = "PlayerStartPos";  // 玩家重生的位置对象名称
 
@@ -20,7 +20,7 @@ public class BambooMazeExitTrigger : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);  // 保证该对象在切换场景时不被销毁
+            // DontDestroyOnLoad(gameObject);  // 保证该对象在切换场景时不被销毁
         }
         else
         {
@@ -28,6 +28,22 @@ public class BambooMazeExitTrigger : MonoBehaviour
         }
 
         BambooMazeTrigger = GetComponent<Collider2D>(); // 修正大小写
+        // 尝试查找名为 "SceneSwitchMask" 的对象
+        GameObject sceneSwitchMask = GameObject.Find("SceneSwitchMask");
+
+        if (sceneSwitchMask != null)
+        {
+            fadeCanvasGroup = sceneSwitchMask.GetComponent<CanvasGroup>();
+
+            if (fadeCanvasGroup == null)
+            {
+                Debug.LogWarning("SceneSwitchMask 对象存在，但未找到 CanvasGroup 组件！");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("未找到 SceneSwitchMask 对象！");
+        }
     }
 
     void Update()

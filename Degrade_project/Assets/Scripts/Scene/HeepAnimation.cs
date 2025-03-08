@@ -23,6 +23,8 @@ public class HeepAnimation : MonoBehaviour
     public List<Dialogue> HeepDialogues;  // 管理垃圾堆的旁白
     public bool isHeepDialogue = false;
     public bool hasHeepDialogueShown = false; // 新增标志，追踪对话是否已显示
+    private GameObject TimePiecePosition;
+    AudioSource audioSource;
     void Awake()
     {
         if (instance == null)
@@ -47,6 +49,8 @@ public class HeepAnimation : MonoBehaviour
     }
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        TimePiecePosition = GameObject.Find("TimePiecePosition");
         animator = GetComponent<Animator>();
 
         // Set initial Animator Controller
@@ -63,10 +67,13 @@ public class HeepAnimation : MonoBehaviour
         if (!isUsingSecondAnimator && VillageSceneController.instance.isTimeMachine)
         {
             SwitchToSecondAnimator();
+
+            // VillageSceneController.instance.isTimeMachine = false;
         }
 
         if (isUsingSecondAnimator && VillageSceneController.instance.isTimeMachineMasked)
         {
+
             Vector2 playerPosition = playerTransform.position;
             Vector2 heepPosition = transform.position;
             // Debug.Log("distance" + Vector2.Distance(playerPosition, heepPosition));
@@ -76,6 +83,8 @@ public class HeepAnimation : MonoBehaviour
                 // 只有在对话未显示过时才触发
                 if (!hasHeepDialogueShown && !isHeepDialogue)
                 {
+                    //垃圾堆振荡音效
+                    audioSource.PlayOneShot(audioSource.clip);
                     isHeepDialogue = true;
                 }
             }
@@ -86,6 +95,7 @@ public class HeepAnimation : MonoBehaviour
     {
         if (secondAnimatorController != null)
         {
+            SpawnTimePiece(); // Spawn TimePiece when animation completes
             animator.runtimeAnimatorController = secondAnimatorController;
             isUsingSecondAnimator = true;
         }
@@ -94,7 +104,7 @@ public class HeepAnimation : MonoBehaviour
     public void OnAnimationComplete()
     {
         animator.SetBool("IsComplete", true);
-        SpawnTimePiece(); // Spawn TimePiece when animation completes
+
     }
 
     public void SpawnTimePiece()
@@ -112,8 +122,22 @@ public class HeepAnimation : MonoBehaviour
                 }
             }
 
-            // Calculate spawn position with offset
-            Vector3 spawnPosition = transform.position + (Vector3)spawnOffset;
+            // 获取 TimePiecePosition 上的 PolygonCollider2D 组件
+            PolygonCollider2D polygonCollider = TimePiecePosition.GetComponent<PolygonCollider2D>();
+            if (polygonCollider == null)
+            {
+                Debug.LogError("PolygonCollider2D not found on TimePiecePosition!");
+                return;
+            }
+
+            // 获取碰撞体的顶点
+            Vector2[] colliderPoints = polygonCollider.points;
+
+            // 在多边形内部生成一个随机位置
+            Vector2 randomPoint = GetRandomPointInsidePolygon(colliderPoints);
+
+            // 生成位置
+            Vector3 spawnPosition = TimePiecePosition.transform.position + new Vector3(randomPoint.x, randomPoint.y, 0);
 
             // Instantiate TimePiece as a child of TimePieceContainer
             GameObject spawnedTimePiece = Instantiate(
@@ -122,7 +146,7 @@ public class HeepAnimation : MonoBehaviour
                 Quaternion.identity,
                 timePieceContainer.transform
             );
-
+            
             // Get the SpriteRenderer and set initial transparency
             SpriteRenderer spriteRenderer = spawnedTimePiece.GetComponent<SpriteRenderer>();
             if (spriteRenderer != null)
@@ -150,6 +174,49 @@ public class HeepAnimation : MonoBehaviour
             Debug.LogError("TimePiece prefab is not assigned in the Inspector!");
         }
     }
+
+    private Vector2 GetRandomPointInsidePolygon(Vector2[] polygonPoints)
+    {
+        // 计算多边形的包围盒
+        float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue, maxY = float.MinValue;
+
+        foreach (Vector2 point in polygonPoints)
+        {
+            minX = Mathf.Min(minX, point.x);
+            maxX = Mathf.Max(maxX, point.x);
+            minY = Mathf.Min(minY, point.y);
+            maxY = Mathf.Max(maxY, point.y);
+        }
+
+        // 在包围盒内生成随机点
+        Vector2 randomPoint;
+        do
+        {
+            randomPoint = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+        } while (!IsPointInsidePolygon(randomPoint, polygonPoints));
+
+        return randomPoint;
+    }
+
+    private bool IsPointInsidePolygon(Vector2 point, Vector2[] polygonPoints)
+    {
+        // 使用射线法判断点是否在多边形内
+        int intersectionCount = 0;
+        for (int i = 0; i < polygonPoints.Length; i++)
+        {
+            Vector2 p1 = polygonPoints[i];
+            Vector2 p2 = polygonPoints[(i + 1) % polygonPoints.Length];
+
+            // 检查射线与边的交点
+            if (((p1.y > point.y) != (p2.y > point.y)) &&
+                (point.x < (p2.x - p1.x) * (point.y - p1.y) / (p2.y - p1.y) + p1.x))
+            {
+                intersectionCount++;
+            }
+        }
+        return (intersectionCount % 2 != 0); // 如果交点数为奇数，则点在多边形内
+    }
+
 
     private IEnumerator FadeInTimePiece(GameObject timePiece)
     {

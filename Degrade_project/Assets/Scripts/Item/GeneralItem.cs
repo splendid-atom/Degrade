@@ -11,10 +11,25 @@ public class GeneralItem : Item
     {
         Debug.Log($"Using item: {itemID}");
         if(itemID == 5){//时光手表
-            VillageSceneController.instance.isTimeMachine = true;
+            audioSource.Play();
+            if(!VillageSceneController.instance.wasTimeMachine){
+               VillageSceneController.instance.isTimeMachine = true; 
+            }
+            if(!VillageSceneController.instance.wasSecondTimeMachine&&
+            VillageSceneController.instance.wasTimeMachine){
+                VillageSceneController.instance.isSecondTimeMachine = true;
+            }
+            
         }
         if(itemID == 4){//时空碎片
             Debug.Log("TimePiece");
+            FetchItemController.instance.UsePortalHint.gameObject.SetActive(false);
+            InterSceneMemory.instance.isSwitchToFactory1 = true;
+        }
+        // 播放使用音效
+        if (useSound != null)
+        {
+            audioSource.PlayOneShot(useSound);
         }
     }
 }
