@@ -1,4 +1,4 @@
-using System.Collections;
+    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +14,7 @@ public class ShieldGeneratorController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("shield health:"+Health);
+        // Debug.Log("shield health:"+Health);
         if(Input.GetKeyDown(KeyCode.K)){
             Health -= 10f;
         }

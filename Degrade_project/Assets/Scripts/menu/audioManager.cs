@@ -13,33 +13,36 @@ public class audioManager : MonoBehaviour
 
     void Start()
     {
-        if (PlayerPrefs.HasKey("mastervolume"))
-        {
-            master.value = PlayerPrefs.GetFloat("mastervolume");
+        if(InterSceneMemory.instance.isInSampleScene()){
+            if (PlayerPrefs.HasKey("mastervolume"))
+            {
+                master.value = PlayerPrefs.GetFloat("mastervolume");
+            }
+            else
+            {
+                master.value = 15f;
+            }
+            if (PlayerPrefs.HasKey("musicvolume"))
+            {
+                music.value = PlayerPrefs.GetFloat("musicvolume");
+            }
+            else
+            {
+                music.value = 15f;
+            }
+            if (PlayerPrefs.HasKey("soundvolume"))
+            {
+                sound.value = PlayerPrefs.GetFloat("soundvolume");
+            }
+            else
+            {
+                sound.value = 15f;
+            }
+            setMasterVolume(master.value);
+            setMusicVolume(music.value);
+            setSoundVolume(sound.value);            
         }
-        else
-        {
-            master.value = 15f;
-        }
-        if (PlayerPrefs.HasKey("musicvolume"))
-        {
-            music.value = PlayerPrefs.GetFloat("musicvolume");
-        }
-        else
-        {
-            music.value = 15f;
-        }
-        if (PlayerPrefs.HasKey("soundvolume"))
-        {
-            sound.value = PlayerPrefs.GetFloat("soundvolume");
-        }
-        else
-        {
-            sound.value = 15f;
-        }
-        setMasterVolume(master.value);
-        setMusicVolume(music.value);
-        setSoundVolume(sound.value);
+
     }
 
     public void setMasterVolume(float volume)

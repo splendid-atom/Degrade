@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEngine.UI;
 using JetBrains.Annotations;
 using UnityEditor.Rendering;
-
+using UnityEngine.SceneManagement;  // 导入SceneManager
 public class gameManager : MonoBehaviour
 {
     public GameObject settingboard;
@@ -21,12 +21,23 @@ public class gameManager : MonoBehaviour
     public GameObject namepanel;
     public InputField nameinput;
     public bool isLoaded = false;
+    public bool isDead = false;
+    public string currentSceneName;
     void Awake()
     {
         instance = this;
     }
     void Start()
     {
+        if (isDead)
+        {
+            Time.timeScale = 1;
+            PlayerController.Instance.TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+            GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth = 100;
+            GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerShield = 100;
+            isDead = false;
+            return;
+        }
         if (slider != null)
         {
             slider.interactable = false;
@@ -96,6 +107,20 @@ public class gameManager : MonoBehaviour
         }
     }
     //切换至游戏场景进度条
+
+    void Update()
+    {
+        if(GameObject.Find("PlayerCharacter")!=null){
+            if (GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth <= 0)
+            {
+                loadScreen.SetActive(true);
+                Time.timeScale = 0;
+                Debug.Log("dead!!!");
+                return;
+            }            
+        }
+
+    }
     public void loadNextLevel()
     {
         timer = 0;
@@ -213,6 +238,13 @@ public class gameManager : MonoBehaviour
             timer = 0;
             StartCoroutine(loadLevel(id));
         }
+    }
+    public void deadRetry()
+    {
+        isDead = true;
+        loadScreen.SetActive(false);
+        Start();
+
     }
 
     //进度条展示

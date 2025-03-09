@@ -169,6 +169,7 @@ public class DialogueController : MonoBehaviour
                 if(!VillageNpcController.instance.isVisited){
                     // 完成任务
                     QuestUIManager.QuestManager.CompleteTask("", 3);
+                    ItemManager.itemManager.AddItem(5, 5);
                 }
                 VillageNpcController.instance.isVisited = true;                
             }

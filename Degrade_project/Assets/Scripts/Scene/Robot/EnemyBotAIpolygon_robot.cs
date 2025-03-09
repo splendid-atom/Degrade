@@ -48,6 +48,8 @@ public class EnemyBotAIpolygon_robot : Enemy
     private DronesAttack dronesAttack;
     // 确定水平偏移方向 
     public float horizontalOffset = 2f; 
+    private Vector3 BigRobotPosition;
+
     void Awake()
     {
         if(patrolAreaCollider==null){
@@ -76,11 +78,16 @@ public class EnemyBotAIpolygon_robot : Enemy
 
     void Start()
     {
-        // UpdateAnimatorDirection(currentForwardDir);
+        BigRobotPosition = new Vector3(-38.4f,-26.9f,0.08f);
+
     }
 
     void Update()
     {
+        if (gameObject.name == "BigRobot" && PlayerController.Instance.PlayerHealth <= 0)
+        {
+            transform.position = BigRobotPosition;
+        }
         if (player == null)
             return;
 
@@ -286,6 +293,7 @@ public class EnemyBotAIpolygon_robot : Enemy
         animator.SetBool("isReadyAttacking", true);
         animator.SetBool("isAttacking", false);
         animator.SetBool("isReturning", false);
+
     }
     // 面向玩家
     private void FacePlayer()

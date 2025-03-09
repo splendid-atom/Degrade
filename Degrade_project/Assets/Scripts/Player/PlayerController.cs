@@ -37,8 +37,10 @@ public class PlayerController : MonoBehaviour
     private float verticalSpeed;
     public bool isDisableMovement = false;
 
+
     void Start()
     {
+
         // QualitySettings.vSyncCount = 0;
         // Application.targetFrameRate = 10;
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -71,6 +73,10 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(PlayerHealth<=0){
+            Died();
+            return;
+        }
         // Debug.Log(moveDirection);
         // Debug.Log("isDisableMovement:"+isDisableMovement);
         if(VillageNpcController.instance!=null){
@@ -108,7 +114,31 @@ public class PlayerController : MonoBehaviour
             arrowIndicator.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
         }
     }
+    // 传送玩家到目标位置
+    public void TeleportTo(Vector3 targetPosition)
+    {
+        // 使用Transform来更改玩家的坐标
+        transform.position = targetPosition;
+        // 你也可以在这里处理一些额外的逻辑，例如平滑传送、动画等
+    }
+    public void InstantFallingDie()
+    {
+        PlayerHealth = 0;
+        PlayerShield = 0;
+        FallingFloorsController.Instance.isFalling = false;
+        TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+        Debug.Log("InstantFallingDie");
+        // Debug.Log("PlayerHealth:"+PlayerHealth);
+        // Debug.Log("PlayerShield:"+PlayerShield);
+        // Debug.Log("MaxHealth:"+MaxHealth);
+        // Debug.Log("MaxShield:"+MaxShield);
+        // Debug.Log("CurrentHoldingItem:"+CurrentHoldingItem);
+    }
+    public void Died(){
+        TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
 
+        Debug.Log("You Died!");
+    }
     // void FixedUpdate()
     // {
     //     if(VillageNpcController.instance!=null){
@@ -182,7 +212,9 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-
+        if(PlayerHealth<=0){
+            return;
+        }
         // 读取移动输入（WASD键）
         move = MoveActionWASD.ReadValue<Vector2>();
 

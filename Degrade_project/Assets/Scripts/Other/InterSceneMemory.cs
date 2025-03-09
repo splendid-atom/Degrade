@@ -23,6 +23,7 @@ public class InterSceneMemory : MonoBehaviour
     public bool isStartSwitchScene = false;
 
     private bool isSwitchingScene = false; // 用于标记是否正在进行场景切换s
+    public bool isGameStart = true;
 
     void Awake()
     {
@@ -33,6 +34,7 @@ public class InterSceneMemory : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded; // 监听场景加载事件
+            SceneManager.LoadSceneAsync("Menu");
         }
         else
         {
@@ -108,7 +110,10 @@ public class InterSceneMemory : MonoBehaviour
     {
         return currentSceneName == "SampleScene";
     }
-
+    public bool isInBambooMaze()
+    {
+        return currentSceneName == "BambooMazeScene";
+    }
     void Update()
     {
         // 检测场景切换
@@ -165,7 +170,7 @@ public class InterSceneMemory : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         string loadedSceneName = scene.name; // 直接获取新加载的场景
-
+        fadeCanvasGroup.alpha = 0;
         if (QuestUIManager.QuestManager != null)
         {
             if(!QuestUIManager.QuestManager.quests

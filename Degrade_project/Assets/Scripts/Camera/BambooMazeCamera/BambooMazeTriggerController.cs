@@ -18,30 +18,28 @@ public class BambooMazeTriggerController : MonoBehaviour
 
     void Start()
     {
-        // 只有当场景为BambooMazeScene时才初始化提示
+        if (GameObject.Find("BambooMovementHint"))
+        {
+            Debug.Log("BambooMovementHint");
+            BambooMovementHint = GameObject.Find("BambooMovementHint").GetComponent<TextMeshProUGUI>(); // 获取TextMeshProUGUI组件
+        }
 
-            if (GameObject.Find("BambooMovementHint"))
-            {
-                Debug.Log("BambooMovementHint");
-                BambooMovementHint = GameObject.Find("BambooMovementHint").GetComponent<TextMeshProUGUI>(); // 获取TextMeshProUGUI组件
-            }
+        if (BambooMovementHint != null)
+        {
+            // 初始化时完全透明
+            SetAlpha(0f);  // 设置 alpha 为 0 使文本不可见
+        }
+        else
+        {
+            Debug.LogError("BambooMovementHint GameObject 没有找到或没有附加TextMeshProUGUI组件！");
+        }
 
-            if (BambooMovementHint != null)
-            {
-                // 初始化时完全透明
-                SetAlpha(0f);  // 设置 alpha 为 0 使文本不可见
-            }
-            else
-            {
-                Debug.LogError("BambooMovementHint GameObject 没有找到或没有附加TextMeshProUGUI组件！");
-            }
+        BambooMazeTrigger = GetComponent<Collider2D>();
 
-            BambooMazeTrigger = GetComponent<Collider2D>();
-
-            if (BambooMazeTrigger == null)
-            {
-                Debug.LogError("没有找到Collider2D组件！");
-            }
+        if (BambooMazeTrigger == null)
+        {
+            Debug.LogError("没有找到Collider2D组件！");
+        }
         
     }
 

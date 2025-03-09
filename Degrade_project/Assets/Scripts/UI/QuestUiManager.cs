@@ -114,7 +114,7 @@ public class QuestUIManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("isAllComplete:"+isCompleteAllInitialWorldTasks());
+        // Debug.Log("isAllComplete:"+isCompleteAllInitialWorldTasks());
         TaskPanelHeight = taskPanel.sizeDelta.y;
         //令滑块高度和panel高度一致
         questScrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(
