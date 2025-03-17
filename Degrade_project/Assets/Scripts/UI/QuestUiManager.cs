@@ -129,7 +129,7 @@ public class QuestUIManager : MonoBehaviour
             {
                 if (!IsTaskInPanel(specialQuest))
                 {
-                    if(quests[0].isCompleted){
+                    if(quests[3].isCompleted){
                         AddTask(specialQuest);
                     }
                     

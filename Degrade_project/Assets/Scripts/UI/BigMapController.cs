@@ -46,6 +46,7 @@ public class BigMapController : MonoBehaviour
     private Vector2 playerArrowInitialPosition;
     private Vector2 playerArrowPos;
     public RectTransform DragContainer; // 拖动容器
+    public RectTransform ZoomContainer; // 缩放容器
     public float rotateTime = 0.2f;
     private bool isRotating = false;
     public int currentRotationIndex = 0; // 旋转索引（-4 到 3）
@@ -146,7 +147,7 @@ public class BigMapController : MonoBehaviour
         {
             if (IsMouseInBigMapContainer())
             {
-                // HandleBigMapZoom();
+                HandleBigMapZoom();
                 HandleBigMapDrag();
             }
             // ResetMapPositionIfMinimized();
@@ -184,14 +185,14 @@ public class BigMapController : MonoBehaviour
     {
         bigMapUI.SetActive(true);
     }
-    // void HandleBigMapZoom()
-    // {
-    //     float scroll = Input.GetAxis("Mouse ScrollWheel");
-    //     if (Mathf.Abs(scroll) > 0f)
-    //     {
-    //         Zoom(scroll);
-    //     }
-    // }
+    void HandleBigMapZoom()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (Mathf.Abs(scroll) > 0f)
+        {
+            Zoom(scroll);
+        }
+    }
 
     // void Zoom(float scroll)
     // {
@@ -211,7 +212,14 @@ public class BigMapController : MonoBehaviour
     //     bigMapImage.localScale = new Vector3(scaleFactor, scaleFactor, 1);
     //     fogOfWarImage.rectTransform.localScale = new Vector3(scaleFactor, scaleFactor, 1);
     // }
+    void Zoom(float scroll)
+    {
+        // 计算新的缩放值
+        float newScale = Mathf.Clamp(ZoomContainer.localScale.x + scroll * zoomSpeed, 1f, 3f);
 
+        // 更新 DragContainer 的缩放
+        ZoomContainer.localScale = new Vector3(newScale, newScale, 1);
+    }
 
     void HandleBigMapDrag()
     {

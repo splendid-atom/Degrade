@@ -922,6 +922,7 @@ MonoBehaviour:
   nameinput: {fileID: 0}
   isLoaded: 0
   isDead: 0
+  currentSceneName: 
 --- !u!1001 &357594335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -179589,9 +179590,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 806940770}
   - {fileID: 113671614}
-  - {fileID: 89607044}
   - {fileID: 265285921}
   - {fileID: 974045338}
   - {fileID: 350424307}
   - {fileID: 61315835}
+  - {fileID: 89607044}
   - {fileID: 553839603}

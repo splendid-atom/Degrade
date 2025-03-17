@@ -192,7 +192,7 @@ public class gameManager : MonoBehaviour
 
     public void saveGame()
     {
-        string savePath = Path.Combine(Application.dataPath, "data", "data.txt");
+        string savePath = Application.dataPath + "data.txt";
         Save save = createSaveQuestandItem();
         Scene scene = SceneManager.GetActiveScene();
         save.sceneIndex = scene.buildIndex;//存入当前场景索引
@@ -211,7 +211,7 @@ public class gameManager : MonoBehaviour
 
     public void loadGame()
     {
-        string savePath = Path.Combine(Application.dataPath, "data", "data.txt");
+        string savePath = Application.dataPath + "data.txt";
         if (!File.Exists(savePath))
         {
             return;
@@ -226,7 +226,7 @@ public class gameManager : MonoBehaviour
 
     public void loadLevel()
     {
-        string savePath = Path.Combine(Application.dataPath, "data", "data.txt");
+        string savePath = Application.dataPath + "data.txt";
         if (!File.Exists(savePath))
         {
             Debug.Log("文件不存在！");
@@ -247,7 +247,7 @@ public class gameManager : MonoBehaviour
 
     }
 
-    //进度条展示
+    // //进度条展示
     IEnumerator loadLevel(int index)
     {
         loadScreen.SetActive(true);
@@ -260,12 +260,38 @@ public class gameManager : MonoBehaviour
             // Debug.Log(timer);
             text.text = timer + "%";
             timer += 1;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.02f);
 
         }
         operation.allowSceneActivation = true;
         isLoaded = true;
     }
+    // IEnumerator loadLevel(int index)
+    // {
+    //     loadScreen.SetActive(true);
+    //     AsyncOperation operation = SceneManager.LoadSceneAsync(index);
+    //     operation.allowSceneActivation = false;
+
+    //     while (timer <= 100)
+    //     {
+    //         slider.value = timer / 100f;
+    //         text.text = timer + "%";
+
+    //         if (timer == 80)
+    //         {
+    //             yield return new WaitForSeconds(0.5f); // 停顿 0.5 秒
+    //             timer = 100; // 直接跳到 100
+    //         }
+    //         else
+    //         {
+    //             timer += 1;
+    //             yield return new WaitForSeconds(0.01f);
+    //         }
+    //     }
+
+    //     operation.allowSceneActivation = true;
+    //     isLoaded = true;
+    // }
 }
 [System.Serializable]
 public class Save//存档类
