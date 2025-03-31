@@ -25,6 +25,7 @@ public class HintUI : MonoBehaviour
     private bool isButtonVisible = true; // 按钮是否可见
     private float blinkInterval = 0.5f; // 闪烁间隔
 
+    private Transform HintContainer;
     void Awake()
     {
         instance = this;
@@ -33,11 +34,14 @@ public class HintUI : MonoBehaviour
 
     void Start()
     {
+        HintContainer = GameObject.Find("HintContainer").transform;
         hintImage = GameObject.Find("HintImage").GetComponent<RawImage>();
         hintButton = GameObject.Find("HintButton").GetComponent<Button>();
         HintTitle = GameObject.Find("HintTitle").GetComponent<TextMeshProUGUI>();
         HintButtonContent = GameObject.Find("HintButtonContent").GetComponent<TextMeshProUGUI>();
+        HintContainer.gameObject.SetActive(false);
 
+        
         // 给Button添加点击事件监听器
         if (hintButton != null)
         {
@@ -50,8 +54,14 @@ public class HintUI : MonoBehaviour
 
     void Update()
     {
-        hintButton.interactable = isTalkingPhone ? false : true;
+        if(!QuestUIManager.QuestManager.quests[0].isCompleted){
+            HintContainer.gameObject.SetActive(true);  
+        }
+        else{
+            HintContainer.gameObject.SetActive(false);
+        }
 
+        hintButton.interactable = isTalkingPhone ? false : true;
         if (isTalkingOver)
         {
             HintButtonContent.text = "通话结束";

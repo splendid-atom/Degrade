@@ -14,6 +14,7 @@ public class DronesAttack : MonoBehaviour
     private Vector3 laserDirection;    // 激光的方向
     public bool isHit = false;        // 激光是否击中目标
     private AudioSource[] audioSources;  // 存储所有的 AudioSource
+    public float attackDamage = 0.5f;
 
     void Start()
     {
@@ -30,10 +31,10 @@ public class DronesAttack : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            setFiring();
-        }
+        // if (Input.GetKeyDown(KeyCode.Space))
+        // {
+        //     setFiring();
+        // }
         // if(!isFiring){
         //     audioSources[1].Stop();
         // }
@@ -80,7 +81,7 @@ public class DronesAttack : MonoBehaviour
                 string hitObjectName = hit.collider.gameObject.name;
                 if(hitObjectName == "PlayerCharacter"&& !isHit){
                     Debug.Log("Hit target: " + hitObjectName);  // 输出目标名称
-                    PlayerController.Instance.PlayerHealth -= 0.5f;                    
+                    PlayerController.Instance.PlayerHealth -= attackDamage;                    
                 }
 
 

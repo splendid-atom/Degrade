@@ -20,7 +20,7 @@ public class BambooMazeTriggerController : MonoBehaviour
     {
         if (GameObject.Find("BambooMovementHint"))
         {
-            Debug.Log("BambooMovementHint");
+            // Debug.Log("BambooMovementHint");
             BambooMovementHint = GameObject.Find("BambooMovementHint").GetComponent<TextMeshProUGUI>(); // 获取TextMeshProUGUI组件
         }
 

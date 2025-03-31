@@ -23,11 +23,11 @@ public class RobotAttack : MonoBehaviour
         {
             secondCollider = colliders[1]; // 获取第二个 CircleCollider2D
             secondCollider.isTrigger = true; // 确保它是触发器模式
-            Debug.Log("成功获取第二个 CircleCollider2D：" + secondCollider);
+            // Debug.Log("成功获取第二个 CircleCollider2D：" + secondCollider);
         }
         else
         {
-            Debug.LogWarning("该对象上没有足够的 CircleCollider2D 组件！");
+            // Debug.LogWarning("该对象上没有足够的 CircleCollider2D 组件！");
         }
     }
     void Update()
@@ -45,7 +45,7 @@ public class RobotAttack : MonoBehaviour
         if (other.CompareTag("Player") && other.IsTouching(secondCollider))
         {
             playerInside = true;
-            Debug.Log("玩家进入第二个 CircleCollider2D");
+            // Debug.Log("玩家进入第二个 CircleCollider2D");
         }
     }
 
@@ -71,13 +71,14 @@ public class RobotAttack : MonoBehaviour
         {
 
             playerInside = false;
-            Debug.Log("玩家离开第二个 CircleCollider2D");
+            // Debug.Log("玩家离开第二个 CircleCollider2D");
         }
+        if(playerInside){}
     }
 
     void Attack()
     {
         PlayerController.Instance.PlayerHealth -= attackDamage;
-        Debug.Log("对玩家造成 " + attackDamage + " 点伤害");
+        // Debug.Log("对玩家造成 " + attackDamage + " 点伤害");
     }
 }

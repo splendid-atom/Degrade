@@ -35,7 +35,7 @@ public class FacingCamera : MonoBehaviour
                 initialCameraRotation = mainCamera.transform.rotation; // 重新获取初始旋转
             }
         }
-
+        UpdateChilds(true);
         RotateObjects();
     }
 

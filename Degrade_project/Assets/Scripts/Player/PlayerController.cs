@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     private float verticalSpeed;
     public bool isDisableMovement = false;
 
+    // public bool isOnLine = false;
 
     void Start()
     {
@@ -133,6 +134,12 @@ public class PlayerController : MonoBehaviour
         // Debug.Log("MaxHealth:"+MaxHealth);
         // Debug.Log("MaxShield:"+MaxShield);
         // Debug.Log("CurrentHoldingItem:"+CurrentHoldingItem);
+    }
+    public void InstantDie(){
+        PlayerHealth = 0;
+        PlayerShield = 0;
+        // TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+        Debug.Log("InstanceDie");
     }
     public void Died(){
         TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
@@ -299,4 +306,13 @@ public class PlayerController : MonoBehaviour
     {
         return isMoving;
     }
+    public void HitPlayerDamage(float damage){
+        if(PlayerHealth<=0){
+            return;
+        }
+        else{
+            PlayerHealth -= damage;
+        }
+    }
+
 }

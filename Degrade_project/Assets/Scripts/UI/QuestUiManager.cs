@@ -177,6 +177,22 @@ public class QuestUIManager : MonoBehaviour
         }
     }
 
+    public bool isTaskCompleted(string taskTitle="",int taskId=0){
+        foreach(var quest in quests){
+            if(quest.title==taskTitle){
+                if(quest.isCompleted){
+                    return true;
+                }
+            }
+            if(quest.id==taskId){
+                if(quest.isCompleted){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public bool isCompleteAllInitialWorldTasks(){
         foreach (var quest in quests)
         {

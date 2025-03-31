@@ -34,7 +34,7 @@ public class InterSceneMemory : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded; // 监听场景加载事件
-            SceneManager.LoadSceneAsync("Menu");
+            // SceneManager.LoadSceneAsync("Menu");
         }
         else
         {

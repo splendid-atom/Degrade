@@ -21,5 +21,8 @@ public class ShieldGeneratorController : MonoBehaviour
         if(Health <= 0){
             ShieldGeneratorAnimation.OnAnimationBroken();
         }
+        if(Health<=0){
+            gameObject.SetActive(false);
+        }
     }
 }

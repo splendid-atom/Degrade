@@ -53,20 +53,21 @@ public class BigMapController : MonoBehaviour
     // 保存当前的旋转角度
     public float currentRotation = 0f;
     private AudioSource audioSource;  // 添加音频源组件
-    private RectMask2D mask;
-
+    public RectMask2D mask;
+    public RawImage BigmapBackground;
     void Awake(){
         instance = this;
     }
     
     void Start()
     {
+        BigmapBackground.maskable = true;
         player = PlayerController.Instance.transform;
         playerArrowInitialPosition = playerArrow.anchoredPosition;
         //猜测导致卡顿的原因：setactive重复初始化大地图导致性能耗损大
         // bigMapUI.SetActive(false);
-        mask = bigMapContainer.GetComponent<RectMask2D>();
-        mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
+        // mask = bigMapContainer.GetComponent<RectMask2D>();
+        mask.padding = new Vector4(1100, mask.padding.y, mask.padding.z, mask.padding.w);
         originalMapPosition = bigMapImage.anchoredPosition;
 
         bigMapWidth = mapWidth / subGridSize;
@@ -160,12 +161,12 @@ public class BigMapController : MonoBehaviour
     void ToggleMap()
     {
         isMapOpen = !isMapOpen;
-        // bigMapUI.SetActive(isMapOpen);
-        if(mask.padding.x == 0){
-            mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
+        BigmapBackground.maskable = !BigmapBackground.maskable;
+        if(mask.padding.x == 100){
+            mask.padding = new Vector4(1100, mask.padding.y, mask.padding.z, mask.padding.w);
         }
         else{
-            mask.padding = new Vector4(0, mask.padding.y, mask.padding.z, mask.padding.w);
+            mask.padding = new Vector4(100, mask.padding.y, mask.padding.z, mask.padding.w);
 
         }
 
@@ -174,7 +175,7 @@ public class BigMapController : MonoBehaviour
     {
         isMapOpen = false;
         // bigMapUI.SetActive(isMapOpen);
-        mask.padding = new Vector4(1000, mask.padding.y, mask.padding.z, mask.padding.w);
+        mask.padding = new Vector4(1100, mask.padding.y, mask.padding.z, mask.padding.w);
 
     }
     public void DisableMap()
@@ -424,15 +425,17 @@ public class BigMapController : MonoBehaviour
     {
         // 用 List 存储像素，然后批量更新
         List<Color> pixels = new List<Color>(mapWidth * mapHeight);
+        Color fogColor = new Color(0.8235295f, 0.7803922f, 0.6941177f, 1.0f); // 透明的灰色迷雾
         for (int i = 0; i < pixels.Capacity; i++)
         {
-            pixels.Add(Color.black); // 初始化为黑色迷雾
+            pixels.Add(fogColor);
         }
         fogTexture.SetPixels(pixels.ToArray());
         fogTexture.Apply();
     }
 
-    void SaveExplorationData()
+
+    public void SaveExplorationData()
     {
         StringBuilder sb = new StringBuilder();
         for (int x = 0; x < bigMapWidth; x++)

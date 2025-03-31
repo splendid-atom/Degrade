@@ -1704,18 +1704,23 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 8825bdf06ce7d7f428efd6a942eac3eb, type: 2}
     amount: 5
     isObtained: 1
+    volume: 0
   - item: {fileID: 11400000, guid: 084fe2ae5554bd04b9b5d9413a4625f4, type: 2}
     amount: 1
     isObtained: 1
+    volume: 0
   - item: {fileID: 11400000, guid: 65f469b5f50e95f4facffac25fef1fa5, type: 2}
     amount: 0
     isObtained: 0
+    volume: 0
   - item: {fileID: 11400000, guid: 290ce70cb33a52349bccc701cbc88a94, type: 2}
     amount: 5
     isObtained: 1
+    volume: 0
   - item: {fileID: 11400000, guid: 507719f4b1abadd488659532f35ad92d, type: 2}
     amount: 0
     isObtained: 0
+    volume: 0
 --- !u!82 &843745315650384018
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2922,7 +2927,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 11393
+    m_Bits: 27777
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: fa2da939b5807574f83cdbb500d662ac, type: 2}
   m_TargetDisplay: 0
@@ -3533,7 +3538,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 15617
+    m_Bits: 32001
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: a35ac73d31940be48807a977379c5177, type: 2}
   m_TargetDisplay: 0
@@ -5322,9 +5327,12 @@ MonoBehaviour:
   subGridSize: 3
   CameraFogScaling: 15
   DragContainer: {fileID: 8373911280628331618}
+  ZoomContainer: {fileID: 0}
   rotateTime: 0.2
   currentRotationIndex: 0
   currentRotation: 0
+  mask: {fileID: 0}
+  BigmapBackground: {fileID: 0}
 --- !u!82 &7698073244372810548
 AudioSource:
   m_ObjectHideFlags: 0

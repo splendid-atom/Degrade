@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEngine.UI;
 using JetBrains.Annotations;
 using UnityEditor.Rendering;
-using UnityEngine.SceneManagement;  // 导入SceneManager
+// using UnityEngine.SceneManagement;  // 导入SceneManager
 public class gameManager : MonoBehaviour
 {
     public GameObject settingboard;

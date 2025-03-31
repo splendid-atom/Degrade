@@ -108,6 +108,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 6052129584367705532}
   isFiring: 0
   isHit: 0
+  attackDamage: 2
 --- !u!114 &5036856755967183394
 MonoBehaviour:
   m_ObjectHideFlags: 0

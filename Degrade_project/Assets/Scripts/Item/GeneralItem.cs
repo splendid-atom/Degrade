@@ -12,13 +12,19 @@ public class GeneralItem : Item
         Debug.Log($"Using item: {itemID}");
         if(itemID == 5){//时光手表
             audioSource.Play();
-            if(!VillageSceneController.instance.wasTimeMachine){
-               VillageSceneController.instance.isTimeMachine = true; 
+            if(!QuestUIManager.QuestManager.isTaskCompleted("真要进去吗?",2)){
+                BambooMazeHint.instance.isHintOn = true;
             }
-            if(!VillageSceneController.instance.wasSecondTimeMachine&&
-            VillageSceneController.instance.wasTimeMachine){
-                VillageSceneController.instance.isSecondTimeMachine = true;
+            else{
+                if(!VillageSceneController.instance.wasTimeMachine){
+                VillageSceneController.instance.isTimeMachine = true; 
+                }
+                if(!VillageSceneController.instance.wasSecondTimeMachine&&
+                VillageSceneController.instance.wasTimeMachine){
+                    VillageSceneController.instance.isSecondTimeMachine = true;
+                }                
             }
+
             
         }
         if(itemID == 4){//时空碎片
