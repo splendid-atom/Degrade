@@ -6,8 +6,10 @@ public class ShieldGeneratorController : MonoBehaviour
 {
     public float Health = 100f;
     private ShieldGeneratorAnimation ShieldGeneratorAnimation;
+    private Enemy3 Enemy3;
     void Start()
     {
+        Enemy3 = GetComponent<Enemy3>();
         ShieldGeneratorAnimation = GetComponent<ShieldGeneratorAnimation>();
     }
 
@@ -24,5 +26,6 @@ public class ShieldGeneratorController : MonoBehaviour
         if(Health<=0){
             gameObject.SetActive(false);
         }
+        Health = Enemy3.currentHealth;
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBotAIpolygon_new : Enemy
+public class EnemyBotAIpolygon_new : Enemy3
 {
     [Header("巡逻点设置")]
     public PolygonCollider2D patrolAreaCollider; // 用于限制巡逻的区域
@@ -72,6 +72,8 @@ public class EnemyBotAIpolygon_new : Enemy
 
     void Start()
     {
+        currentHealth = 100f;
+        Debug.Log("currentHealth"+currentHealth);
         UpdateAnimatorDirection(currentForwardDir);
     }
 

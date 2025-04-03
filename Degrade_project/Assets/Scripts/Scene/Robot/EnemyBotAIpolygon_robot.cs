@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyBotAIpolygon_robot : Enemy
+public class EnemyBotAIpolygon_robot : Enemy3
 {
     [Header("巡逻点设置")]
     public PolygonCollider2D patrolAreaCollider; // 用于限制巡逻的区域

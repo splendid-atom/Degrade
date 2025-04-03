@@ -10,11 +10,20 @@ public class LineRunController : MonoBehaviour
     public Transform LineRunCameraTransform; // 👈 新增的 public 变量，指定相机的位置
     public Transform InitialCameraTransform; // 👈 新增的 public 变量，指定相机的位置
     public Camera MainCamera;
+    public bool isLineRunPassed = false;
     private void Awake()
     {
         Instance = this;
     }
-
+    public bool isLineRunPassedCheck()
+    {
+        if(isLineRunPassed){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
     public void AddBelt(BeltTriggerMovement belt)
     {
         if (!activeBelts.Contains(belt))

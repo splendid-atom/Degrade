@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // 引入TextMeshPro命名空间
-using UnityEngine.UI; // 引入UI命名空间
+using TMPro;
+using UnityEngine.UI;
 
-[System.Serializable] // 使其可以在Inspector中显示
+[System.Serializable]
 public class Dialogue
 {
-    public bool isSpeakerPlayer; // 说话者是否为player，不是则为NPC
-    public string dialogueText; // 对话内容
+    public bool isSpeakerPlayer;
+    public string dialogueText;
 
     public Dialogue(bool isSpeakerPlayer, string dialogueText)
     {
@@ -17,253 +17,292 @@ public class Dialogue
     }
 }
 
-
 public class DialogueController : MonoBehaviour
 {
     public static DialogueController instance;
-    private TextMeshProUGUI playerDialogue; // 用来存储TextMeshPro组件
-    private TextMeshProUGUI speakerName; // 用来存储TextMeshPro组件
-    private string currentNpcName; // 用来存储TextMeshPro组件
+    private TextMeshProUGUI playerDialogue;
+    private TextMeshProUGUI speakerName;
+    private string currentNpcName;
     private GameObject DialogueContainer;
     private List<Dialogue> currentDialogues;
     private List<Dialogue> currentVisitedDialogues;
-    private Button dialogueButton; // 用来存储Button组件
-
-    private int currentDialogueIndex = 0; // 当前对话索引
-    public List<GameObject> uiElementsToHide; // 用于存储需要隐藏的UI对象列表
+    private Button dialogueButton;
+    private int currentDialogueIndex = 0;
+    public List<GameObject> uiElementsToHide;
     private RectMask2D mask;
+
     void Awake()
     {
         if (instance == null)
         {
             instance = this;
         }
-        else
+        else if (instance != null)
         {
             Destroy(gameObject);
         }
     }
+
     void Start()
     {
-        playerDialogue = GameObject.Find("PlayerDialogue").GetComponent<TextMeshProUGUI>();
-        speakerName = GameObject.Find("SpeakerName").GetComponent<TextMeshProUGUI>();
+        playerDialogue = GameObject.Find("PlayerDialogue")?.GetComponent<TextMeshProUGUI>();
+        speakerName = GameObject.Find("SpeakerName")?.GetComponent<TextMeshProUGUI>();
         DialogueContainer = GameObject.Find("DialogueContainer");
-        currentDialogues = VillageNpcController.instance.villageNpcDialogues;
-        currentVisitedDialogues = VillageNpcController.instance.villageNpcVisitedDialogues;
-        mask = GameObject.Find("DialogueContainerMask").GetComponent<RectMask2D>();
-        // 获取Button组件
-        dialogueButton = DialogueContainer.GetComponent<Button>();
+        if (VillageNpcController.instance != null)
+        {
+            currentDialogues = VillageNpcController.instance.villageNpcDialogues;
+            currentVisitedDialogues = VillageNpcController.instance.villageNpcVisitedDialogues;
+        }
+        mask = GameObject.Find("DialogueContainerMask")?.GetComponent<RectMask2D>();
+        if (DialogueContainer != null)
+        {
+            dialogueButton = DialogueContainer.GetComponent<Button>();
+        }
 
-        // 给Button添加点击事件监听器
         if (dialogueButton != null)
         {
             dialogueButton.onClick.AddListener(OnDialogueContainerClick);
         }
 
-        // DialogueContainer.SetActive(false); // 初始对话框隐藏
-        mask.padding = new Vector4(1300, 0, 0, 0);
+        if (mask != null)
+        {
+            mask.padding = new Vector4(1300, 0, 0, 0);
+        }
     }
 
-
-
-    // Update is called once per frame
     void Update()
     {
-        switchingCurrentDialogues();    
+        switchingCurrentDialogues();
         ShowDialogueContainer();
-        // 隐藏需要隐藏的UI元素
-        if(isHavingDialogue()){
-           HideUIElements(); 
+
+        if (isHavingDialogue())
+        {
+            HideUIElements();
         }
-        // 更新对话内容
-        if (currentDialogues.Count > 0)
+
+        if (currentDialogues != null && currentDialogues.Count > 0 && 
+            playerDialogue != null && speakerName != null)
         {
             playerDialogue.text = currentDialogues[currentDialogueIndex].dialogueText;
             speakerName.text = currentDialogues[currentDialogueIndex].isSpeakerPlayer 
-            ? PlayerController.Instance.PlayerName : currentNpcName;
+                ? (PlayerController.Instance != null ? PlayerController.Instance.PlayerName : "") 
+                : currentNpcName;
         }
-        if(VillageNpcController.instance.isVisited&&VillageNpcController.instance.canTriggerNpc){
+
+        if (VillageNpcController.instance != null && 
+            VillageNpcController.instance.isVisited && 
+            VillageNpcController.instance.canTriggerNpc)
+        {
             currentDialogues = currentVisitedDialogues;
         }
     }
 
-    //是否需要隐藏画面上的其他UI
-    //并且处理切换dialogue的逻辑
-    public bool isHavingDialogue(){
-        if(VillageNpcController.instance.isTalking||
-        NewPlayerGuide.instance.isGuiding||
-        SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger||
-        HeepAnimation.instance.isHeepDialogue||
-        RiverPortalAnimation.instance.isTalking||
-        RiverPortalAnimation.instance.isSecondTalking||
-        PortalAnimation.instance.isTalking||
-        PortalAnimation.instance.isSecondTalking||
-        FetchItemController.instance.isTalking
-        ){
-            // 赋值当前 NPC 名称（优先 VillageNpcController）
-            if(VillageNpcController.instance.isTalking){
+    public bool isHavingDialogue()
+    {
+        if ((VillageNpcController.instance != null && VillageNpcController.instance.isTalking) ||
+            (NewPlayerGuide.instance != null && NewPlayerGuide.instance.isGuiding) ||
+            (SwitchToMazeSceneTrigger.instance != null && SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger) ||
+            (HeepAnimation.instance != null && HeepAnimation.instance.isHeepDialogue) ||
+            (RiverPortalAnimation.instance != null && (RiverPortalAnimation.instance.isTalking || 
+                                                      RiverPortalAnimation.instance.isSecondTalking)) ||
+            (PortalAnimation.instance != null && (PortalAnimation.instance.isTalking || 
+                                                 PortalAnimation.instance.isSecondTalking)) ||
+            (FetchItemController.instance != null && FetchItemController.instance.isTalking))
+        {
+            if (VillageNpcController.instance != null && VillageNpcController.instance.isTalking)
+            {
                 currentNpcName = VillageNpcController.instance.npcName;
             }
-            // else if(FetchItemController.instance.isTalking){
-            //     currentNpcName = FetchItemController.instance.npcName;
-            // }
-            // else if(NewPlayerGuide.instance.isGuiding){
-            //     currentNpcName = NewPlayerGuide.instance.npcName;
-            // }
-            else{
+            else if (NewPlayerGuide.instance != null)
+            {
                 currentNpcName = NewPlayerGuide.instance.npcName;
             }
-
             return true;
         }
         return false;
     }
 
-    void switchingCurrentDialogues(){
-        if(VillageNpcController.instance.isVisited){
+    void switchingCurrentDialogues()
+    {
+        if (VillageNpcController.instance != null && VillageNpcController.instance.isVisited)
+        {
             currentDialogues = VillageNpcController.instance.villageNpcVisitedDialogues;
         }
-        if(NewPlayerGuide.instance.isGuiding){
+        if (NewPlayerGuide.instance != null && NewPlayerGuide.instance.isGuiding)
+        {
             currentDialogues = NewPlayerGuide.instance.NewPlayerDialogues;
         }
-        if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
+        if (SwitchToMazeSceneTrigger.instance != null && SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger)
+        {
             currentDialogues = SwitchToMazeSceneTrigger.instance.bambooMazeDialogues;
         }
-        if(HeepAnimation.instance.isHeepDialogue){
+        if (HeepAnimation.instance != null && HeepAnimation.instance.isHeepDialogue)
+        {
             currentDialogues = HeepAnimation.instance.HeepDialogues;
         }
-        if(RiverPortalAnimation.instance.isTalking){
+        if (RiverPortalAnimation.instance != null && RiverPortalAnimation.instance.isTalking)
+        {
             currentDialogues = RiverPortalAnimation.instance.PollutedRiverDialogues;
         }
-        if(RiverPortalAnimation.instance.isSecondTalking){
+        if (RiverPortalAnimation.instance != null && RiverPortalAnimation.instance.isSecondTalking)
+        {
             currentDialogues = RiverPortalAnimation.instance.PollutedRiverReturnDialogues;
         }
-        if(PortalAnimation.instance.isTalking){
+        if (PortalAnimation.instance != null && PortalAnimation.instance.isTalking)
+        {
             currentDialogues = PortalAnimation.instance.DegradeBambooDialogues;
         }
-        if(PortalAnimation.instance.isSecondTalking){
+        if (PortalAnimation.instance != null && PortalAnimation.instance.isSecondTalking)
+        {
             currentDialogues = PortalAnimation.instance.SecondDegradeBambooDialogues;
         }
-        if(FetchItemController.instance.isTalking){
+        if (FetchItemController.instance != null && FetchItemController.instance.isTalking)
+        {
             currentDialogues = FetchItemController.instance.CollectedTimePieceDialogues;
         }
     }
 
-    // 点击DialogueContainer时的事件
     void OnDialogueContainerClick()
     {
-        // Debug.Log("DialogueContainer clicked!");    
-        Debug.Log("currentDialogue.Count"+currentDialogues.Count);
-        // 如果不是最后一条对话，则切换到下一条
-        if (currentDialogueIndex < currentDialogues.Count - 1)
+        if (currentDialogues != null)
         {
-            currentDialogueIndex++;
-        }
-        else
-        {
-            // 如果是最后一条对话，则关闭对话框
-            if(VillageNpcController.instance.isTalking){
+            Debug.Log("currentDialogue.Count" + currentDialogues.Count);
 
-                VillageNpcController.instance.isTalking = false; // 可以根据你的需求设置，表示对话结束
-                VillageNpcController.instance.FadeNpc();
-                if(!VillageNpcController.instance.isVisited){
-                    // 完成任务
-                    QuestUIManager.QuestManager.CompleteTask("", 3);
-                    ItemManager.itemManager.AddItem(5, 5);
+            if (currentDialogueIndex < currentDialogues.Count - 1)
+            {
+                currentDialogueIndex++;
+            }
+            else
+            {
+                if (VillageNpcController.instance != null && VillageNpcController.instance.isTalking)
+                {
+                    VillageNpcController.instance.isTalking = false;
+                    VillageNpcController.instance.FadeNpc();
+                    if (!VillageNpcController.instance.isVisited)
+                    {
+                        if (QuestUIManager.QuestManager != null)
+                        {
+                            QuestUIManager.QuestManager.CompleteTask("", 3);
+                        }
+                        if (ItemManager.itemManager != null)
+                        {
+                            ItemManager.itemManager.AddItem(5, 5);
+                        }
+                    }
+                    VillageNpcController.instance.isVisited = true;
                 }
-                VillageNpcController.instance.isVisited = true;                
-            }
-            if(NewPlayerGuide.instance.isGuiding){
-                NewPlayerGuide.instance.isGuiding = false;
-                NewPlayerGuide.instance.isNewPlayerGuiding = true;
-                HintUI.instance.isTalkingOver = true;
-            }
-            if(SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger){
-                SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger = false;
-                SwitchToMazeSceneTrigger.instance.isStartSwitchScene = true;
-            }
-            if(HeepAnimation.instance.isHeepDialogue){
-                HeepAnimation.instance.isHeepDialogue = false;
-                QuestUIManager.QuestManager.CompleteTask("", 4);
-                // 标记 Heep 对话已显示并保存
-                // HeepAnimation.instance.hasHeepDialogueShown = true;
-                // PlayerPrefs.SetInt("HasHeepDialogueShown", 1);
-                // PlayerPrefs.Save();
-                HeepAnimation.instance.OnDialogueEnd();
-            }
-            if(RiverPortalAnimation.instance.isTalking){
-                RiverPortalAnimation.instance.isTalking = false;
-                RiverPortalAnimation.instance.OnDialogueEnd();
-            }
-            if(RiverPortalAnimation.instance.isSecondTalking){
-                RiverPortalAnimation.instance.isSecondTalking = false;
-                RiverPortalAnimation.instance.OnSecondDialogueEnd();
-            }
-            if(PortalAnimation.instance.isTalking){
-                PortalAnimation.instance.isTalking = false;
-                PortalAnimation.instance.OnDialogueEnd();
-            }
-            if(PortalAnimation.instance.isSecondTalking){
-                PortalAnimation.instance.isSecondTalking = false;
-                PortalAnimation.instance.OnSecondDialogueEnd();
-            }
-            if(FetchItemController.instance.isTalking){
-                FetchItemController.instance.isTalking = false;
-                //完成报告长官的任务
-                QuestUIManager.QuestManager.CompleteTask("", 7);
-            }
+                if (NewPlayerGuide.instance != null && NewPlayerGuide.instance.isGuiding)
+                {
+                    NewPlayerGuide.instance.isGuiding = false;
+                    NewPlayerGuide.instance.isNewPlayerGuiding = true;
+                    if (HintUI.instance != null)
+                    {
+                        HintUI.instance.isTalkingOver = true;
+                    }
+                }
+                if (SwitchToMazeSceneTrigger.instance != null && SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger)
+                {
+                    SwitchToMazeSceneTrigger.instance.isInMazeSwitchTrigger = false;
+                    SwitchToMazeSceneTrigger.instance.isStartSwitchScene = true;
+                }
+                if (HeepAnimation.instance != null && HeepAnimation.instance.isHeepDialogue)
+                {
+                    HeepAnimation.instance.isHeepDialogue = false;
+                    if (QuestUIManager.QuestManager != null)
+                    {
+                        QuestUIManager.QuestManager.CompleteTask("", 4);
+                    }
+                    HeepAnimation.instance.OnDialogueEnd();
+                }
+                if (RiverPortalAnimation.instance != null && RiverPortalAnimation.instance.isTalking)
+                {
+                    RiverPortalAnimation.instance.isTalking = false;
+                    RiverPortalAnimation.instance.OnDialogueEnd();
+                }
+                if (RiverPortalAnimation.instance != null && RiverPortalAnimation.instance.isSecondTalking)
+                {
+                    RiverPortalAnimation.instance.isSecondTalking = false;
+                    RiverPortalAnimation.instance.OnSecondDialogueEnd();
+                }
+                if (PortalAnimation.instance != null && PortalAnimation.instance.isTalking)
+                {
+                    PortalAnimation.instance.isTalking = false;
+                    PortalAnimation.instance.OnDialogueEnd();
+                }
+                if (PortalAnimation.instance != null && PortalAnimation.instance.isSecondTalking)
+                {
+                    PortalAnimation.instance.isSecondTalking = false;
+                    PortalAnimation.instance.OnSecondDialogueEnd();
+                }
+                if (FetchItemController.instance != null && FetchItemController.instance.isTalking)
+                {
+                    FetchItemController.instance.isTalking = false;
+                    if (QuestUIManager.QuestManager != null)
+                    {
+                        QuestUIManager.QuestManager.CompleteTask("", 7);
+                    }
+                }
 
-            currentDialogueIndex = 0;
-
-            // 恢复所有UI的显示
-            ShowUIElements();
-            // DialogueContainer.SetActive(false);
-            mask.padding = new Vector4(1300, 0, 0, 0);
-
+                currentDialogueIndex = 0;
+                ShowUIElements();
+                if (mask != null)
+                {
+                    mask.padding = new Vector4(1300, 0, 0, 0);
+                }
+            }
         }
     }
 
-
-
-    
-    // 隐藏需要隐藏的UI元素
     void HideUIElements()
     {
-        foreach (GameObject uiElement in uiElementsToHide)
+        if (uiElementsToHide != null)
         {
-            uiElement.SetActive(false); // 隐藏UI元素
+            foreach (GameObject uiElement in uiElementsToHide)
+            {
+                if (uiElement != null)
+                {
+                    uiElement.SetActive(false);
+                }
+            }
         }
-        BigMapController.instance.CloseMap();
+        if (BigMapController.instance != null)
+        {
+            BigMapController.instance.CloseMap();
+        }
     }
 
-    // 恢复所有UI元素的显示
     void ShowUIElements()
     {
-        foreach (GameObject uiElement in uiElementsToHide)
+        if (uiElementsToHide != null)
         {
-            uiElement.SetActive(true); // 显示UI元素
+            foreach (GameObject uiElement in uiElementsToHide)
+            {
+                if (uiElement != null)
+                {
+                    uiElement.SetActive(true);
+                }
+            }
         }
     }
+
     void ShowDialogueContainer()
     {
-        //村民开门1.5秒后才显示对话框
-        if(VillageNpcController.instance.isTalking){
+        if (VillageNpcController.instance != null && VillageNpcController.instance.isTalking)
+        {
             StartCoroutine(DelayedDialogueContainer());
         }
-        //电话的对话框立即显示
-        else{
-            // DialogueContainer.SetActive(isHavingDialogue());
-            mask.padding = new Vector4(isHavingDialogue()?0:1300, 0, 0, 0);
+        else if (mask != null)
+        {
+            mask.padding = new Vector4(isHavingDialogue() ? 0 : 1300, 0, 0, 0);
         }
-        
     }
-    // 使用协程来延迟执行
+
     IEnumerator DelayedDialogueContainer()
     {
-        yield return new WaitForSeconds(1.5f);  // 延迟 1 秒
-        // DialogueContainer.SetActive(isHavingDialogue());
-        mask.padding = new Vector4(isHavingDialogue()?0:1300, 0, 0, 0);
-
+        yield return new WaitForSeconds(1.5f);
+        if (mask != null)
+        {
+            mask.padding = new Vector4(isHavingDialogue() ? 0 : 1300, 0, 0, 0);
+        }
     }
-
 }

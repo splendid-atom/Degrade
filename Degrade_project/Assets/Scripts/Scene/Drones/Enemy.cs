@@ -3,11 +3,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float maxHealth = 100f;
-    private float currentHealth;
+    public float currentHealth;
 
-    /// <summary>
-    /// 用于控制该敌人是否可受到伤害，若为 false 则免疫伤害
-    /// </summary>
     [SerializeField] bool canTakeDamage = true;
 
     // 可选：受击特效与音效
@@ -17,14 +14,14 @@ public class Enemy : MonoBehaviour
 
     private void Awake()
     {
-        currentHealth = maxHealth;
+
+    }
+    private void Start()
+    {
+
         audioSource = GetComponent<AudioSource>();
     }
 
-    /// <summary>
-    /// 敌人受到伤害时调用，若 canTakeDamage = false，则无视伤害。
-    /// </summary>
-    /// <param name="damage">伤害数值</param>
     public void TakeDamage(float damage)
     {
         if (!canTakeDamage)
@@ -33,7 +30,7 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        currentHealth -= damage;
+        //currentHealth -= damage;
         Debug.Log(gameObject.name + " 受到伤害：" + damage + "，剩余生命：" + currentHealth);
 
         // 播放受击特效

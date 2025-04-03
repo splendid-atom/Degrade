@@ -127,7 +127,13 @@ public class PlayerController : MonoBehaviour
         PlayerHealth = 0;
         PlayerShield = 0;
         FallingFloorsController.Instance.isFalling = false;
-        TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+        if(LineRunController.Instance.isLineRunPassed){
+            TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));            
+        }
+        else{
+            TeleportTo(new Vector3(191.21f, -29.2f, -0.7f));            
+        }
+
         Debug.Log("InstantFallingDie");
         // Debug.Log("PlayerHealth:"+PlayerHealth);
         // Debug.Log("PlayerShield:"+PlayerShield);
@@ -142,7 +148,12 @@ public class PlayerController : MonoBehaviour
         Debug.Log("InstanceDie");
     }
     public void Died(){
-        TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+        if(LineRunController.Instance.isLineRunPassed){
+            TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));            
+        }
+        else{
+            TeleportTo(new Vector3(191.21f, -29.2f, -0.7f));            
+        }
 
         Debug.Log("You Died!");
     }

@@ -9,6 +9,8 @@ TagManager:
   - Bridge
   - Container
   - NoRotation
+  - PlayerAttack
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -25,7 +27,7 @@ TagManager:
   - BambooForest
   - Grid
   - Obstacle
-  - 
+  - weapon
   - 
   - 
   - 

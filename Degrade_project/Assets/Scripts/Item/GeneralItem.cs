@@ -25,6 +25,10 @@ public class GeneralItem : Item
                 }                
             }
 
+            if(InterSceneMemory.instance.isInFactory1()){
+                Debug.Log("TimeMachine");
+            }
+
             
         }
         if(itemID == 4){//时空碎片

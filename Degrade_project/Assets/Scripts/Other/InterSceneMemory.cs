@@ -114,6 +114,9 @@ public class InterSceneMemory : MonoBehaviour
     {
         return currentSceneName == "BambooMazeScene";
     }
+    public bool isInFactory1(){
+        return currentSceneName == "Factory1";
+    }
     void Update()
     {
         // 检测场景切换

@@ -26,12 +26,16 @@ public class EnergyCanon : MonoBehaviour
     [Header("狂暴模式设置")]
     [SerializeField] private float rageAttackInterval = 0.1f;  // 狂暴模式攻击间隔
     [SerializeField] private int rageAttackCount = 3;         // 同时攻击点数量
+    [SerializeField] private Transform AlarmsContainer;
+    [SerializeField] private Transform EnergyBulletsContainer;
 
     private Transform playerTransform;
     private float nextAttackTime;
     private bool isShieldActive = true;
     Animator animator; 
     public PolygonCollider2D polygonCollider2D;
+    public PolygonCollider2D polygonCollider2DRaged;
+    public bool isTimeStopped = false;
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -60,7 +64,7 @@ public class EnergyCanon : MonoBehaviour
         }
         if (!isShieldActive && Time.time >= nextAttackTime)
         {
-            StartCoroutine(ExecuteRageAttack());            
+            StartCoroutine(ExecuteRageAttack());          
             nextAttackTime = Time.time + rageAttackInterval;
         }
     }
@@ -81,7 +85,7 @@ public class EnergyCanon : MonoBehaviour
         List<GameObject> warningObjects = new List<GameObject>();
         foreach (Vector3 pos in attackPositions)
         {
-            GameObject warningObject = Instantiate(warningCirclePrefab, pos, Quaternion.identity);
+            GameObject warningObject = Instantiate(warningCirclePrefab, pos, Quaternion.identity,AlarmsContainer);
             SpriteRenderer warningRenderer = warningObject.GetComponent<SpriteRenderer>();
             if (warningRenderer != null)
             {
@@ -98,7 +102,7 @@ public class EnergyCanon : MonoBehaviour
             Destroy(warningObjects[i]);
             if (energyBulletPrefab != null)
             {
-                GameObject energyBullet = Instantiate(energyBulletPrefab, attackPositions[i], Quaternion.identity);
+                GameObject energyBullet = Instantiate(energyBulletPrefab, attackPositions[i], Quaternion.identity,EnergyBulletsContainer);
                 energyBullets.Add(energyBullet);
             }
 
@@ -169,6 +173,7 @@ public class EnergyCanon : MonoBehaviour
         if (destroyedGenerators >= shieldGenerators.Count && isShieldActive)
         {
             DisableShield();
+            polygonCollider2D = polygonCollider2DRaged;
         }
     }
 
@@ -180,7 +185,7 @@ public class EnergyCanon : MonoBehaviour
 
     private IEnumerator ExecuteAttack()
     {
-        animator.SetBool("isShooting", true);
+        animator.SetBool("isShooting", true);            
         if (!playerTransform || !IsPositionInAttackRange(playerTransform.position))
         {
             yield break;
@@ -191,7 +196,7 @@ public class EnergyCanon : MonoBehaviour
         Vector3 attackPosition = GetClosestPointInPolygon(targetPosition); // 如果玩家位置不在多边形内，找最近点
         attackPosition.z = 0.1f; // 设置固定 Z 值
 
-        GameObject warningObject = Instantiate(warningCirclePrefab, attackPosition, Quaternion.identity);
+        GameObject warningObject = Instantiate(warningCirclePrefab, attackPosition, Quaternion.identity,AlarmsContainer);
         SpriteRenderer warningRenderer = warningObject.GetComponent<SpriteRenderer>();
         if (warningRenderer != null)
         {
@@ -204,7 +209,7 @@ public class EnergyCanon : MonoBehaviour
         GameObject energyBullet = null;
         if (energyBulletPrefab != null)
         {
-            energyBullet = Instantiate(energyBulletPrefab, attackPosition, Quaternion.identity);
+            energyBullet = Instantiate(energyBulletPrefab, attackPosition, Quaternion.identity,EnergyBulletsContainer);
         }
 
         float distanceToTarget = Vector2.Distance(
@@ -222,7 +227,7 @@ public class EnergyCanon : MonoBehaviour
         yield return new WaitForSeconds(bulletAnimationDuration);
 
         if (energyBullet != null) Destroy(energyBullet);
-        animator.SetBool("isShooting", false);
+        animator.SetBool("isShooting", false);            
     }
     // 获取 PolygonCollider2D 内的随机点
     private Vector3 GetRandomPointInPolygon()

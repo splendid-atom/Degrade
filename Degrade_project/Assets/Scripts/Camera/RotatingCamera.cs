@@ -21,12 +21,14 @@ public class RotatingCamera : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        transform.position = player.position;
     }
 
     void Update()
     {
         transform.position = player.position;
         Rotate();
+
     }
 
     void Rotate()
