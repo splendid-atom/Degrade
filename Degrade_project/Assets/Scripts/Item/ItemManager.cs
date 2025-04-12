@@ -17,12 +17,12 @@ public class ItemManager : MonoBehaviour
             {
                 inventoryItems[i].isObtained = true;
                 inventoryItems[i].amount = amount;
-                Debug.Log($"Item added at index {i}");
+                // Debug.Log($"Item added at index {i}");
                 OnItemAdded?.Invoke(i);
                 return;
             }
         }
-        Debug.LogWarning("Item with ID " + itemId + " not found or already obtained.");
+        // Debug.LogWarning("Item with ID " + itemId + " not found or already obtained.");
     }
     public int GetItemAmount(string itemName){
         foreach (var inventoryItem in inventoryItems)
@@ -53,7 +53,7 @@ public class ItemManager : MonoBehaviour
         // 初始化物品列表（可以通过添加物品在 Inspector 中配置）
         foreach (var inventoryItem in inventoryItems)
         {
-            Debug.Log($"Item: {inventoryItem.item.itemName}, Amount: {inventoryItem.amount}, Obtained: {inventoryItem.isObtained}");
+            // Debug.Log($"Item: {inventoryItem.item.itemName}, Amount: {inventoryItem.amount}, Obtained: {inventoryItem.isObtained}");
         }
     }
     public void AddAmount(string itemName, int addedAmount){

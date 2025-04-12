@@ -1,0 +1,68 @@
+[33mc3e02dbe[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update
+[33ma245143b[m Update
+[33m45064d66[m 存档点
+[33md4e1d1dc[m 优化进度条、新增大地图缩放
+[33mc890d58e[m draft
+[33mb3f84145[m 新增无人机、机器人、工厂第二层
+[33m50089881[m update readme
+[33m8d8f5005[m 新增存档功能、时空碎片和传送门、污染河流动画，优化任务面板、道具栏
+[33ma9bec371[m 新增枯萎竹林
+[33mf72426a7[m[33m ([m[1;31morigin/xsk[m[33m)[m 优化普通竹林、新增动态竹林迷宫
+[33m61d19f27[m 手动merge
+[33m026c621a[m 手动merge
+[33m66548698[m 优化新手教程(与组长的对话)，优化任务栏和任务信息栏，新增桥的音效
+[33m11797ffe[m 新增NPC对话、对话框UI、时光手表
+[33m3d3dc5fd[m 优化玩家出生地场景，新增新手教程完成后桥的动画
+[33mdba2538c[m Update README.md
+[33mc72f5784[m 在main的基础上新增传送门、垃圾堆动画
+[33mf2e576c6[m 在main的基础上新增传送门、垃圾堆动画
+[33m6fecd8a6[m Merge pull request #14 from splendid-atom/hrf
+[33mce1ebcdc[m hrf audio
+[33m0282a2da[m hrf2/13
+[33mae573629[m Merge pull request #13 from splendid-atom/hrf
+[33m623ff939[m hrf_2/12
+[33m0fc91911[m river_hrf
+[33me02af179[m hrf2/10
+[33m912ea865[m Merge pull request #12 from splendid-atom/xsk
+[33m183c94a4[m 新增人物信息栏，优化道具栏
+[33m79966949[m Merge pull request #11 from splendid-atom/xsk
+[33m50dc7ecd[m 新增道具栏，优化任务栏
+[33mf9ba91f5[m Merge pull request #10 from splendid-atom/xsk
+[33m17b0bada[m Update README.md
+[33mf2ee4371[m Merge branch 'xsk' of https://github.com/splendid-atom/Degrade into xsk
+[33mab717761[m 优化任务栏和新手教程、简易道具使用
+[33me8ffeaad[m 优化任务栏和新手教程、简易道具使用
+[33mcfa4ab18[m Merge pull request #8 from splendid-atom/xsk
+[33mbd985732[m Update README.md
+[33m4d37fca9[m Update README.md
+[33m8c561744[m 新增简易大地图和任务栏
+[33m6ea3f67b[m Merge branch 'main' of https://github.com/splendid-atom/Degrade into xsk
+[33md5acd284[m debug hrf
+[33mb5ee1efc[m water2
+[33mb44167bc[m Merge branch 'main' into xsk
+[33m5df8c91c[m 新增小地图功能
+[33m4eecc87d[m Update README.md
+[33m3bce2295[m Update README.md
+[33m4b13d1dd[m water try
+[33m9343db2d[m Merge pull request #5 from splendid-atom/xsk
+[33mbeec851b[m Merge branch 'main' into xsk
+[33m0e0085bd[m 武器系统Debug
+[33m5250ea50[m changeback
+[33m750ff874[m 子弹发射尝试（失败）
+[33m4f681206[m 新增有影子的树木，优化了新手教程（WASDQE）
+[33m5e0425bf[m Merge pull request #4 from splendid-atom/xsk
+[33mdb9e6bff[m 新增一个可用河流tile(water2)
+[33m44011054[m 新增新手教程WASD移动
+[33m6d6a7634[m 加了新手教程的箭头和实验室tile
+[33m2aea6d4b[m Merge pull request #3 from splendid-atom/xsk
+[33m1e6bb704[m 新增package和usersetting
+[33m8c5cf3f5[m Merge pull request #2 from splendid-atom/xsk
+[33mf1d9be9c[m 尝试第一种2.5D视角
+[33me4b5e7f3[m first save
+[33m7edd012c[m Delete Degrade_project/UserSettings directory
+[33m65ace32e[m Delete Degrade_project/Packages directory
+[33mc6f904e6[m Delete Degrade_project/Logs directory
+[33m60595abc[m Delete Degrade_project/Library directory
+[33ma6ad7162[m 新增一些测试的assets
+[33m4bbcc78a[m hrf_1_23_1
+[33maf62cb76[m Initial commit

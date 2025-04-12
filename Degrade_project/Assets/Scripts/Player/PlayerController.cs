@@ -219,6 +219,19 @@ public class PlayerController : MonoBehaviour
     //         transform.position = new Vector3(position.x, position.y, smoothZ);
     //     }
     // }
+
+
+    public void TakeDamage(float damage)
+    {
+        if (PlayerHealth <= 0)
+        {
+            return;
+        }
+        PlayerHealth -= damage;
+    }
+
+
+
     //玩家移动和帧率无关
     void FixedUpdate()
     {
@@ -253,8 +266,8 @@ public class PlayerController : MonoBehaviour
         }
 
         // 计算新的位置
-        Vector2 position = rigidbody2d.position + moveDirection * currentSpeed * Time.fixedDeltaTime;
-
+        // Vector2 position = rigidbody2d.position + moveDirection * currentSpeed * Time.fixedDeltaTime;
+        Vector2 position = rigidbody2d.position + moveDirection * currentSpeed * Time.unscaledDeltaTime;
         if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
         {
             // 获取玩家当前位置的 X 值

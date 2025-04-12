@@ -52,7 +52,7 @@ public class FetchItemController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("UsePortalHint not found!");
+            // Debug.LogError("UsePortalHint not found!");
         }
         // 检查场景名称，如果不是"sampleScene"，则返回
         if (InterSceneMemory.instance.isInSampleScene())

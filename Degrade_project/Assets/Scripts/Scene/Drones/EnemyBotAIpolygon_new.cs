@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Minimalist.Quantity;
 
 public class EnemyBotAIpolygon_new : Enemy3
 {
@@ -24,8 +25,10 @@ public class EnemyBotAIpolygon_new : Enemy3
     public float hoverHeight = 3f;        // 悬停在玩家上方的高度
     public float attackDelayTime = 2f;    // 玩家脱离攻击范围后，延迟追击的时间
     public bool isFacingRight = true;     // 是否面向右侧（可以手动调整初始值）
-    
-    // private float detectionTimer = 0f;
+
+    [Header("Z 轴设置")]
+    public float targetZHeight = 0f;      // 公开的 Z 轴高度，控制无人机保持的 Z 坐标
+
     private Vector2 currentForwardDir;
     private float previousX;
     public float moveSpeed = 2f;
@@ -33,52 +36,54 @@ public class EnemyBotAIpolygon_new : Enemy3
     private Transform target;
     private Animator animator;
     public Vector2 initialDirection; // 初始动画方向
-    
+    public float TrashScale = 5.544793f;
     // 状态控制
-    private enum DroneState { Patrol, Hover, Attack, Chase };
+    private enum DroneState { Patrol, Hover, Attack, Chase ,Idle}
     private DroneState currentState = DroneState.Patrol;
     private float stateTimer = 0f;
     private bool playerDetected = false;
-    
+
     // 添加朝向锁定变量，防止在攻击时抽搐
     private float facingLockTimer = 0f;
     private float facingLockDuration = 0.5f; // 锁定朝向的持续时间
     private bool facingLocked = false;
+
     // 引用 DronesAttack 类的实例
     private DronesAttack dronesAttack;
+
     void Awake()
     {
         patrolAreaCollider = GameObject.Find("DronesPatrolArea").GetComponent<PolygonCollider2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         animator = GetComponent<Animator>();
-        // 获取 DronesAttack 组件
         dronesAttack = GetComponent<DronesAttack>();
         if (patrolAreaCollider != null)
         {
-            // 获取碰撞器的边界
             patrolStartPoint = patrolAreaCollider.bounds.min;
             patrolEndPoint = patrolAreaCollider.bounds.max;
 
-            // 设置初始动画方向
-            if (initialDirection.sqrMagnitude > 0.001f) 
+            if (initialDirection.sqrMagnitude > 0.001f)
             {
                 currentForwardDir = initialDirection.normalized;
             }
 
             UpdateAnimatorDirection(currentForwardDir);
             SetRandomPatrolTarget();
-        }        
+        }
+
+        // 初始化 Z 轴高度
+        SetZHeight();
     }
 
     void Start()
     {
         currentHealth = 100f;
-        Debug.Log("currentHealth"+currentHealth);
         UpdateAnimatorDirection(currentForwardDir);
     }
 
     void Update()
     {
+        HealthDisplaySetting();
         if (player == null)
             return;
 
@@ -95,63 +100,62 @@ public class EnemyBotAIpolygon_new : Enemy3
 
         // 检测玩家是否在视野范围内
         playerDetected = IsPlayerInFOV();
-        
+
         // 检测玩家是否在攻击范围内，即使不在视野内
         bool playerInAttackRange = IsPlayerInAttackRange();
         
+        if(!TrashEnemiesController.instance.isTrashEnemiesMovable){
+            currentState = DroneState.Idle;
+        }
         // 状态机逻辑
         switch (currentState)
         {
+            case DroneState.Idle:
+                if(TrashEnemiesController.instance.isTrashEnemiesMovable){
+                    currentState = DroneState.Patrol;
+                }
+                break;
             case DroneState.Patrol:
                 Patrol();
-                // 如果检测到玩家，或者玩家在攻击范围内，切换到悬停状态
                 if (playerDetected || playerInAttackRange)
                 {
                     currentState = DroneState.Hover;
-                    SetAnimationAimming(); // 侦测到玩家时播放瞄准动画
-
+                    SetAnimationAimming();
                 }
                 break;
-                
+
             case DroneState.Hover:
                 HoverAbovePlayer();
-                // 如果玩家既不在视野范围内也不在攻击范围内，返回巡逻
                 if (!playerDetected && !playerInAttackRange)
                 {
                     currentState = DroneState.Patrol;
-                    SetAnimationIdling(); // 离开视野时播放空闲动画
+                    SetAnimationIdling();
                 }
-                // 如果悬停到位，准备攻击
                 else if (IsInPosition())
                 {
                     currentState = DroneState.Attack;
-                    // 锁定朝向，防止抽搐
                     SetFacingDirection(player.position.x > transform.position.x);
                 }
                 break;
-                
+
             case DroneState.Attack:
                 AttackPlayer();
-                // 如果玩家既不在视野范围内也不在攻击范围内，返回巡逻
                 if (!playerDetected && !playerInAttackRange)
                 {
                     currentState = DroneState.Patrol;
-                    SetAnimationIdling(); // 离开视野时播放空闲动画
+                    SetAnimationIdling();
                 }
-                // 如果玩家超出攻击范围但在视野内，开始计时
                 else if (!playerInAttackRange)
                 {
                     stateTimer = 0f;
                     currentState = DroneState.Chase;
                 }
                 break;
-                
+
             case DroneState.Chase:
                 stateTimer += Time.deltaTime;
-                // 延迟追击
                 if (stateTimer < attackDelayTime)
                 {
-                    // 原地等待，但不频繁改变朝向
                     if (!facingLocked)
                     {
                         FacePlayer();
@@ -162,15 +166,12 @@ public class EnemyBotAIpolygon_new : Enemy3
                 {
                     ChasePlayer();
                 }
-                
-                // 如果玩家回到攻击范围内，继续攻击
+
                 if (playerInAttackRange)
                 {
                     currentState = DroneState.Attack;
-                    // 锁定朝向，防止抽搐
                     SetFacingDirection(player.position.x > transform.position.x);
                 }
-                // 如果玩家既不在视野范围内也不在攻击范围内，返回巡逻
                 else if (!playerDetected && !playerInAttackRange)
                 {
                     currentState = DroneState.Patrol;
@@ -179,10 +180,12 @@ public class EnemyBotAIpolygon_new : Enemy3
                 break;
         }
 
-        // 更新敌人朝向的动画
+        // 确保每帧更新 Z 轴高度
+        SetZHeight();
+
         UpdateAnimatorDirection(currentForwardDir);
     }
-    
+
     // 设置朝向并锁定，防止抽搐
     private void SetFacingDirection(bool faceRight)
     {
@@ -193,116 +196,129 @@ public class EnemyBotAIpolygon_new : Enemy3
         facingLocked = true;
         facingLockTimer = 0f;
     }
-    
+
     // 判断是否已经悬停到位
     private bool IsInPosition()
     {
         Vector2 hoverPosition = GetHoverPosition();
-        return Vector2.Distance(transform.position, hoverPosition) < 0.1f;
+        float random_precision = Random.Range(0.3f, 1f);
+        return Vector2.Distance(transform.position, hoverPosition) < random_precision;
     }
-    
-    // 获取玩家头顶的悬停位置
+
+    // 获取玩家头顶的悬停位置（加入随机性）
     private Vector2 GetHoverPosition()
     {
-    // 确定水平偏移方向 
-    float horizontalOffset = 2f; 
-    // 水平偏移量，可以根据需要调整 
-    // 如果无人机在玩家左边，悬停位置偏左 
-    // 如果无人机在玩家右边，悬停位置偏右 
-    if (transform.position.x < player.position.x) 
-    { // 无人机在玩家左边，悬停位置设置在玩家头顶偏左 
-    return (Vector2)player.position + Vector2.up * hoverHeight - Vector2.right * horizontalOffset; } 
-    else { 
-        // 无人机在玩家右边，悬停位置设置在玩家头顶偏右 
-        return (Vector2)player.position + Vector2.up * hoverHeight + Vector2.right * horizontalOffset; }
+        float horizontalOffset = 2f;
+        Vector2 basePosition;
+
+        if (transform.position.x < player.position.x)
+        {
+            basePosition = (Vector2)player.position + Vector2.up * hoverHeight - Vector2.right * horizontalOffset;
+        }
+        else
+        {
+            basePosition = (Vector2)player.position + Vector2.up * hoverHeight + Vector2.right * horizontalOffset;
+        }
+
+        // 添加随机偏移
+        float randomRange = 0.5f;
+        float offsetX = Random.Range(-randomRange, randomRange);
+        float offsetY = Random.Range(-randomRange, randomRange);
+
+        return basePosition + new Vector2(offsetX, offsetY);
     }
-    
+
     // 检查玩家是否在攻击范围内
     private bool IsPlayerInAttackRange()
     {
         return Vector2.Distance(transform.position, player.position) <= attackRange;
     }
-    
+
     // 悬停在玩家头顶
     private void HoverAbovePlayer()
     {
         Vector2 hoverPosition = GetHoverPosition();
         Vector2 direction = (hoverPosition - (Vector2)transform.position).normalized;
-        
-        transform.position = Vector2.MoveTowards(transform.position, hoverPosition, moveSpeed * 1.5f * Time.deltaTime);
-        
+
+        // 计算新的 X 和 Y 坐标
+        Vector2 newPos = Vector2.MoveTowards(transform.position, hoverPosition, moveSpeed * 1.5f * Time.deltaTime);
+
+        // 更新位置，保持 Z 轴为 targetZHeight
+        transform.position = new Vector3(newPos.x, newPos.y, targetZHeight);
+
         currentForwardDir = direction;
-        
-        // 只有在没有锁定朝向时才更新朝向
+
         if (!facingLocked)
         {
             FacePlayer();
         }
     }
-    
+
     // 攻击玩家
     private void AttackPlayer()
     {
-        // 触发 DronesAttack 的攻击方法
         if (dronesAttack != null && !dronesAttack.isFiring)
         {
             dronesAttack.setFiring();
         }
 
-        // 确保朝向正确
         if (!facingLocked)
         {
             SetFacingDirection(player.position.x > transform.position.x);
         }
     }
 
-    
     // 追击玩家
     private void ChasePlayer()
     {
         Vector2 direction = (player.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, player.position, 
+
+        // 计算新的 X 和 Y 坐标
+        Vector2 newPos = Vector2.MoveTowards(transform.position, player.position,
             moveSpeed * chaseSpeedMultiplier * Time.deltaTime);
-        
+
+        // 更新位置，保持 Z 轴为 targetZHeight
+        transform.position = new Vector3(newPos.x, newPos.y, targetZHeight);
+
         currentForwardDir = direction;
-        
-        // 只有在没有锁定朝向时才更新朝向
+
         if (!facingLocked)
         {
             FacePlayer();
         }
-        
-        
     }
-    public void SetAnimationIdling(){
+
+    public void SetAnimationIdling()
+    {
         animator.SetBool("isIdling", true);
         animator.SetBool("isAimming", false);
         animator.SetBool("isShoting", false);
     }
-    public void SetAnimationAimming(){
+
+    public void SetAnimationAimming()
+    {
         animator.SetBool("isIdling", false);
         animator.SetBool("isAimming", true);
         animator.SetBool("isShoting", false);
     }
+
     // 面向玩家
     private void FacePlayer()
     {
         Vector2 dirToPlayer = player.position - transform.position;
         bool shouldFaceRight = dirToPlayer.x > 0;
-        
+
         if (shouldFaceRight != isFacingRight)
         {
             Flip();
-            // 更新朝向后锁定一小段时间
             facingLocked = true;
             facingLockTimer = 0f;
         }
     }
-    
-    void UpdateAnimatorDirection(Vector2 moveDirection) 
+
+    void UpdateAnimatorDirection(Vector2 moveDirection)
     {
         moveDirection.Normalize();
-        
         float moveX = (moveDirection.x + 1) / 2; // 映射 [-1,1] 到 [0,1]
         animator.SetFloat("Move X", moveX);
         animator.SetFloat("Move Y", moveDirection.y);
@@ -317,7 +333,7 @@ public class EnemyBotAIpolygon_new : Enemy3
 
         toPlayer.Normalize();
         float angle = Vector2.Angle(currentForwardDir, toPlayer);
-        return (angle < viewAngle * 0.5f);
+        return angle < viewAngle * 0.5f;
     }
 
     private void Patrol()
@@ -325,31 +341,30 @@ public class EnemyBotAIpolygon_new : Enemy3
         if (patrolAreaCollider == null)
             return;
 
-        // 移动到当前的巡逻目标
-        transform.position = Vector2.MoveTowards(transform.position, patrolTarget, moveSpeed * Time.deltaTime);
+        // 计算目标位置（仅更新 X 和 Y）
+        Vector2 newPos = Vector2.MoveTowards(transform.position, patrolTarget, moveSpeed * Time.deltaTime);
 
-        // 更新前进方向
-        Vector2 newDir = patrolTarget - (Vector2)transform.position;
+        // 更新位置，保持 Z 轴为 targetZHeight
+        transform.position = new Vector3(newPos.x, newPos.y, targetZHeight);
+
+        Vector2 newDir = patrolTarget - newPos;
         if (newDir.sqrMagnitude > 0.001f)
         {
             currentForwardDir = newDir.normalized;
         }
 
-        // 更新动画
         UpdateAnimatorDirection(currentForwardDir);
 
-        // 如果到达巡逻目标，选择新的巡逻目标
-        if (Vector2.Distance(transform.position, patrolTarget) < 0.1f)
+        if (Vector2.Distance(newPos, patrolTarget) < 0.1f)
         {
             SetRandomPatrolTarget();
         }
 
-        // 只有在没有锁定朝向时才更新朝向
         if (!facingLocked)
         {
             TurnDirection(currentForwardDir.x);
         }
-        
+
         SetAnimationIdling();
     }
 
@@ -362,7 +377,7 @@ public class EnemyBotAIpolygon_new : Enemy3
 
     private void TurnDirection(float moveX)
     {
-        bool shouldFaceRight = moveX > 0; 
+        bool shouldFaceRight = moveX > 0;
 
         if (shouldFaceRight != isFacingRight)
         {
@@ -378,9 +393,18 @@ public class EnemyBotAIpolygon_new : Enemy3
         transform.localScale = scale;
     }
 
+    // 设置 Z 轴高度
+    private void SetZHeight()
+    {
+        Vector3 currentPos = transform.position;
+        if (Mathf.Abs(currentPos.z - targetZHeight) > 0.001f)
+        {
+            transform.position = new Vector3(currentPos.x, currentPos.y, targetZHeight);
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
-        // 绘制视野范围
         Vector3 forwardDir = (currentForwardDir.sqrMagnitude < 0.001f) ? Vector3.right : (Vector3)currentForwardDir;
         float halfAngle = viewAngle * 0.5f;
 
@@ -401,9 +425,52 @@ public class EnemyBotAIpolygon_new : Enemy3
             Vector3 dir = rotation * forwardDir;
             Gizmos.DrawLine(transform.position, transform.position + dir.normalized * viewRadius);
         }
-        
-        // 绘制攻击范围
+
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+
+    private void HealthDisplaySetting()
+    {
+        direction = transform.localScale.x > 0 ? 1 : -1;
+        HealthDisplay.localScale = new Vector3(
+            Mathf.Abs(HealthDisplay.localScale.x) * direction,
+            HealthDisplay.localScale.y,
+            HealthDisplay.localScale.z
+        );
+        if (quantityBhv != null)
+        {
+            quantityBhv.Amount = currentHealth;
+        }
+    }
+    public void ResetPatrolArea()
+    {
+        if (patrolAreaCollider != null)
+        {
+            // 获取碰撞器的边界
+            patrolStartPoint = patrolAreaCollider.bounds.min;
+            patrolEndPoint = patrolAreaCollider.bounds.max;
+            SetRandomPatrolTarget();
+        }      
+    }
+    public void ResetScale(){
+        transform.localScale = new Vector3(TrashScale,TrashScale,TrashScale);
+    }
+    public void SetViewRange(){
+        viewRadius = viewRadius * 50;
+        viewAngle = 360f;
+    }
+    private void SetRebornHeight(){
+        transform.position = new Vector3(transform.position.x,transform.position.y,targetZHeight);
+    }
+    public void EnableAnimator(){
+        animator.enabled = true;
+    }
+    public void SetRebornCondition(){
+        ResetPatrolArea();
+        ResetScale();
+        SetViewRange();
+        SetRebornHeight();
+        EnableAnimator();
     }
 }

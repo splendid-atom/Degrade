@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 using UnityEngine.UI;
 using JetBrains.Annotations;
 using UnityEditor.Rendering;
-// using UnityEngine.SceneManagement;  // 导入SceneManager
+
 public class gameManager : MonoBehaviour
 {
     public GameObject settingboard;
@@ -23,25 +23,36 @@ public class gameManager : MonoBehaviour
     public bool isLoaded = false;
     public bool isDead = false;
     public string currentSceneName;
+
     void Awake()
     {
         instance = this;
     }
+
     void Start()
     {
-        if (isDead)
+        if (isDead != null && isDead)
         {
             Time.timeScale = 1;
-            PlayerController.Instance.TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
-            GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth = 100;
-            GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerShield = 100;
+            if (PlayerController.Instance != null)
+            {
+                PlayerController.Instance.TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
+            }
+            GameObject playerChar = GameObject.Find("PlayerCharacter");
+            if (playerChar != null && playerChar.GetComponent<PlayerController>() != null)
+            {
+                playerChar.GetComponent<PlayerController>().PlayerHealth = 100;
+                playerChar.GetComponent<PlayerController>().PlayerShield = 100;
+            }
             isDead = false;
             return;
         }
+
         if (slider != null)
         {
             slider.interactable = false;
         }
+
         if (namepanel != null)
         {
             if (!PlayerPrefs.HasKey("PlayerName"))
@@ -50,158 +61,204 @@ public class gameManager : MonoBehaviour
             }
             else Debug.Log(PlayerPrefs.GetString("PlayerName"));
         }
-        if (GameObject.Find("GameData").GetComponent<dataManager>().newFile)
+
+        GameObject gameData = GameObject.Find("GameData");
+        if (gameData != null && gameData.GetComponent<dataManager>() != null && 
+            gameData.GetComponent<dataManager>().newFile != null && 
+            gameData.GetComponent<dataManager>().newFile)
         {
-            if (GameObject.Find("GameData") != null)
+            if (gameData != null)
             {
                 int i = 0, j = 0;
-                Save dataSave = GameObject.Find("GameData").GetComponent<dataManager>().tempSave;
-                //载入任务状态
-                if (QuestUIManager.QuestManager != null)
+                Save dataSave = gameData.GetComponent<dataManager>().tempSave;
+
+                if (QuestUIManager.QuestManager != null && dataSave != null)
                 {
                     foreach (QuestUIManager.Quest quest in QuestUIManager.QuestManager.quests)
                     {
-                        quest.isCompleted = dataSave.questsList[i].iscompleted;
-                        i++;
+                        if (i < dataSave.questsList.Count)
+                        {
+                            quest.isCompleted = dataSave.questsList[i].iscompleted;
+                            i++;
+                        }
                     }
                 }
-                //载入物品状态
-                if (ItemManager.itemManager != null)
+
+                if (ItemManager.itemManager != null && dataSave != null)
                 {
                     foreach (InventoryItem itemStatus in ItemManager.itemManager.inventoryItems)
                     {
-                        itemStatus.item.itemID = dataSave.itemList[j].id;
-                        itemStatus.amount = dataSave.itemList[j].amount;
-                        itemStatus.isObtained = dataSave.itemList[j].isObtained;
-                        j++;
+                        if (j < dataSave.itemList.Count)
+                        {
+                            itemStatus.item.itemID = dataSave.itemList[j].id;
+                            itemStatus.amount = dataSave.itemList[j].amount;
+                            itemStatus.isObtained = dataSave.itemList[j].isObtained;
+                            j++;
+                        }
                     }
                 }
-                //修改玩家位置
-                if (GameObject.Find("PlayerCharacter") != null)
+
+                GameObject playerCharacter = GameObject.Find("PlayerCharacter");
+                if (playerCharacter != null && dataSave != null)
                 {
-                    GameObject.Find("PlayerCharacter").transform.localPosition = new Vector3(dataSave.x, dataSave.y, 0);
-                    GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth = dataSave.PlayerHealth;
-                    GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerShield = dataSave.PlayerShield;
+                    playerCharacter.transform.localPosition = new Vector3(dataSave.x, dataSave.y, 0);
+                    if (playerCharacter.GetComponent<PlayerController>() != null)
+                    {
+                        playerCharacter.GetComponent<PlayerController>().PlayerHealth = dataSave.PlayerHealth;
+                        playerCharacter.GetComponent<PlayerController>().PlayerShield = dataSave.PlayerShield;
+                    }
                 }
-                if (QuestUIManager.QuestManager != null)
+
+                if (QuestUIManager.QuestManager != null && 
+                    QuestUIManager.QuestManager.quests != null && 
+                    QuestUIManager.QuestManager.quests.Count > 0)
                 {
                     if (QuestUIManager.QuestManager.quests[0].isCompleted)
                     {
-                        //阻止镜头移动
-                        if (GameObject.Find("CameraContainer") != null && GameObject.Find("CameraContainer").GetComponent<SwitchBridgeCamera>() != null)
+                        GameObject cameraContainer = GameObject.Find("CameraContainer");
+                        if (cameraContainer != null && cameraContainer.GetComponent<SwitchBridgeCamera>() != null)
                         {
-                            GameObject.Find("CameraContainer").GetComponent<SwitchBridgeCamera>().isBridgeCameraSwitched = true;
-
+                            cameraContainer.GetComponent<SwitchBridgeCamera>().isBridgeCameraSwitched = true;
                         }
-                        //阻止镜头移动
-                        if (GameObject.Find("NewPlayerBridge") != null)
+
+                        GameObject newPlayerBridge = GameObject.Find("NewPlayerBridge");
+                        if (newPlayerBridge != null && newPlayerBridge.GetComponent<BridgeController>() != null)
                         {
-                            Vector3 newPosition = GameObject.Find("NewPlayerBridge").GetComponent<BridgeController>().NewPlayerBridge.position;
+                            Vector3 newPosition = newPlayerBridge.GetComponent<BridgeController>().NewPlayerBridge.position;
                             newPosition.z = -1.943357f;
-                            GameObject.Find("NewPlayerBridge").GetComponent<BridgeController>().NewPlayerBridge.position = newPosition;
-                            GameObject.Find("NewPlayerBridge").GetComponent<BridgeController>().isBridgeRaised = true;
+                            newPlayerBridge.GetComponent<BridgeController>().NewPlayerBridge.position = newPosition;
+                            newPlayerBridge.GetComponent<BridgeController>().isBridgeRaised = true;
                         }
                     }
                 }
             }
         }
     }
-    //切换至游戏场景进度条
 
     void Update()
     {
-        if(GameObject.Find("PlayerCharacter")!=null){
-            if (GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth <= 0)
+        GameObject playerChar = GameObject.Find("PlayerCharacter");
+        if (playerChar != null && playerChar.GetComponent<PlayerController>() != null)
+        {
+            if (playerChar.GetComponent<PlayerController>().PlayerHealth <= 0)
             {
-                loadScreen.SetActive(true);
+                if (loadScreen != null)
+                {
+                    loadScreen.SetActive(true);
+                }
                 Time.timeScale = 0;
                 Debug.Log("dead!!!");
                 return;
-            }            
+            }
         }
-
     }
+
     public void loadNextLevel()
     {
         timer = 0;
-        GameObject.Find("GameData").GetComponent<dataManager>().newFile = false;
+        GameObject gameData = GameObject.Find("GameData");
+        if (gameData != null && gameData.GetComponent<dataManager>() != null)
+        {
+            gameData.GetComponent<dataManager>().newFile = false;
+        }
         StartCoroutine(loadLevel(0));
     }
-    //打开设置界面
+
     public void openSet()
     {
-        settingboard.SetActive(true);
+        if (settingboard != null)
+        {
+            settingboard.SetActive(true);
+        }
     }
-    //关闭设置界面
+
     public void closeSet()
     {
-        settingboard.SetActive(false);
+        if (settingboard != null)
+        {
+            settingboard.SetActive(false);
+        }
     }
-    //退出游戏界面
+
     public void quit()
     {
         SceneManager.LoadScene("Menu");
     }
-    //退出游戏
+
     public void exit()
     {
         Application.Quit();
     }
-    //进入存档界面
+
     public void openFileScene()
     {
         SceneManager.LoadScene("loadScene");
     }
-    //输入玩家名
+
     public void enterName()
     {
-        PlayerPrefs.SetString("PlayerName", nameinput.text);
-        namepanel.SetActive(false);
+        if (nameinput != null && namepanel != null)
+        {
+            PlayerPrefs.SetString("PlayerName", nameinput.text);
+            namepanel.SetActive(false);
+        }
     }
-    //更改玩家名
+
     public void changeName()
     {
-        namepanel.SetActive(true);
+        if (namepanel != null)
+        {
+            namepanel.SetActive(true);
+        }
     }
 
     public Save createSaveQuestandItem()
     {
         Save saveData = new Save();
-        //存入任务信息
-        foreach (QuestUIManager.Quest quest in QuestUIManager.QuestManager.quests)
+        if (QuestUIManager.QuestManager != null && QuestUIManager.QuestManager.quests != null)
         {
-            saveQuest temp = new saveQuest();
-            temp.id = quest.id;
-            temp.iscompleted = quest.isCompleted;
-            saveData.questsList.Add(temp);
+            foreach (QuestUIManager.Quest quest in QuestUIManager.QuestManager.quests)
+            {
+                saveQuest temp = new saveQuest();
+                temp.id = quest.id;
+                temp.iscompleted = quest.isCompleted;
+                saveData.questsList.Add(temp);
+            }
         }
-        //存入物品信息
-        foreach (InventoryItem item in ItemManager.itemManager.inventoryItems)
+
+        if (ItemManager.itemManager != null && ItemManager.itemManager.inventoryItems != null)
         {
-            saveItem temp = new saveItem();
-            temp.id = item.item.itemID;
-            temp.amount = item.amount;
-            temp.isObtained = item.isObtained;
-            saveData.itemList.Add(temp);
+            foreach (InventoryItem item in ItemManager.itemManager.inventoryItems)
+            {
+                saveItem temp = new saveItem();
+                temp.id = item.item.itemID;
+                temp.amount = item.amount;
+                temp.isObtained = item.isObtained;
+                saveData.itemList.Add(temp);
+            }
         }
         return saveData;
     }
-
-
-    //存档游戏内容
 
     public void saveGame()
     {
         string savePath = Application.dataPath + "data.txt";
         Save save = createSaveQuestandItem();
         Scene scene = SceneManager.GetActiveScene();
-        save.sceneIndex = scene.buildIndex;//存入当前场景索引
-        save.x = GameObject.Find("PlayerCharacter").transform.position.x;
-        save.y = GameObject.Find("PlayerCharacter").transform.position.y;
-        //存入人物坐标位置
-        save.PlayerHealth = (int)GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerHealth;
-        save.PlayerShield = GameObject.Find("PlayerCharacter").GetComponent<PlayerController>().PlayerShield;
-        //存入人物生命护盾值
+        save.sceneIndex = scene.buildIndex;
+        
+        GameObject playerChar = GameObject.Find("PlayerCharacter");
+        if (playerChar != null)
+        {
+            save.x = playerChar.transform.position.x;
+            save.y = playerChar.transform.position.y;
+            if (playerChar.GetComponent<PlayerController>() != null)
+            {
+                save.PlayerHealth = (int)playerChar.GetComponent<PlayerController>().PlayerHealth;
+                save.PlayerShield = playerChar.GetComponent<PlayerController>().PlayerShield;
+            }
+        }
+
         BinaryFormatter bf = new BinaryFormatter();
         FileStream fileStream = File.Create(savePath);
         bf.Serialize(fileStream, save);
@@ -216,12 +273,18 @@ public class gameManager : MonoBehaviour
         {
             return;
         }
+
         BinaryFormatter bf = new BinaryFormatter();
         FileStream fileStream = File.Open(savePath, FileMode.Open);
         Save save = (Save)bf.Deserialize(fileStream);
         fileStream.Close();
-        GameObject.Find("GameData").GetComponent<dataManager>().tempSave = save;
-        GameObject.Find("GameData").GetComponent<dataManager>().newFile = true;
+
+        GameObject gameData = GameObject.Find("GameData");
+        if (gameData != null && gameData.GetComponent<dataManager>() != null)
+        {
+            gameData.GetComponent<dataManager>().tempSave = save;
+            gameData.GetComponent<dataManager>().newFile = true;
+        }
     }
 
     public void loadLevel()
@@ -232,90 +295,70 @@ public class gameManager : MonoBehaviour
             Debug.Log("文件不存在！");
             return;
         }
-        if (GameObject.Find("GameData").GetComponent<dataManager>() != null)
+
+        GameObject gameData = GameObject.Find("GameData");
+        if (gameData != null && gameData.GetComponent<dataManager>() != null && 
+            gameData.GetComponent<dataManager>().tempSave != null)
         {
-            int id = GameObject.Find("GameData").GetComponent<dataManager>().tempSave.sceneIndex;
+            int id = gameData.GetComponent<dataManager>().tempSave.sceneIndex;
             timer = 0;
             StartCoroutine(loadLevel(id));
         }
     }
+
     public void deadRetry()
     {
         isDead = true;
-        loadScreen.SetActive(false);
+        if (loadScreen != null)
+        {
+            loadScreen.SetActive(false);
+        }
         Start();
-
     }
 
-    // //进度条展示
     IEnumerator loadLevel(int index)
     {
-        loadScreen.SetActive(true);
-        AsyncOperation operation = SceneManager.LoadSceneAsync(index);
-        operation.allowSceneActivation = false;
-        while (timer <= 100)
+        if (loadScreen != null && slider != null && text != null)
         {
-            slider.value = timer / 100f;
-            // Debug.Log(slider.value);
-            // Debug.Log(timer);
-            text.text = timer + "%";
-            timer += 1;
-            yield return new WaitForSeconds(0.02f);
-
+            loadScreen.SetActive(true);
+            AsyncOperation operation = SceneManager.LoadSceneAsync(index);
+            operation.allowSceneActivation = false;
+            while (timer <= 100)
+            {
+                slider.value = timer / 100f;
+                text.text = timer + "%";
+                timer += 1;
+                yield return new WaitForSeconds(0.02f);
+            }
+            operation.allowSceneActivation = true;
+            isLoaded = true;
         }
-        operation.allowSceneActivation = true;
-        isLoaded = true;
     }
-    // IEnumerator loadLevel(int index)
-    // {
-    //     loadScreen.SetActive(true);
-    //     AsyncOperation operation = SceneManager.LoadSceneAsync(index);
-    //     operation.allowSceneActivation = false;
-
-    //     while (timer <= 100)
-    //     {
-    //         slider.value = timer / 100f;
-    //         text.text = timer + "%";
-
-    //         if (timer == 80)
-    //         {
-    //             yield return new WaitForSeconds(0.5f); // 停顿 0.5 秒
-    //             timer = 100; // 直接跳到 100
-    //         }
-    //         else
-    //         {
-    //             timer += 1;
-    //             yield return new WaitForSeconds(0.01f);
-    //         }
-    //     }
-
-    //     operation.allowSceneActivation = true;
-    //     isLoaded = true;
-    // }
 }
+
 [System.Serializable]
-public class Save//存档类
+public class Save
 {
-    public List<saveQuest> questsList = new List<saveQuest>();//存储任务完成情况
-    public List<saveItem> itemList = new List<saveItem>();//存储物品状况
-    public int sceneIndex;//存储场景索引
-    public float x;//存储人物x坐标
-    public float y;//存储人物y坐标
-    public int PlayerHealth;    // 生命值
-    public int PlayerShield;    // 护甲值
+    public List<saveQuest> questsList = new List<saveQuest>();
+    public List<saveItem> itemList = new List<saveItem>();
+    public int sceneIndex;
+    public float x;
+    public float y;
+    public int PlayerHealth;
+    public int PlayerShield;
 }
 
 [System.Serializable]
 public class saveQuest
 {
-    public int id; //存储任务id
-    public bool iscompleted;//存储任务完成情况
+    public int id;
+    public bool iscompleted;
 }
+
 [System.Serializable]
 public class saveItem
 {
-    public int id;//存储物品id
-    public int amount;//存储物品数量
-    public bool isObtained;//存储获得状态
+    public int id;
+    public int amount;
+    public bool isObtained;
 }
-

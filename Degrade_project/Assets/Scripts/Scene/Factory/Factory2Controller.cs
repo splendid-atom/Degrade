@@ -9,7 +9,8 @@ public class Factory2Controller : MonoBehaviour
     public List<GameObject> shieldGenerators = new List<GameObject>();
     private GameObject shieldGeneratorContainer;
     public bool isFallingFloorsCrazy = false;
-
+    public bool isCanonRageMode = false;//炮台是否在 rage mode
+    public GameObject BigRobot;
     void Awake()
     {
         Instance = this;
@@ -17,6 +18,9 @@ public class Factory2Controller : MonoBehaviour
 
     void Start()
     {
+        if(BigRobot==null){
+            BigRobot = GameObject.Find("BigRobot");
+        }
         shieldGeneratorContainer = GameObject.Find("ShieldGeneratorContainer");
 
         if (shieldGeneratorContainer != null)
@@ -57,8 +61,26 @@ public class Factory2Controller : MonoBehaviour
             }
         }
         CheckAndSetFallingFloorsCrazy();
+        // 添加bigrobot的rigidbody2D
+        if (isCanonRageMode&&BigRobot != null)
+        {
+            // 检查是否已有 Rigidbody2D，若没有则添加
+            Rigidbody2D rb = BigRobot.GetComponent<Rigidbody2D>();
+            if (rb == null)
+            {
+                rb = BigRobot.AddComponent<Rigidbody2D>();
+                Debug.Log("Rigidbody2D added to " + BigRobot.name);
+            }
+        }
     }
 
+    public bool isCanonInRageMode(){
+        return isCanonRageMode;
+    }
+    public void SetCanonRageMode()
+    {
+        isCanonRageMode = true;
+    }
     public void CheckAndSetFallingFloorsCrazy()
     {
         if (shieldGeneratorHealths != null && shieldGenerators != null &&

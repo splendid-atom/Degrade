@@ -39,6 +39,12 @@ public class RotatingCamera : MonoBehaviour
                 return;
             }            
         }
+        if(StairForbidRotation.Instance!=null){
+            if (StairForbidRotation.Instance.IsPlayerInside())
+            {
+                return;
+            }
+        }
         if (Input.GetKey(KeyCode.Q) && !isRotating)
         {
             currentRotationIndex++; // 逆时针旋转

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;  // 引入UI命名空间以使用RawImage和CanvasGroup
 using TMPro;
+
 public class VillageSceneController : MonoBehaviour
 {
     public static VillageSceneController instance;
@@ -19,59 +20,87 @@ public class VillageSceneController : MonoBehaviour
         instance = this;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        WatchHint = GameObject.Find("WatchHint").GetComponent<TextMeshProUGUI>();
-        timeMachineMask = GameObject.Find("TimeMachineMask").GetComponent<RawImage>();
-        if (timeMachineMask != null)
+        GameObject watchHintObj = GameObject.Find("WatchHint");
+        if (watchHintObj != null)
         {
-            canvasGroup = timeMachineMask.GetComponent<CanvasGroup>();
-            if (canvasGroup == null)  // 如果没有CanvasGroup组件，添加一个
+            WatchHint = watchHintObj.GetComponent<TextMeshProUGUI>();
+        }
+
+        GameObject maskObj = GameObject.Find("TimeMachineMask");
+        if (maskObj != null)
+        {
+            timeMachineMask = maskObj.GetComponent<RawImage>();
+            if (timeMachineMask != null)
             {
-                canvasGroup = timeMachineMask.gameObject.AddComponent<CanvasGroup>();
+                canvasGroup = timeMachineMask.GetComponent<CanvasGroup>();
+                if (canvasGroup == null)  // 如果没有CanvasGroup组件，添加一个
+                {
+                    canvasGroup = timeMachineMask.gameObject.AddComponent<CanvasGroup>();
+                }
             }
         }
-        WatchHint.gameObject.SetActive(false);
+
+        if (WatchHint != null)
+        {
+            WatchHint.gameObject.SetActive(false);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         ToggleWatchHintDisplay();
-        // 当isTimeMachine由false变为true时，执行TimeMachine
-        if (!wasTimeMachine && isTimeMachine)
+        
+        if (wasTimeMachine != null && isTimeMachine != null)
         {
-            TimeMachine();
-            // 更新wasTimeMachine的状态
-            wasTimeMachine = true;
-        }
-        if (!wasSecondTimeMachine && isSecondTimeMachine)
-        {
-            TimeMachine();
-            StartCoroutine(WaitAndStartDegradeBamboo());
-            // 更新wasTimeMachine的状态
-            wasSecondTimeMachine = true;
+            if (!wasTimeMachine && isTimeMachine)
+            {
+                TimeMachine();
+                wasTimeMachine = true;
+            }
         }
 
+        if (wasSecondTimeMachine != null && isSecondTimeMachine != null)
+        {
+            if (!wasSecondTimeMachine && isSecondTimeMachine)
+            {
+                TimeMachine();
+                StartCoroutine(WaitAndStartDegradeBamboo());
+                wasSecondTimeMachine = true;
+            }
+        }
     }
+
     IEnumerator WaitAndStartDegradeBamboo()
     {
         yield return new WaitForSeconds(3f);  // Wait for 3 seconds
-        DegradeBambooForest.instance.StartWilt();
-    }
-    public void ToggleWatchHintDisplay(){
-        if(QuestUIManager.QuestManager.currentQuestId==4&&
-        !isTimeMachine&&!wasTimeMachine){
-            WatchHint.gameObject.SetActive(true);
-            return;
+        if (DegradeBambooForest.instance != null)
+        {
+            DegradeBambooForest.instance.StartWilt();
         }
-
-        WatchHint.gameObject.SetActive(false);
     }
 
+    public void ToggleWatchHintDisplay()
+    {
+        if (QuestUIManager.QuestManager != null && 
+            QuestUIManager.QuestManager.currentQuestId != null &&
+            WatchHint != null)
+        {
+            if (QuestUIManager.QuestManager.currentQuestId == 4 &&
+                isTimeMachine != null && 
+                wasTimeMachine != null &&
+                !isTimeMachine && 
+                !wasTimeMachine)
+            {
+                WatchHint.gameObject.SetActive(true);
+                return;
+            }
 
-    // TimeMachine函数，控制遮罩的渐变透明度
+            WatchHint.gameObject.SetActive(false);
+        }
+    }
+
     void TimeMachine()
     {
         if (canvasGroup != null)
@@ -80,33 +109,31 @@ public class VillageSceneController : MonoBehaviour
         }
     }
 
-    // 控制渐变的协程
     IEnumerator FadeInAndOut()
     {
-        // 渐变透明度为1
-        float elapsedTime = 0f;
-        float duration = 1f;  // 渐变持续时间为1秒
-        while (elapsedTime < duration)
+        if (canvasGroup != null)
         {
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);  // 从0到1的渐变
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            float elapsedTime = 0f;
+            float duration = 1f;
+            while (elapsedTime < duration)
+            {
+                canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            canvasGroup.alpha = 1f;
+
+            yield return new WaitForSeconds(1f);
+
+            elapsedTime = 0f;
+            while (elapsedTime < duration)
+            {
+                canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+            canvasGroup.alpha = 0f;
+            isTimeMachineMasked = true;
         }
-        canvasGroup.alpha = 1f;  // 确保完全透明
-
-        // 等待1秒
-        yield return new WaitForSeconds(1f);
-
-        // 渐变透明度为0
-        elapsedTime = 0f;
-        while (elapsedTime < duration)
-        {
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);  // 从1到0的渐变
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        canvasGroup.alpha = 0f;  // 确保完全透明
-        isTimeMachineMasked = true;
-
     }
 }

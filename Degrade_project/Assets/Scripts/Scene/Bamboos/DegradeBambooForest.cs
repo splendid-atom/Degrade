@@ -42,6 +42,10 @@ public class DegradeBambooForest : MonoBehaviour
     }
     void Start()
     {
+        if(playerObject == null)
+        {
+            playerObject = GameObject.Find("PlayerCharacter");
+        }
         portalTransform = GameObject.Find("degradePortal");
         portalTransform.SetActive(false);
         originPosition = transform.position; // 在Start时计算一次位置

@@ -11,6 +11,7 @@ TagManager:
   - NoRotation
   - PlayerAttack
   - Enemy
+  - Obstacles
   layers:
   - Default
   - TransparentFX

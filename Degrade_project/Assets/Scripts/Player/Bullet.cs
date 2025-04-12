@@ -18,7 +18,8 @@ public class Bullet : MonoBehaviour
     private float angle; // 子弹的旋转角度
     private bool isDestroying = false; // 标记是否正在销毁过程中
     private Rigidbody2D rb; // 刚体引用
-
+    private bool isDrones = false;
+    private float offsetZ = 0f;
      void Start()
     {
         // 获取刚体组件
@@ -80,7 +81,8 @@ public class Bullet : MonoBehaviour
         
         // 忽略与玩家的碰撞
         if (!isDestroying && !collision.gameObject.CompareTag("Player")
-        && collision.gameObject.CompareTag("Enemy"))
+        && (collision.gameObject.CompareTag("Enemy")||
+        collision.gameObject.CompareTag("Obstacles")))
         {
             /// 防止多次触发
             // if (isDestroying) return;
@@ -96,6 +98,8 @@ public class Bullet : MonoBehaviour
             {
                 enemy.TakeDamage(damage);
                 Debug.Log($"{collision.gameObject.name} 扣除了 {damage} 点生命值");
+                isDrones = true;
+                offsetZ = enemy.targetZHeight;
             }
             if (enemyRobot != null)
             {
@@ -168,7 +172,12 @@ public class Bullet : MonoBehaviour
             GameObject explosion;
             if (parent != null)
             {
-                explosion = Instantiate(explosionAnimPrefab, transform.position, Quaternion.identity, parent);
+                Vector3 explosion_transform = transform.position; // 默认使用当前位置
+                if (isDrones)
+                {
+                    explosion_transform.z = offsetZ;
+                }
+                explosion = Instantiate(explosionAnimPrefab, explosion_transform, Quaternion.identity, parent);
             }
             else
             {
