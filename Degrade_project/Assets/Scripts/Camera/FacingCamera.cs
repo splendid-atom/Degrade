@@ -1,5 +1,3 @@
-
-// FacingCamera.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,38 +5,53 @@ using UnityEngine;
 public class FacingCamera : MonoBehaviour
 {
     public static FacingCamera instance;
-    public List<Transform> childs = new List<Transform>();  // 使用List动态管理子物体
-    private Camera mainCamera;
+    private List<Transform> childs = new List<Transform>();  // 使用List动态管理子物体
+    private Camera mainCamera;  // 引用摄像机
     private bool returnInitial = false;
-    private Quaternion initialCameraRotation;
-
+    private Quaternion initialCameraRotation;  
     void Awake()
     {
         instance = this;
+
+    }
+    void Start()
+    {
         mainCamera = Camera.main;
         initialCameraRotation = mainCamera.transform.rotation;
         UpdateChilds(true);  // 初始化时更新子物体列表
+        StartCoroutine(PeriodicUpdateChilds());  // 启动定期更新协程
     }
 
-    void Start()
-    {
-        UpdateChilds(true);  // 初始化时更新子物体列表
-    }
-
+    // Update is called once per frame
     void Update()
     {
-        if (mainCamera == null)
+        // 更新 returnInitial 状态
+        if (QuestUIManager.QuestManager.quests[0].isCompleted && 
+            !SwitchBridgeCamera.instance.isBridgeCameraSwitched)
         {
-            mainCamera = Camera.main;
-            if (mainCamera != null)
-            {
-                initialCameraRotation = mainCamera.transform.rotation; // 重新获取初始旋转
-            }
+            returnInitial = true;
         }
-        UpdateChilds(true);
+        if (QuestUIManager.QuestManager.quests[0].isCompleted && 
+            SwitchBridgeCamera.instance.isBridgeCameraSwitched)
+        {
+            returnInitial = false;
+        }
+
+        // 每帧更新子物体列表，确保新添加的子物体被包含
+        UpdateChilds(false);  // 标记为每帧更新
         RotateObjects();
     }
 
+    private IEnumerator PeriodicUpdateChilds()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);  // 等待1秒
+            UpdateChilds(false);  // 更新子物体列表
+        }
+    }
+
+    // 更新子物体列表
     public void UpdateChilds(bool isStart)
     {
         if (isStart)
@@ -46,97 +59,107 @@ public class FacingCamera : MonoBehaviour
             childs.Clear();  // 仅在Start时清空当前子物体列表
         }
 
+        // 遍历所有当前子物体
         for (int i = 0; i < transform.childCount; i++)
         {
             Transform child = transform.GetChild(i);
-            AddChildRecursive(child);
+            AddChildRecursive(child);  // 递归地添加子物体
         }
     }
 
+    // 递归添加子物体并处理旋转逻辑
     void AddChildRecursive(Transform child)
     {
-        if (!childs.Contains(child))
+        if (!childs.Contains(child))  // 防止重复添加
         {
             childs.Add(child);
 
             // 如果该物体的标签是"FacingOnce"，则设置旋转
             if (child.CompareTag("FacingOnce"))
             {
+                // 仅在第一次运行时旋转一次，之后不再旋转
                 child.rotation = mainCamera.transform.rotation;
             }
 
             // 对于所有子物体，包括"RotatingContainer"的子物体，继续递归
             for (int i = 0; i < child.childCount; i++)
             {
-                AddChildRecursive(child.GetChild(i));
+                AddChildRecursive(child.GetChild(i));  // 递归地添加所有子物体
             }
         }
     }
 
+    // 使子物体始终面向摄像头
     void RotateObjects()
     {
-        for (int i = childs.Count - 1; i >= 0; i--)
+        for (int i = childs.Count - 1; i >= 0; i--)  // 反向遍历，防止在移除元素时出错
         {
             Transform child = childs[i];
+
+            // 如果当前物体已经销毁，移除它
             if (child == null)
             {
                 childs.RemoveAt(i);
                 continue;
             }
 
+            // 如果当前物体是 "NoRotation"，则忽略旋转
             if (child.CompareTag("NoRotation"))
             {
                 continue;
             }
 
-            if (!child.CompareTag("FacingOnce"))
+            // 如果物体不是 "FacingOnce"，则继续旋转
+            if (child.gameObject.layer != LayerMask.NameToLayer("MinimapOnly"))
             {
-                if (returnInitial)
+                if (!child.CompareTag("FacingOnce"))
                 {
-                    child.rotation = initialCameraRotation;
-                }
-                else
-                {
-                    child.rotation = mainCamera.transform.rotation;
+                    // 根据 returnInitial 状态决定旋转到初始位置或摄像头方向
+                    if (returnInitial)
+                    {
+                        child.rotation = initialCameraRotation;  // 朝向游戏开始时的旋转
+                    }
+                    else
+                    {
+                        child.rotation = mainCamera.transform.rotation;  // 始终朝向当前摄像头
+                    }
                 }
             }
 
-            // RotateObjectsRecursively(child);
+            // 对于子物体，如果它是 "RotatingContainer"，继续递归旋转它的子物体
+            RotateObjectsRecursively(child);
         }
     }
 
+    // 递归旋转子物体（确保递归处理每个子物体）
     void RotateObjectsRecursively(Transform parent)
     {
-        for (int i = parent.childCount - 1; i >= 0; i--)
+        for (int i = parent.childCount - 1; i >= 0; i--)  // 反向遍历，防止在移除元素时出错
         {
             Transform child = parent.GetChild(i);
 
+            // 如果当前物体已经销毁，跳过
             if (child == null)
             {
                 continue;
             }
 
+            // 如果当前物体不是 "NoRotation"，则旋转它
             if (!child.CompareTag("NoRotation"))
             {
+                // 根据 returnInitial 状态决定旋转到初始位置或摄像头方向
                 if (returnInitial)
                 {
-                    child.rotation = initialCameraRotation;
+                    child.rotation = initialCameraRotation;  // 朝向游戏开始时的旋转
                 }
                 else
                 {
-                    child.rotation = mainCamera.transform.rotation;
+                    child.rotation = mainCamera.transform.rotation;  // 始终朝向当前摄像头
                 }
             }
 
+            // 继续递归其子物体
             RotateObjectsRecursively(child);
         }
-    }
-
-    // 恢复childs列表
-    public void RestoreChilds(List<Transform> savedChilds)
-    {
-        childs = savedChilds;
-        // 恢复后需要重新更新旋转
-        RotateObjects();
     }
 }

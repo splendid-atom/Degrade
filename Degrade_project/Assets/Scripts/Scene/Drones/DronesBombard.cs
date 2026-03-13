@@ -127,9 +127,7 @@ public class DronesBombard : MonoBehaviour
         this.fadeDuration = fadeDuration;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        if(angle==-90f||angle==90f){
-            angle = 0f;
-        }
+        angle = (angle == 90f ||angle == -90f) ? 0f : angle;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
         Vector3 scale = transform.localScale;
 

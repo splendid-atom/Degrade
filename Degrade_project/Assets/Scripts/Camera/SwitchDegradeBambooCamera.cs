@@ -35,20 +35,21 @@ public class SwitchDegradeBambooCamera : MonoBehaviour
 
     private void Update()
     {
-    }
+        // 输出任务完成状态进行调试
+        // Debug.Log("任务完成状态: " + QuestUIManager.QuestManager.quests[0].isCompleted);
 
-    public void SwitchToDegradeBambooCamera()
-    {
-        // Debug.Log("任务完成，切换镜头");
-        StartCoroutine(SmoothSwitchToDegradeBambooCamera()); // 使用协程平滑切换到桥摄像机
-        StartCoroutine(SwitchBackToMainCameraAfterDelay()); // 在所有竹子完成枯萎后切回主摄像机
+        // 检查任务是否完成
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            // Debug.Log("任务完成，切换镜头");
+            StartCoroutine(SmoothSwitchToDegradeBambooCamera()); // 使用协程平滑切换到桥摄像机
+            StartCoroutine(SwitchBackToMainCameraAfterDelay()); // 在所有竹子完成枯萎后切回主摄像机
+        }
     }
 
     // 使用协程平滑切换到桥摄像机
     IEnumerator SmoothSwitchToDegradeBambooCamera()
     {
-        //等待1秒
-        yield return new WaitForSeconds(1f);
         // 记录当前主摄像机的位置和旋转
         Vector3 startPosition = mainCamera.transform.position;
         Quaternion startRotation = mainCamera.transform.rotation;
@@ -74,9 +75,6 @@ public class SwitchDegradeBambooCamera : MonoBehaviour
         // 确保最终位置和旋转准确
         degradeBambooCamera.transform.position = degradeBambooCameraInitialPosition;
         degradeBambooCamera.transform.rotation = degradeBambooCameraInitialRotation;
-        //枯萎竹林对话开启
-        PortalAnimation.instance.isTalking = true;
-    
     }
 
     // 协程：在所有竹子完成枯萎后切换回主摄像机

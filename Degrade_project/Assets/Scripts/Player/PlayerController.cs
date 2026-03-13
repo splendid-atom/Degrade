@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public int CurrentHoldingItem = 0;
     public string PlayerName;        // 玩家名字
 
+    public bool isInvincible = false;  // 是否无敌
     // 存储所有桥的碰撞体
     private List<Collider2D> bridgeColliders = new List<Collider2D>();
 
@@ -36,14 +37,9 @@ public class PlayerController : MonoBehaviour
     public float veticalFactor = 1.5f;
     private float verticalSpeed;
     public bool isDisableMovement = false;
-
-    // public bool isOnLine = false;
-
+    // public bool isInvincible = false;
     void Start()
     {
-
-        // QualitySettings.vSyncCount = 0;
-        // Application.targetFrameRate = 10;
         rigidbody2d = GetComponent<Rigidbody2D>();
         MoveActionWASD.Enable();
         animator = GetComponent<Animator>();
@@ -74,10 +70,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(PlayerHealth<=0){
-            Died();
-            return;
-        }
         // Debug.Log(moveDirection);
         // Debug.Log("isDisableMovement:"+isDisableMovement);
         if(VillageNpcController.instance!=null){
@@ -115,193 +107,74 @@ public class PlayerController : MonoBehaviour
             arrowIndicator.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
         }
     }
-    // 传送玩家到目标位置
-    public void TeleportTo(Vector3 targetPosition)
-    {
-        // 使用Transform来更改玩家的坐标
-        transform.position = targetPosition;
-        // 你也可以在这里处理一些额外的逻辑，例如平滑传送、动画等
-    }
-    public void InstantFallingDie()
-    {
-        PlayerHealth = 0;
-        PlayerShield = 0;
-        FallingFloorsController.Instance.isFalling = false;
-        if(LineRunController.Instance.isLineRunPassed){
-            TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));            
-        }
-        else{
-            TeleportTo(new Vector3(191.21f, -29.2f, -0.7f));            
-        }
 
-        Debug.Log("InstantFallingDie");
-        // Debug.Log("PlayerHealth:"+PlayerHealth);
-        // Debug.Log("PlayerShield:"+PlayerShield);
-        // Debug.Log("MaxHealth:"+MaxHealth);
-        // Debug.Log("MaxShield:"+MaxShield);
-        // Debug.Log("CurrentHoldingItem:"+CurrentHoldingItem);
-    }
-    public void InstantDie(){
-        PlayerHealth = 0;
-        PlayerShield = 0;
-        // TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));
-        Debug.Log("InstanceDie");
-    }
-    public void Died(){
-        if(LineRunController.Instance.isLineRunPassed){
-            TeleportTo(new Vector3(18.7f, -26.2f, -0.7f));            
-        }
-        else{
-            TeleportTo(new Vector3(191.21f, -29.2f, -0.7f));            
-        }
-
-        Debug.Log("You Died!");
-    }
-    // void FixedUpdate()
-    // {
-    //     if(VillageNpcController.instance!=null){
-    //         if (VillageNpcController.instance.isTalking)
-    //         {
-    //             return;
-    //         }            
-    //     }
-    //     if(isDisableMovement){
-    //         return;
-    //     }
-
-
-    //     // 使用角色自身的坐标系移动
-    //     move = move.x * transform.right + move.y * transform.up;
-
-    //     // 调整垂直方向的速度，只在按W或S时加速
-        
-    //     // Debug.Log($"(move.x,move.y): ({globalmove.x}, {globalmove.y})");
-
-    //     // 判断是否为上下移动（只要 move.y 不为 0）
-    //     if (Mathf.Abs(globalmove.y) > 0.7)  // 如果 move.y 非零，则认为是上下移动
-    //     {
-    //         verticalSpeed = speed * veticalFactor; // 提高垂直移动速度，例如增加50%
-    //     }
-    //     else
-    //     {
-    //         verticalSpeed = speed; // 保持水平移动的速度
-    //     }
-
-    //     // 计算玩家新位置
-    //     Vector2 position = (Vector2)rigidbody2d.position + move * verticalSpeed * Time.deltaTime;
-
-    //     if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
-    //     {
-    //         // 获取玩家当前位置的 X 值
-    //         float playerX = transform.position.x;
-
-    //         // 根据玩家的 X 值计算 Z 轴的位置，使用线性插值映射到 waveAmplitude 范围
-    //         float bridgeStartX = activeBridge.bounds.min.x;
-    //         float bridgeEndX = activeBridge.bounds.max.x;
-
-    //         float normalizedX = Mathf.InverseLerp(bridgeStartX, bridgeEndX, playerX);  // 将玩家的 X 映射到 [0, 1] 范围
-    //         float targetZ = Mathf.Sin(normalizedX * Mathf.PI * waveFrequency) * waveAmplitude;  // 使用更大的幅度增加起伏范围
-
-    //         // 平滑过渡到目标 Z 位置，使用更高平滑因子
-    //         float smoothZ = Mathf.SmoothDamp(transform.position.z, targetZ, ref zVelocity, 0.1f);  // 使用 SmoothDamp 确保平滑过渡
-
-    //         position = new Vector2(position.x, position.y);  // 保持 XY 不变
-    //         rigidbody2d.MovePosition(position);  // 移动到新的位置
-    //         transform.position = new Vector3(position.x, position.y, smoothZ);  // 调整 Z 轴
-    //     }
-    //     else
-    //     {
-    //         // 普通移动
-    //         rigidbody2d.MovePosition(position);
-
-    //         // Z 轴回归到原始位置
-    //         float smoothZ = Mathf.SmoothDamp(transform.position.z, 0f, ref zVelocity, 0.2f);  // 回到 Z = 0，使用平滑过渡
-    //         transform.position = new Vector3(position.x, position.y, smoothZ);
-    //     }
-    // }
-
-
-    public void TakeDamage(float damage)
-    {
-        if (PlayerHealth <= 0)
-        {
-            return;
-        }
-        PlayerHealth -= damage;
-    }
-
-
-
-    //玩家移动和帧率无关
     void FixedUpdate()
     {
-        if (VillageNpcController.instance != null && VillageNpcController.instance.isTalking)
-        {
+        if(VillageNpcController.instance!=null){
+            if (VillageNpcController.instance.isTalking)
+            {
+                return;
+            }            
+        }
+        if(isDisableMovement){
             return;
         }
-        if (isDisableMovement)
+
+
+        // 使用角色自身的坐标系移动
+        move = move.x * transform.right + move.y * transform.up;
+
+        // 调整垂直方向的速度，只在按W或S时加速
+        
+        // Debug.Log($"(move.x,move.y): ({globalmove.x}, {globalmove.y})");
+
+        // 判断是否为上下移动（只要 move.y 不为 0）
+        if (Mathf.Abs(globalmove.y) > 0.7)  // 如果 move.y 非零，则认为是上下移动
         {
-            return;
+            verticalSpeed = speed * veticalFactor; // 提高垂直移动速度，例如增加50%
         }
-        if(PlayerHealth<=0){
-            return;
-        }
-        // 读取移动输入（WASD键）
-        move = MoveActionWASD.ReadValue<Vector2>();
-
-        // 获取摄像机的方向
-        Transform camTransform = Camera.main.transform;
-        Vector3 cameraForward = camTransform.up;   // 2D 游戏中通常使用摄像机的 "up" 作为前进方向
-        Vector3 cameraRight = camTransform.right;  // 右方向
-
-        // 计算基于摄像机的移动方向
-        Vector2 moveDirection = (move.x * new Vector2(cameraRight.x, cameraRight.y) +
-                                move.y * new Vector2(cameraForward.x, cameraForward.y)).normalized;
-
-        // 计算速度（独立于帧数）
-        float currentSpeed = speed;
-        if (Mathf.Abs(move.y) > 0.7)  // 上下移动加速
+        else
         {
-            currentSpeed *= veticalFactor;
+            verticalSpeed = speed; // 保持水平移动的速度
         }
 
-        // 计算新的位置
-        // Vector2 position = rigidbody2d.position + moveDirection * currentSpeed * Time.fixedDeltaTime;
-        Vector2 position = rigidbody2d.position + moveDirection * currentSpeed * Time.unscaledDeltaTime;
+        // 计算玩家新位置
+        Vector2 position = (Vector2)rigidbody2d.position + move * verticalSpeed * Time.deltaTime;
+
         if (isOnBridge && activeBridge != null && QuestUIManager.QuestManager.quests[0].isCompleted)
         {
             // 获取玩家当前位置的 X 值
             float playerX = transform.position.x;
 
-            // 计算桥的 X 轴范围
+            // 根据玩家的 X 值计算 Z 轴的位置，使用线性插值映射到 waveAmplitude 范围
             float bridgeStartX = activeBridge.bounds.min.x;
             float bridgeEndX = activeBridge.bounds.max.x;
 
-            // 计算 Z 轴的起伏
-            float normalizedX = Mathf.InverseLerp(bridgeStartX, bridgeEndX, playerX);
-            float targetZ = Mathf.Sin(normalizedX * Mathf.PI * waveFrequency) * waveAmplitude;
+            float normalizedX = Mathf.InverseLerp(bridgeStartX, bridgeEndX, playerX);  // 将玩家的 X 映射到 [0, 1] 范围
+            float targetZ = Mathf.Sin(normalizedX * Mathf.PI * waveFrequency) * waveAmplitude;  // 使用更大的幅度增加起伏范围
 
-            // 平滑调整 Z 轴
-            float smoothZ = Mathf.SmoothDamp(transform.position.z, targetZ, ref zVelocity, 0.1f);
+            // 平滑过渡到目标 Z 位置，使用更高平滑因子
+            float smoothZ = Mathf.SmoothDamp(transform.position.z, targetZ, ref zVelocity, 0.1f);  // 使用 SmoothDamp 确保平滑过渡
 
-            // 移动刚体
-            rigidbody2d.MovePosition(position);
-            transform.position = new Vector3(position.x, position.y, smoothZ);
+            position = new Vector2(position.x, position.y);  // 保持 XY 不变
+            rigidbody2d.MovePosition(position);  // 移动到新的位置
+            transform.position = new Vector3(position.x, position.y, smoothZ);  // 调整 Z 轴
         }
         else
         {
             // 普通移动
             rigidbody2d.MovePosition(position);
 
-            // 平滑回归到原始 Z 轴
-            // float smoothZ = Mathf.SmoothDamp(transform.position.z, 0f, ref zVelocity, 0.2f);
-            // transform.position = new Vector3(position.x, position.y, smoothZ);
-            transform.position = new Vector3(position.x, position.y, transform.position.z);
-
+            // Z 轴回归到原始位置
+            float smoothZ = Mathf.SmoothDamp(transform.position.z, 0f, ref zVelocity, 0.2f);  // 回到 Z = 0，使用平滑过渡
+            transform.position = new Vector3(position.x, position.y, smoothZ);
         }
     }
 
-
+    public void TakeDamage(float damage)
+    {
+        PlayerHealth -= damage;
+    }
 
 
     // 当玩家进入桥的碰撞体时
@@ -330,13 +203,4 @@ public class PlayerController : MonoBehaviour
     {
         return isMoving;
     }
-    public void HitPlayerDamage(float damage){
-        if(PlayerHealth<=0){
-            return;
-        }
-        else{
-            PlayerHealth -= damage;
-        }
-    }
-
 }

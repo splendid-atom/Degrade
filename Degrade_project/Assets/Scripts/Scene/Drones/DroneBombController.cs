@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DroneBombController : MonoBehaviour
@@ -15,6 +16,8 @@ public class DroneBombController : MonoBehaviour
     private float fieldMinX, fieldMaxX, fieldMinY, fieldMaxY;
     private int columns, rows;
     private bool lastWasVertical = false;
+
+    
 
     [SerializeField] float explosionDamage = 50f;
     [SerializeField] float explosionRadius = 3f;
@@ -59,6 +62,7 @@ public class DroneBombController : MonoBehaviour
 
     void SpawnVerticalBombWave()
     {
+        isVerticalBombing = true;
         int playerGridX = Mathf.Clamp(
             Mathf.FloorToInt((player.position.x - fieldMinX) / gridSize),
             0, columns - 1
@@ -85,6 +89,7 @@ public class DroneBombController : MonoBehaviour
 
     void SpawnHorizontalBombWave()
     {
+        isVerticalBombing = false;
         int playerGridY = Mathf.Clamp(
             Mathf.FloorToInt((player.position.y - fieldMinY) / gridSize),
             0, rows - 1
@@ -111,10 +116,20 @@ public class DroneBombController : MonoBehaviour
 
     void SpawnDrone(Vector3 position, Vector3 direction)
     {
-        GameObject drone = Instantiate(droneBombPrefab, position, Quaternion.identity);
+        GameObject drone;
+        if (isVerticalBombing) 
+        {
+            drone = Instantiate(droneBombPrefab, position, Quaternion.Euler(0f, 0f, 270f));
+        }
+        else 
+        {
+          drone = Instantiate(droneBombPrefab, position, Quaternion.identity);
+        }
+
         DronesBombard bombardScript = drone.GetComponent<DronesBombard>();
         bombardScript.presetVariables(explosionDamage, explosionRadius, damageLayerMask);
-        drone.transform.SetParent(transform, true); // 设置为本对象子物体，保持世界坐标
+        
+        //drone.transform.SetParent(transform, true); // 设置为本对象子物体，保持世界坐标
         if (bombardScript != null)
         {
             bombardScript.isAwakeBomb = false; // 不在 Start() 中自动启动

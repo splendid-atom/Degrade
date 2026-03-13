@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7685371054589233456}
+  - component: {fileID: 2265696583479852163}
   m_Layer: 0
   m_Name: Bomb
   m_TagString: Untagged
@@ -32,6 +33,20 @@ Transform:
   - {fileID: 8321930901097435247}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2265696583479852163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8234440776001309081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70be5c30457420640b7fc3da5521ce26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosion: {fileID: 3523032664663680425}
+  isExploded: 0
 --- !u!1001 &1410636200820937814
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -156,6 +171,11 @@ PrefabInstance:
 --- !u!4 &532849884114249174 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1510542076297736576, guid: 314219ba2e0117d4694fa3ffa337c23f, type: 3}
+  m_PrefabInstance: {fileID: 1410636200820937814}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &3523032664663680425 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2555728658033373695, guid: 314219ba2e0117d4694fa3ffa337c23f, type: 3}
   m_PrefabInstance: {fileID: 1410636200820937814}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5332155008780699689

@@ -141,11 +141,11 @@ public class TrashEnemiesController : MonoBehaviour
                 continue;
             }
         }
-        if(Input.GetKeyDown(KeyCode.R)){
-            StartCoroutine(RebornTrashEnemiesProcess());
-        }
+        // if(Input.GetKeyDown(KeyCode.R)){
+        //     StartCoroutine(RebornTrashEnemiesProcess());
+        // }
     }
-    IEnumerator RebornTrashEnemiesProcess(){
+    public IEnumerator RebornTrashEnemiesProcess(){
         SwitchTrashEnemyCamera.SwitchToTrashEnemyCamera();
         yield return new WaitForSeconds(delayBeforeReborn);
         RebornTrashEnemies();

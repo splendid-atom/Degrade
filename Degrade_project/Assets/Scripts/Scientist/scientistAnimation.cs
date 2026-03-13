@@ -27,7 +27,7 @@ public class scientistAnimation : MonoBehaviour
             OnAnimatorIdling();
         }
     }
-    void OnAnimatorFloatUp(){
+    public void OnAnimatorFloatUp(){
         animator.SetBool("isFloatUp", true);
         animator.SetBool("isFloatDown", false);
         animator.SetBool("isFloating", false);
@@ -36,7 +36,7 @@ public class scientistAnimation : MonoBehaviour
         animator.SetBool("isSummonUp", false);
 
     }
-    void OnAnimatorFloatDown(){
+    public void OnAnimatorFloatDown(){
         animator.SetBool("isFloatUp", false);
         animator.SetBool("isFloatDown", true);
         animator.SetBool("isFloating", false);
@@ -45,7 +45,7 @@ public class scientistAnimation : MonoBehaviour
         animator.SetBool("isSummonUp", false);
 
     }
-    void OnAnimatorFloating(){
+    public void OnAnimatorFloating(){
         animator.SetBool("isFloatUp", false);
         animator.SetBool("isFloatDown", false);
         animator.SetBool("isFloating", true);
@@ -54,7 +54,7 @@ public class scientistAnimation : MonoBehaviour
         animator.SetBool("isSummonUp", false);
         
     }
-    void OnAnimatorSummonUp(){
+    public void OnAnimatorSummonUp(){
         animator.SetBool("isFloatUp", false);
         animator.SetBool("isFloatDown", false);
         animator.SetBool("isFloating", false);
@@ -62,7 +62,7 @@ public class scientistAnimation : MonoBehaviour
         animator.SetBool("isSummoning", false);
         animator.SetBool("isSummonUp", true);
     }
-    void OnAnimatorSummoning(){
+    public void OnAnimatorSummoning(){
         animator.SetBool("isFloatUp", false);
         animator.SetBool("isFloatDown", false);
         animator.SetBool("isFloating", false);
@@ -71,7 +71,7 @@ public class scientistAnimation : MonoBehaviour
         animator.SetBool("isSummonUp", false);
 
     }
-    void OnAnimatorIdling(){
+    public void OnAnimatorIdling(){
         animator.SetBool("isFloatUp", false);
         animator.SetBool("isFloatDown", false);
         animator.SetBool("isFloating", false);

@@ -34,9 +34,9 @@ public class SwitchBridgeCamera : MonoBehaviour
 
     private void Update()
     {
-        if(InterSceneMemory.instance.isBridgeRised&&InterSceneMemory.instance.isBeenToBambooMaze){
-            return;
-        }
+        // 输出任务完成状态进行调试
+        // Debug.Log("任务完成状态: " + QuestUIManager.QuestManager.quests[0].isCompleted);
+
         // 检查任务是否完成
         if (QuestUIManager.QuestManager.quests[0].isCompleted && !isBridgeCameraSwitched)
         {
